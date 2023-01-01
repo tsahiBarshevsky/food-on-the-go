@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "food-on-the-go",
+    "slug": "food-on-the-go",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
