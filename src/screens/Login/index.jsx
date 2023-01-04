@@ -117,6 +117,9 @@ const LoginScreen = () => {
                             )
                         }}
                     </Formik>
+                    <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
+                        <Text>Register</Text>
+                    </TouchableOpacity>
                 </KeyboardAvoidingView>
             </ScrollView>
         </SafeAreaView>
