@@ -16,7 +16,8 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
+    Keyboard
 } from 'react-native';
 
 const { width } = Dimensions.get('screen');
@@ -42,6 +43,7 @@ const RegistrationScreen = () => {
 
     const onRegister = (values) => {
         const { email, password } = values;
+        Keyboard.dismiss();
         createUserWithEmailAndPassword(authentication, email.trim(), password.trim())
             .catch((error) => console.log('error', error))
     }
