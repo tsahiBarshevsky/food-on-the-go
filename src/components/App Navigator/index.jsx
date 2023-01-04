@@ -4,7 +4,11 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import { background } from '../../utils/theme';
 
 // App screens
-import { RegistrationScreen } from '../../screens';
+import {
+    RegistrationScreen,
+    LoginScreen,
+    HomeScreen
+} from '../../screens';
 
 const Stack = createStackNavigator();
 const navigatorTheme = {
@@ -22,12 +26,22 @@ const AppNavigator = () => {
     return (
         <NavigationContainer theme={navigatorTheme}>
             <Stack.Navigator
-                initialRouteName='Registration'
+                initialRouteName='Login'
                 screenOptions={{ headerShown: false }}
             >
                 <Stack.Screen
                     name='Registration'
                     component={RegistrationScreen}
+                    options={options}
+                />
+                <Stack.Screen
+                    name='Login'
+                    component={LoginScreen}
+                    options={options}
+                />
+                <Stack.Screen
+                    name='Home'
+                    component={HomeScreen}
                     options={options}
                 />
             </Stack.Navigator>
