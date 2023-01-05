@@ -1,8 +1,10 @@
 import { combineReducers } from "redux";
-import dayReducer from './day';
+import myRestaurantReducer from "./myRestaurant";
+import restaurantsReducer from "./restaurants";
 
 const rootReducer = combineReducers({
-    day: dayReducer
+    myRestaurant: myRestaurantReducer,
+    restaurants: restaurantsReducer
 });
 
 export default rootReducer;

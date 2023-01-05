@@ -1,11 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import * as Location from 'expo-location';
 import update from 'immutability-helper';
+import uuid from 'react-native-uuid';
 import { Formik } from 'formik';
 import { FontAwesome } from '@expo/vector-icons';
-import { authentication } from '../../utils/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useDispatch } from 'react-redux';
 import { Checkbox, TimePicker } from '../../components';
 import { hours, restaurant, schedule } from '../../utils/constants';
+import { addNewRestaurant } from '../../redux/actions/restaurants';
 import gloablStyles from '../../utils/globalStyles';
 
 // React Native components
@@ -23,10 +25,18 @@ import {
     Keyboard
 } from 'react-native';
 
+// Firebase
+import { authentication, db } from '../../utils/firebase';
+import { doc, setDoc } from 'firebase/firestore/lite';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+
 const { width } = Dimensions.get('screen');
 
 const RegistrationScreen = () => {
+    const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
     const [type, setType] = useState('');
+    const [latitude, setLatitude] = useState(0);
+    const [longitude, setLongitude] = useState(0);
     const [activeScreen, setActiveScreen] = useState(1);
     const [showPassword, setShowPassword] = useState(true);
     const [index, setIndex] = useState(0);
@@ -48,6 +58,9 @@ const RegistrationScreen = () => {
     const linkRef = useRef(null);
     const phoneRef = useRef(null);
 
+    // Redux dispatch
+    const dispatch = useDispatch();
+
     const nextScreen = (type) => {
         setActiveScreen(prevState => prevState + 1);
         scrollRef.current?.scrollTo({ x: width * activeScreen });
@@ -63,12 +76,41 @@ const RegistrationScreen = () => {
         const { email, password } = values;
         Keyboard.dismiss();
         createUserWithEmailAndPassword(authentication, email.trim(), password.trim())
-            .catch((error) => console.log('error', error))
+            .catch((error) => console.log('error', error));
     }
 
     const onRegisterOwner = (values) => {
         const { email, password, name, description, link, phone } = values;
         Keyboard.dismiss();
+        createUserWithEmailAndPassword(authentication, email.trim(), password.trim())
+            .then(async () => {
+                const restaurant = {
+                    id: uuid.v4(),
+                    owner: authentication.currentUser.email,
+                    name: name,
+                    description: description,
+                    link: link,
+                    openingHours: openHours,
+                    type: restaurantType.foodTruck ? "Food Truck" : "Coffee Cart",
+                    phone: phone,
+                    image: null,
+                    location: {
+                        latitude: latitude,
+                        longitude: longitude
+                    }
+                };
+                // Insert new document to firestore
+                try {
+                    await setDoc(doc(db, 'restaurants', restaurant.id), restaurant);
+                }
+                catch (error) {
+                    console.log(error.message);
+                }
+                finally {
+                    dispatch({ type: 'SET_MY_RESTAURANT', myRestaurant: restaurant });
+                    dispatch(addNewRestaurant(restaurant));
+                }
+            });
     }
 
     const onChangeAvailability = (index, status) => {
@@ -106,8 +148,49 @@ const RegistrationScreen = () => {
         setIndex(index);
         setOpen(openHours[index].open);
         setClose(openHours[index].close);
-        timePickerRef.current?.open();
+        if (isKeyboardOpen) {
+            Keyboard.dismiss();
+            setTimeout(() => {
+                timePickerRef.current?.open();
+            }, 100);
+        }
+        else
+            timePickerRef.current?.open();
     }
+
+    const getLocation = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            console.log('Permissions not granted');
+            return;
+        }
+        const location = await Location.getCurrentPositionAsync();
+        const { coords } = location;
+        if (coords) {
+            const { latitude, longitude } = coords;
+            setLatitude(latitude);
+            setLongitude(longitude);
+        }
+    }
+
+    useEffect(() => {
+        if (type === 'owner')
+            getLocation();
+    }, [type]);
+
+    useEffect(() => {
+        const keyboardOpenListener = Keyboard.addListener("keyboardDidShow", () =>
+            setIsKeyboardOpen(true)
+        );
+        const keyboardCloseListener = Keyboard.addListener("keyboardDidHide", () =>
+            setIsKeyboardOpen(false)
+        );
+
+        return () => {
+            if (keyboardOpenListener) keyboardOpenListener.remove();
+            if (keyboardCloseListener) keyboardCloseListener.remove();
+        };
+    }, []);
 
     return (
         <>
