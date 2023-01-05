@@ -27,7 +27,6 @@ const TimePicker = ({
                 }
             });
             setOpenHours(newArray);
-            onCloseModal();
             bottomSheetRef.current?.close();
         }
         else

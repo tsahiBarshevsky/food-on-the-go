@@ -70,4 +70,13 @@ const schedule = [
     }
 ];
 
-export { hours, schedule };
+const restaurant = {
+    email: '',
+    password: '',
+    name: '',
+    description: '',
+    link: '',
+    phone: ''
+};
+
+export { hours, schedule, restaurant };
