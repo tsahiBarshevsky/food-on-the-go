@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { AntDesign } from '@expo/vector-icons';
 import WheelPicker from 'react-native-wheely';
+import update from 'immutability-helper';
+import moment from 'moment/moment';
+import { hours } from '../../utils/constants';
 
-
-const TimePicker = ({ bottomSheetRef, hours }) => {
-    const [open, setOpen] = useState(0);
-    const [close, setClose] = useState(0);
-
-    const onCloseModal = () => {
-        setOpen(0);
-        setClose(0);
+const TimePicker = ({
+    bottomSheetRef,
+    open,
+    setOpen,
+    close,
+    setClose,
+    openHours,
+    setOpenHours,
+    index
+}) => {
+    const onConfirm = () => {
+        const openTime = moment(hours[open], "HH:mm");
+        const closeTime = moment(hours[close], "HH:mm");
+        if (openTime.isBefore(closeTime)) {
+            const newArray = update(openHours, {
+                [index]: {
+                    $merge: { open: open, close: close }
+                }
+            });
+            setOpenHours(newArray);
+            onCloseModal();
+            bottomSheetRef.current?.close();
+        }
+        else
+            ToastAndroid.show('Open before close not allowed', ToastAndroid.SHORT);
     }
 
     return (
@@ -23,7 +43,6 @@ const TimePicker = ({ bottomSheetRef, hours }) => {
             modalStyle={styles.modalStyle}
             openAnimationConfig={{ timing: { duration: 200 } }}
             closeAnimationConfig={{ timing: { duration: 500 } }}
-            onClose={onCloseModal}
         >
             <View style={styles.bottomSheetContainer}>
                 <View style={styles.header}>
@@ -31,11 +50,7 @@ const TimePicker = ({ bottomSheetRef, hours }) => {
                         <AntDesign name="close" size={20} color="black" />
                     </TouchableOpacity>
                     <Text>Select Hours</Text>
-                    <TouchableOpacity onPress={() => {
-                        console.log(hours[open] + " - " + hours[close]);
-                        onCloseModal();
-                        bottomSheetRef.current?.close();
-                    }}>
+                    <TouchableOpacity onPress={onConfirm}>
                         <AntDesign name="check" size={20} color="black" />
                     </TouchableOpacity>
                 </View>

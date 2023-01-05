@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import moment from 'moment/moment';
+import React, { useState, useRef } from 'react';
 import update from 'immutability-helper';
 import { Formik } from 'formik';
 import { FontAwesome } from '@expo/vector-icons';
 import { authentication } from '../../utils/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { TimePicker } from '../../components';
+import { hours, schedule } from '../../utils/constants';
 import gloablStyles from '../../utils/globalStyles';
 
 // React Native components
@@ -29,24 +29,13 @@ const RegistrationScreen = () => {
     const [type, setType] = useState('');
     const [activeScreen, setActiveScreen] = useState(1);
     const [showPassword, setShowPassword] = useState(true);
-    const [hours, setHours] = useState([]);
     const timePickerRef = useRef(null);
 
     // Restaurant initial values
-    const [openHours, setOpenHours] = useState([
-        {
-            day: 'Sunday',
-            isOpen: false,
-            open: '',
-            close: ''
-        },
-        {
-            day: 'Monday',
-            isOpen: false,
-            open: '',
-            close: ''
-        }
-    ]);
+    const [index, setIndex] = useState(0);
+    const [open, setOpen] = useState(0);
+    const [close, setClose] = useState(0);
+    const [openHours, setOpenHours] = useState(schedule);
     const restaurant = {
         openingHours: [],
         type: '',
@@ -85,13 +74,12 @@ const RegistrationScreen = () => {
         setOpenHours(newArray);
     }
 
-    useEffect(() => {
-        const items = [];
-        new Array(24).fill().forEach((_, index) => {
-            items.push(moment({ hour: index, minute: 0 }).format('HH:mm'));
-        });
-        setHours(items);
-    }, []);
+    const onOpenTimeTicker = (index) => {
+        setIndex(index);
+        setOpen(openHours[index].open);
+        setClose(openHours[index].close);
+        timePickerRef.current?.open();
+    }
 
     return (
         <>
@@ -129,8 +117,8 @@ const RegistrationScreen = () => {
                                             </TouchableOpacity>
                                             <Text>{item.day}</Text>
                                             {item.isOpen &&
-                                                <TouchableOpacity onPress={() => timePickerRef.current?.open()}>
-                                                    <Text>Open time picker</Text>
+                                                <TouchableOpacity onPress={() => onOpenTimeTicker(index)}>
+                                                    <Text>{hours[item.open]} - {hours[item.close]}</Text>
                                                 </TouchableOpacity>
                                             }
                                         </View>
@@ -220,7 +208,13 @@ const RegistrationScreen = () => {
             </SafeAreaView>
             <TimePicker
                 bottomSheetRef={timePickerRef}
-                hours={hours}
+                open={open}
+                setOpen={setOpen}
+                close={close}
+                setClose={setClose}
+                openHours={openHours}
+                setOpenHours={setOpenHours}
+                index={index}
             />
         </>
     )
