@@ -7,7 +7,8 @@ import { background } from '../../utils/theme';
 import {
     RegistrationScreen,
     LoginScreen,
-    HomeScreen
+    HomeScreen,
+    RestaurantScreen
 } from '../../screens';
 
 const Stack = createStackNavigator();
@@ -42,6 +43,11 @@ const AppNavigator = () => {
                 <Stack.Screen
                     name='Home'
                     component={HomeScreen}
+                    options={options}
+                />
+                <Stack.Screen
+                    name='Restaurant'
+                    component={RestaurantScreen}
                     options={options}
                 />
             </Stack.Navigator>
