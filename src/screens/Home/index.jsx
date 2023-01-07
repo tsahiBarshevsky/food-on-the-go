@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { signOut } from 'firebase/auth';
 import { authentication } from '../../utils/firebase';
-import { LocationBox, RestaurantCard } from '../../components';
+import { LocationBox, RatingBar, RestaurantCard } from '../../components';
 import { CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 
 // firebase
@@ -47,7 +47,7 @@ const HomeScreen = () => {
         if (Platform.OS === 'ios')
             x = x - 15;
         else
-            x = x - 30;
+            x = x - 26;
         flatlistRef.current?.scrollTo({ x: x, y: 0, animated: true });
     }
 
@@ -91,8 +91,10 @@ const HomeScreen = () => {
             <View style={styles.mapContainer}>
                 <MapView
                     ref={mapRef}
-                    style={styles.map}
+                    showsUserLocation
                     showsBuildings={false}
+                    toolbarEnabled={false}
+                    style={styles.map}
                     region={{
                         latitude: coordinates.latitude,
                         longitude: coordinates.longitude,
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     map: {
-        height: '100%',
+        height: '105%',
         width: '100%',
     },
     cards: {
