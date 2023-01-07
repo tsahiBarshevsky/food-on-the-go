@@ -1,15 +1,20 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CARD_WIDTH } from '../../utils/constants';
 
 const RestaurantCard = ({ restaurant }) => {
     return (
-        <View style={styles.container}>
+        <TouchableOpacity
+            onPress={() => console.log(restaurant.id)}
+            style={styles.container}
+            activeOpacity={1}
+        >
             <Image
                 source={{ uri: restaurant.image }}
                 style={styles.image}
             />
             <Text style={styles.title}>{restaurant.name}</Text>
-        </View>
+        </TouchableOpacity>
     )
 }
 
@@ -18,14 +23,17 @@ export default RestaurantCard;
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
+        width: CARD_WIDTH,
         backgroundColor: 'royalblue',
         borderRadius: 10,
         padding: 10,
-        zIndex: 2
+        zIndex: 2,
+        marginHorizontal: 10,
+        overflow: 'hidden'
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 110,
+        height: 110,
         resizeMode: 'cover',
         borderRadius: 5,
         marginRight: 10

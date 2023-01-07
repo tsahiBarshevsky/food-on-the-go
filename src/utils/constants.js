@@ -1,3 +1,9 @@
+import { Dimensions } from "react-native";
+
+const { width } = Dimensions.get('screen');
+const CARD_WIDTH = width * 0.8;
+const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
+
 const hours = [
     "00:00",
     "01:00",
@@ -333,6 +339,8 @@ const mapStyleDark = [
 ];
 
 export {
+    CARD_WIDTH,
+    SPACING_FOR_CARD_INSET,
     hours,
     schedule,
     restaurant,
