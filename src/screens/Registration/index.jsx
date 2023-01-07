@@ -79,38 +79,44 @@ const RegistrationScreen = () => {
             .catch((error) => console.log('error', error));
     }
 
-    const onRegisterOwner = (values) => {
+    const onRegisterOwner = async (values) => {
         const { email, password, name, description, link, phone } = values;
         Keyboard.dismiss();
-        createUserWithEmailAndPassword(authentication, email.trim(), password.trim())
-            .then(async () => {
-                const restaurant = {
-                    id: uuid.v4(),
-                    owner: authentication.currentUser.email,
-                    name: name,
-                    description: description,
-                    link: link,
-                    openingHours: openHours,
-                    type: restaurantType.foodTruck ? "Food Truck" : "Coffee Cart",
-                    phone: phone,
-                    image: null,
-                    location: {
-                        latitude: latitude,
-                        longitude: longitude
-                    }
-                };
-                // Insert new document to firestore
-                try {
-                    await setDoc(doc(db, 'restaurants', restaurant.id), restaurant);
-                }
-                catch (error) {
-                    console.log(error.message);
-                }
-                finally {
-                    dispatch({ type: 'SET_MY_RESTAURANT', myRestaurant: restaurant });
-                    dispatch(addNewRestaurant(restaurant));
-                }
-            });
+        // createUserWithEmailAndPassword(authentication, email.trim(), password.trim())
+        //     .then(async () => {
+        // });
+        const restaurant = {
+            id: uuid.v4(),
+            // owner: authentication.currentUser.email,
+            name: name,
+            description: description,
+            link: link,
+            type: restaurantType.foodTruck ? "Food Truck" : "Coffee Cart",
+            image: 'https://images.pexels.com/photos/11621146/pexels-photo-11621146.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+            phone: phone,
+            priceRange: {
+                lowest: 10,
+                highest: 20
+            },
+            reviews: [],
+            openingHours: openHours,
+            location: {
+                latitude: latitude,
+                longitude: longitude
+            }
+        };
+        // Insert new document to firestore
+        try {
+            await setDoc(doc(db, 'restaurants', restaurant.id), restaurant);
+        }
+        catch (error) {
+            console.log(error.message);
+        }
+        finally {
+            console.log('done')
+            // dispatch({ type: 'SET_MY_RESTAURANT', myRestaurant: restaurant });
+            // dispatch(addNewRestaurant(restaurant));
+        }
     }
 
     const onChangeAvailability = (index, status) => {
