@@ -4,6 +4,7 @@ import { StyleSheet, ScrollView, Text, View, Image, FlatList, TouchableOpacity, 
 import { FontAwesome } from '@expo/vector-icons';
 import { hours } from '../../utils/constants';
 import globalStyles from '../../utils/globalStyles';
+import ReviewCard from '../../components/Review Card';
 
 const RestaurantScreen = ({ route }) => {
     const { restaurant } = route.params;
@@ -105,6 +106,11 @@ const RestaurantScreen = ({ route }) => {
                             <Text>sum: {ratingAverage}</Text>
                             <Text>{restaurant.reviews.length} Reviews</Text>
                         </View>
+                        {restaurant.reviews.map((review) => {
+                            return (
+                                <ReviewCard key={review.user.uid} review={review} />
+                            )
+                        })}
                     </View>
                     :
                     <Text>No reviews yet</Text>
