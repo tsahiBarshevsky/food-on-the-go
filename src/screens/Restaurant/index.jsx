@@ -3,22 +3,29 @@ import * as Progress from 'react-native-progress';
 import { StyleSheet, ScrollView, Text, View, Image, FlatList, TouchableOpacity, Linking } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { hours } from '../../utils/constants';
+import { authentication } from '../../utils/firebase';
 import globalStyles from '../../utils/globalStyles';
-import ReviewCard from '../../components/Review Card';
+import { ReviewCard, RatingBar } from '../../components';
 
 const RestaurantScreen = ({ route }) => {
     const { restaurant } = route.params;
+    const [userRating, setUserRating] = useState(-1);
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
 
     useEffect(() => {
+        // Calculate each rating sum
         const sum = {};
         [...Array(5).keys()].forEach((item) => {
             sum[item + 1] = restaurant.reviews.filter((review) => review.rating === item + 1).length;
         });
         setRatingSum(sum);
+        // Calculate rating average
         const ratings = restaurant.reviews.map(({ rating }) => rating);
         setRatingAverage(ratings.reduce((a, b) => a + b, 0) / ratings.length);
+        // Get user rating
+        const review = restaurant.reviews.find((review) => review.user.uid === authentication.currentUser.uid);
+        setUserRating(review?.rating);
     }, []);
 
     return (
@@ -77,6 +84,11 @@ const RestaurantScreen = ({ route }) => {
                             </View>
                         )
                     }}
+                />
+                <Text style={styles.subtitle}>Rate and review</Text>
+                <RatingBar
+                    defaultRating={userRating}
+                    setDefaultRating={setUserRating}
                 />
                 <Text style={styles.subtitle}>Reviews</Text>
                 {restaurant.reviews.length > 0 ?

@@ -8,7 +8,8 @@ import {
     RegistrationScreen,
     LoginScreen,
     HomeScreen,
-    RestaurantScreen
+    RestaurantScreen,
+    ReviewScreen
 } from '../../screens';
 
 const Stack = createStackNavigator();
@@ -48,6 +49,11 @@ const AppNavigator = () => {
                 <Stack.Screen
                     name='Restaurant'
                     component={RestaurantScreen}
+                    options={options}
+                />
+                <Stack.Screen
+                    name='Review'
+                    component={ReviewScreen}
                     options={options}
                 />
             </Stack.Navigator>
