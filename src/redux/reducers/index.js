@@ -1,10 +1,14 @@
 import { combineReducers } from "redux";
-import myRestaurantReducer from "./myRestaurant";
+import ownedRestaurantsReducer from "./ownedRestaurants";
 import restaurantsReducer from "./restaurants";
+import userReducer from './user';
+import locationReducer from './location';
 
 const rootReducer = combineReducers({
-    myRestaurant: myRestaurantReducer,
-    restaurants: restaurantsReducer
+    restaurants: restaurantsReducer,
+    ownedRestaurants: ownedRestaurantsReducer,
+    user: userReducer,
+    location: locationReducer
 });
 
 export default rootReducer;

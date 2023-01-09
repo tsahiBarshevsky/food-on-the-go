@@ -16,8 +16,9 @@ const MapScreen = () => {
         latitude: 32.01784,
         longitude: 34.75616
     };
-    const navigation = useNavigation();
+    // const navigation = useNavigation();
     const restaurants = useSelector(state => state.restaurants);
+    const location = useSelector(state => state.location);
     const dispatch = useDispatch();
     const mapRef = useRef(null);
     const flatlistRef = useRef(null);
@@ -41,12 +42,12 @@ const MapScreen = () => {
         flatlistRef.current?.scrollTo({ x: x, y: 0, animated: true });
     }
 
-    useEffect(() => {
-        fetchData();
-        fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}&localityLanguage=en`)
-            .then((res) => res.json())
-            .then((res) => setStreet(`${res.city}, ${res.countryName}`));
-    }, []);
+    // useEffect(() => {
+    // fetchData();
+    // fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}&localityLanguage=en`)
+    //     .then((res) => res.json())
+    //     .then((res) => setStreet(`${res.city}, ${res.countryName}`));
+    // }, []);
 
     // Animation control
     useEffect(() => {
@@ -75,9 +76,9 @@ const MapScreen = () => {
         });
     });
 
-    return restaurants.length > 0 && (
+    return (
         <View style={styles.container}>
-            <LocationBox street={street} />
+            <LocationBox street={location.street} />
             <View style={styles.mapContainer}>
                 <MapView
                     ref={mapRef}
@@ -86,8 +87,8 @@ const MapScreen = () => {
                     toolbarEnabled={false}
                     style={styles.map}
                     region={{
-                        latitude: coordinates.latitude,
-                        longitude: coordinates.longitude,
+                        latitude: location.latitude,
+                        longitude: location.longitude,
                         latitudeDelta: 0.005,
                         longitudeDelta: 0.005
                     }}

@@ -1,5 +1,6 @@
 export { default as RegistrationScreen } from './Registration';
 export { default as LoginScreen } from './Login';
+export { default as SplashScreen } from './Splash';
 export { default as MapScreen } from './Map';
 export { default as FavouritesScreen } from './Favourites';
 export { default as ProfileScreen } from './Profile';
