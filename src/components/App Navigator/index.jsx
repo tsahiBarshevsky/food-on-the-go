@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { background } from '../../utils/theme';
+import BottomBarNavigator from '../../Navigators/bottomTabNavigator';
 
 // App screens
 import {
@@ -43,6 +44,11 @@ const AppNavigator = () => {
                 />
                 <Stack.Screen
                     name='Home'
+                    component={BottomBarNavigator}
+                    options={options}
+                />
+                {/* <Stack.Screen
+                    name='Home'
                     component={HomeScreen}
                     options={options}
                 />
@@ -55,7 +61,7 @@ const AppNavigator = () => {
                     name='Review'
                     component={ReviewScreen}
                     options={options}
-                />
+                /> */}
             </Stack.Navigator>
         </NavigationContainer>
     )
