@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import * as Progress from 'react-native-progress';
 import { StyleSheet, ScrollView, Text, View, Image, FlatList, TouchableOpacity, Linking } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Entypo } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { hours } from '../../utils/constants';
 import { authentication } from '../../utils/firebase';
+import { ReviewCard, RatingBar, List } from '../../components';
 import globalStyles from '../../utils/globalStyles';
-import { ReviewCard, RatingBar } from '../../components';
 
 const RestaurantScreen = ({ route }) => {
     const { restaurant } = route.params;
     const [userRating, setUserRating] = useState(-1);
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
+    const navigation = useNavigation();
 
     useEffect(() => {
         // Calculate each rating sum
@@ -31,10 +33,23 @@ const RestaurantScreen = ({ route }) => {
     return (
         <View style={globalStyles.container}>
             <ScrollView contentContainerStyle={styles.scrollView}>
-                <Image
-                    source={{ uri: restaurant.image }}
-                    style={styles.image}
-                />
+                <View style={styles.header}>
+                    <Image
+                        source={{ uri: restaurant.image }}
+                        style={styles.image}
+                    />
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                        style={[styles.button, styles.back]}
+                    >
+                        <Entypo name="chevron-left" size={25} color="white" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.button, styles.favorite]}
+                    >
+                        <FontAwesome name="bookmark-o" size={18} color="white" />
+                    </TouchableOpacity>
+                </View>
                 <Text style={styles.title}>{restaurant.name}</Text>
                 <Text>{restaurant.description}</Text>
                 <Text style={styles.subtitle}>About</Text>
@@ -67,7 +82,8 @@ const RestaurantScreen = ({ route }) => {
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.subtitle}>Opening hours</Text>
-                <FlatList
+                <List list={restaurant.openingHours} />
+                {/* <FlatList
                     data={restaurant.openingHours}
                     scrollEnabled={false}
                     keyExtractor={(item) => item.day}
@@ -84,7 +100,7 @@ const RestaurantScreen = ({ route }) => {
                             </View>
                         )
                     }}
-                />
+                /> */}
                 <Text style={styles.subtitle}>Rate and review</Text>
                 <RatingBar
                     defaultRating={userRating}
@@ -139,12 +155,36 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingBottom: 15
     },
-    image: {
+    header: {
+        position: 'relative',
         width: '100%',
         height: 200,
-        resizeMode: 'cover',
+        marginVertical: 10,
+        backgroundColor: 'royalblue',
         borderRadius: 15,
-        marginVertical: 10
+        overflow: 'hidden'
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+        opacity: 0.2
+    },
+    button: {
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 30,
+        height: 30,
+        top: 10,
+        borderRadius: 10,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)'
+    },
+    back: {
+        left: 10
+    },
+    favorite: {
+        right: 10
     },
     title: {
         fontSize: 23,
