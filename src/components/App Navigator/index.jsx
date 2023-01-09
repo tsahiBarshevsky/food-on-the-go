@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { background } from '../../utils/theme';
-import BottomBarNavigator from '../../Navigators/bottomTabNavigator';
+import BottomBarNavigator from '../../navigators/bottomTabNavigator';
 
 // App screens
 import {

@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FavouritesScreen, ProfileScreen } from '../screens';
 
 // Navigators
-import MapNavigator from '../Navigators/mapNavigator';
+import MapNavigator from './mapNavigator';
 
 const Tab = createBottomTabNavigator();
 
