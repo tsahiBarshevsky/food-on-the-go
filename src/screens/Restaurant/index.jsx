@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as Progress from 'react-native-progress';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import moment from 'moment/moment';
 import { hours } from '../../utils/constants';
 import { authentication } from '../../utils/firebase';
-import { ReviewCard, RatingBar, List } from '../../components';
+import { ReviewCard, RatingBar, List, SavePanel } from '../../components';
 import globalStyles from '../../utils/globalStyles';
 
 const RestaurantScreen = ({ route }) => {
@@ -15,8 +15,9 @@ const RestaurantScreen = ({ route }) => {
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
     const navigation = useNavigation();
+    const savePanelRef = useRef(null);
 
-
+    // is open stuff
     const today = moment().format('dddd');
     const item = restaurant.openingHours[moment().format('d')];
     const openTime = moment(hours[item.open], "HH:mm");
@@ -38,109 +39,113 @@ const RestaurantScreen = ({ route }) => {
     }, []);
 
     return (
-        <View style={globalStyles.container}>
-            <ScrollView contentContainerStyle={styles.scrollView}>
-                <View style={styles.header}>
-                    <Image
-                        source={{ uri: restaurant.image }}
-                        style={styles.image}
-                    />
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                        style={[styles.button, styles.back]}
-                    >
-                        <Entypo name="chevron-left" size={25} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.button, styles.favorite]}
-                    >
-                        <FontAwesome name="bookmark-o" size={18} color="white" />
-                    </TouchableOpacity>
-                </View>
-                <Text style={styles.title}>{restaurant.name}</Text>
-                <Text>{restaurant.description}</Text>
-                <Text style={styles.subtitle}>About</Text>
-                <View style={styles.aboutBox}>
-                    <View style={styles.icon}>
-                        <FontAwesome name="map-marker" size={24} color="black" />
+        <>
+            <View style={globalStyles.container}>
+                <ScrollView contentContainerStyle={styles.scrollView}>
+                    <View style={styles.header}>
+                        <Image
+                            source={{ uri: restaurant.image }}
+                            style={styles.image}
+                        />
+                        <TouchableOpacity
+                            onPress={() => navigation.goBack()}
+                            style={[styles.button, styles.back]}
+                        >
+                            <Entypo name="chevron-left" size={25} color="white" />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => savePanelRef.current?.open()}
+                            style={[styles.button, styles.favorite]}
+                        >
+                            <FontAwesome name="bookmark-o" size={18} color="white" />
+                        </TouchableOpacity>
                     </View>
-                    <Text>TBA</Text>
-                </View>
-                <View style={styles.aboutBox}>
-                    <View style={styles.icon}>
-                        <FontAwesome name="shekel" size={20} color="black" />
-                    </View>
-                    <Text>{restaurant.priceRange.lowest} - {restaurant.priceRange.highest}</Text>
-                </View>
-                <View style={styles.aboutBox}>
-                    <View style={styles.icon}>
-                        <FontAwesome name="phone" size={20} color="black" />
-                    </View>
-                    <TouchableOpacity onPress={() => Linking.openURL(`tel: ${restaurant.phone}`)}>
-                        <Text>{restaurant.phone}</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.aboutBox}>
-                    <View style={styles.icon}>
-                        <FontAwesome name="link" size={20} color="black" />
-                    </View>
-                    <TouchableOpacity onPress={() => Linking.openURL(restaurant.link)}>
-                        <Text>{restaurant.link}</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.openingHours}>
-                    <Text style={{ fontSize: 17 }}>Opening hours</Text>
-                    {item.isOpen && today === item.day && moment().isBetween(openTime, closeTime) ?
-                        <Text style={styles.open}>Open now</Text>
-                        :
-                        <Text style={styles.close}>Close now</Text>
-                    }
-                </View>
-                <List list={restaurant.openingHours} />
-                <Text style={styles.subtitle}>Rate and review</Text>
-                <RatingBar
-                    defaultRating={userRating}
-                    setDefaultRating={setUserRating}
-                />
-                <Text style={styles.subtitle}>Reviews</Text>
-                {restaurant.reviews.length > 0 ?
-                    <View>
-                        {Object.keys(ratingsSum).map((key) => {
-                            return (
-                                <View key={key} style={styles.rating}>
-                                    <View style={{ marginRight: 5 }}>
-                                        <Text>{key}</Text>
-                                    </View>
-                                    <View style={{ width: '96%' }}>
-                                        <Progress.Bar
-                                            progress={ratingsSum[key] / restaurant.reviews.length}
-                                            width={null}
-                                            height={10}
-                                            color="#4169e1"
-                                            unfilledColor="rgba(65, 105, 225, 0.5)"
-                                            borderWidth={0}
-                                            animationType="timing"
-                                            borderRadius={10}
-                                        />
-                                    </View>
-                                </View>
-                            )
-                        })}
-                        <View>
-                            <Text>sum: {ratingAverage}</Text>
-                            <Text>{restaurant.reviews.length} Reviews</Text>
+                    <Text style={styles.title}>{restaurant.name}</Text>
+                    <Text>{restaurant.description}</Text>
+                    <Text style={styles.subtitle}>About</Text>
+                    <View style={styles.aboutBox}>
+                        <View style={styles.icon}>
+                            <FontAwesome name="map-marker" size={24} color="black" />
                         </View>
-                        {restaurant.reviews.map((review) => {
-                            return (
-                                <ReviewCard key={review.user.uid} review={review} />
-                            )
-                        })}
+                        <Text>TBA</Text>
                     </View>
-                    :
-                    <Text>No reviews yet</Text>
-                }
-            </ScrollView>
-        </View>
+                    <View style={styles.aboutBox}>
+                        <View style={styles.icon}>
+                            <FontAwesome name="shekel" size={20} color="black" />
+                        </View>
+                        <Text>{restaurant.priceRange.lowest} - {restaurant.priceRange.highest}</Text>
+                    </View>
+                    <View style={styles.aboutBox}>
+                        <View style={styles.icon}>
+                            <FontAwesome name="phone" size={20} color="black" />
+                        </View>
+                        <TouchableOpacity onPress={() => Linking.openURL(`tel: ${restaurant.phone}`)}>
+                            <Text>{restaurant.phone}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.aboutBox}>
+                        <View style={styles.icon}>
+                            <FontAwesome name="link" size={20} color="black" />
+                        </View>
+                        <TouchableOpacity onPress={() => Linking.openURL(restaurant.link)}>
+                            <Text>{restaurant.link}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.openingHours}>
+                        <Text style={{ fontSize: 17 }}>Opening hours</Text>
+                        {item.isOpen && today === item.day && moment().isBetween(openTime, closeTime) ?
+                            <Text style={styles.open}>Open now</Text>
+                            :
+                            <Text style={styles.close}>Close now</Text>
+                        }
+                    </View>
+                    <List list={restaurant.openingHours} />
+                    <Text style={styles.subtitle}>Rate and review</Text>
+                    <RatingBar
+                        defaultRating={userRating}
+                        setDefaultRating={setUserRating}
+                    />
+                    <Text style={styles.subtitle}>Reviews</Text>
+                    {restaurant.reviews.length > 0 ?
+                        <View>
+                            {Object.keys(ratingsSum).map((key) => {
+                                return (
+                                    <View key={key} style={styles.rating}>
+                                        <View style={{ marginRight: 5 }}>
+                                            <Text>{key}</Text>
+                                        </View>
+                                        <View style={{ width: '96%' }}>
+                                            <Progress.Bar
+                                                progress={ratingsSum[key] / restaurant.reviews.length}
+                                                width={null}
+                                                height={10}
+                                                color="#4169e1"
+                                                unfilledColor="rgba(65, 105, 225, 0.5)"
+                                                borderWidth={0}
+                                                animationType="timing"
+                                                borderRadius={10}
+                                            />
+                                        </View>
+                                    </View>
+                                )
+                            })}
+                            <View>
+                                <Text>sum: {ratingAverage}</Text>
+                                <Text>{restaurant.reviews.length} Reviews</Text>
+                            </View>
+                            {restaurant.reviews.map((review) => {
+                                return (
+                                    <ReviewCard key={review.user.uid} review={review} />
+                                )
+                            })}
+                        </View>
+                        :
+                        <Text>No reviews yet</Text>
+                    }
+                </ScrollView>
+            </View>
+            <SavePanel bottomSheetRef={savePanelRef} />
+        </>
     )
 }
 
