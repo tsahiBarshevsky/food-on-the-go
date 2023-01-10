@@ -144,7 +144,10 @@ const RestaurantScreen = ({ route }) => {
                     }
                 </ScrollView>
             </View>
-            <SavePanel bottomSheetRef={savePanelRef} />
+            <SavePanel
+                bottomSheetRef={savePanelRef}
+                restaurant={restaurant}
+            />
         </>
     )
 }
