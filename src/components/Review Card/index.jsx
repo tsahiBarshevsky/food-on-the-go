@@ -23,9 +23,9 @@ const ReviewCard = ({ review }) => {
                 <View style={styles.stars}>
                     {[...Array(5).keys()].map((item) => {
                         if (item + 1 <= review.rating)
-                            return (<AntDesign name="star" size={20} color="black" />);
+                            return (<AntDesign key={item} name="star" size={20} color="black" />);
                         else
-                            return (<AntDesign name="staro" size={20} color="black" />);
+                            return (<AntDesign key={item} name="staro" size={20} color="black" />);
                     })}
                 </View>
                 <Text>On {moment.unix(review.date.seconds).format('DD/MM/YYYY')}</Text>

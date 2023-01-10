@@ -5,13 +5,6 @@ import { hours } from '../../utils/constants';
 
 const List = ({ list }) => {
     const today = moment().format('dddd');
-    const item = list[moment().format('d')];
-    const openTime = moment(hours[item.open], "HH:mm");
-    const closeTime = moment(hours[item.close], "HH:mm");
-    if (item.isOpen && today === item.day && moment().isBetween(openTime, closeTime))
-        console.log('open now')
-    else
-        console.log('closed now')
 
     return (
         <View>

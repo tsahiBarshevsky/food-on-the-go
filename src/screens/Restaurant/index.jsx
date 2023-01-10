@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import * as Progress from 'react-native-progress';
-import { StyleSheet, ScrollView, Text, View, Image, FlatList, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import moment from 'moment/moment';
 import { hours } from '../../utils/constants';
 import { authentication } from '../../utils/firebase';
 import { ReviewCard, RatingBar, List } from '../../components';
@@ -14,6 +15,12 @@ const RestaurantScreen = ({ route }) => {
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
     const navigation = useNavigation();
+
+
+    const today = moment().format('dddd');
+    const item = restaurant.openingHours[moment().format('d')];
+    const openTime = moment(hours[item.open], "HH:mm");
+    const closeTime = moment(hours[item.close], "HH:mm");
 
     useEffect(() => {
         // Calculate each rating sum
@@ -81,26 +88,15 @@ const RestaurantScreen = ({ route }) => {
                         <Text>{restaurant.link}</Text>
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.subtitle}>Opening hours</Text>
+                <View style={styles.openingHours}>
+                    <Text style={{ fontSize: 17 }}>Opening hours</Text>
+                    {item.isOpen && today === item.day && moment().isBetween(openTime, closeTime) ?
+                        <Text style={styles.open}>Open now</Text>
+                        :
+                        <Text style={styles.close}>Close now</Text>
+                    }
+                </View>
                 <List list={restaurant.openingHours} />
-                {/* <FlatList
-                    data={restaurant.openingHours}
-                    scrollEnabled={false}
-                    keyExtractor={(item) => item.day}
-                    ItemSeparatorComponent={() => <View style={{ marginBottom: 5 }} />}
-                    renderItem={({ item }) => {
-                        return (
-                            <View style={styles.openHour}>
-                                <Text>{item.day}</Text>
-                                {item.isOpen ?
-                                    <Text>{hours[item.open]} - {hours[item.close]}</Text>
-                                    :
-                                    <Text>Closed</Text>
-                                }
-                            </View>
-                        )
-                    }}
-                /> */}
                 <Text style={styles.subtitle}>Rate and review</Text>
                 <RatingBar
                     defaultRating={userRating}
@@ -207,10 +203,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    openHour: {
+    openingHours: {
         flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+        marginVertical: 5
+    },
+    open: {
+        color: 'green'
+    },
+    close: {
+        color: 'red'
     },
     rating: {
         flexDirection: 'row',
