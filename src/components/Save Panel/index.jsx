@@ -1,4 +1,5 @@
 import React from 'react';
+import update from 'immutability-helper';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
@@ -6,17 +7,44 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { addRestaurantToSaved, removeRestaurantFromSaved } from '../../redux/actions/user';
 
+// firebase
+import { doc, updateDoc } from 'firebase/firestore/lite';
+import { db } from '../../utils/firebase';
+
 const SavePanel = ({ bottomSheetRef, restaurant }) => {
     const user = useSelector(state => state.user);
     const { favorites, interested } = user.saved;
     const dispatch = useDispatch();
 
-    const handleChangeSavedList = (list, id) => {
+    const handleChangeSavedList = async (list, id) => {
+        const userRef = doc(db, "users", user.uid);
         const index = eval(list).findIndex((id) => id === restaurant.id);
-        if (index !== -1)
-            dispatch(removeRestaurantFromSaved(list, index));
-        else
-            dispatch(addRestaurantToSaved(list, id));
+        if (index !== -1) { // Remove restaurant from saved list
+            const saved = update(user.saved, {
+                [list]: {
+                    $splice: [[index, 1]]
+                }
+            });
+            try {
+                await updateDoc(userRef, { saved: saved }); // Update document on Firestore
+                dispatch(removeRestaurantFromSaved(list, index)); // Update store
+            }
+            catch (error) {
+                console.log(error.message);
+            }
+        }
+        else { // Add restaurant to saved list
+            const saved = update(user.saved, {
+                [list]: { $push: [id] }
+            });
+            try {
+                await updateDoc(userRef, { saved: saved }); // Update document on Firestore
+                dispatch(addRestaurantToSaved(list, id)); // Update store
+            }
+            catch (error) {
+                console.log(error.message);
+            }
+        }
     }
 
     return (
