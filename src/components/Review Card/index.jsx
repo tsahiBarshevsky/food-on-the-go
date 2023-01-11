@@ -15,14 +15,14 @@ const ReviewCard = ({ review }) => {
                     </Text>
                 </View>
                 <View>
-                    <Text>TBA: user name</Text>
+                    <Text>{review.user.displayName}</Text>
                     <Text>{review.user.email}</Text>
                 </View>
             </View>
             <View style={styles.review}>
                 <View style={styles.stars}>
                     {[...Array(5).keys()].map((item) => {
-                        if (item + 1 <= review.rating)
+                        if (item <= review.rating)
                             return (<AntDesign key={item} name="star" size={20} color="black" />);
                         else
                             return (<AntDesign key={item} name="staro" size={20} color="black" />);

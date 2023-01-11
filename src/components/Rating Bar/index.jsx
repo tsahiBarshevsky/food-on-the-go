@@ -1,27 +1,34 @@
 import React from 'react';
+import update from 'immutability-helper';
 import { StyleSheet, FlatList, TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateRating } from '../../redux/actions/review';
 
-const RatingBar = ({ defaultRating, setDefaultRating }) => {
+const RatingBar = ({ currentRating, defaultRating, setDefaultRating }) => {
     const maxRating = [...Array(5).keys()];
+    const review = useSelector(state => state.review);
     const navigation = useNavigation();
+    const dispatch = useDispatch();
 
     const Separator = () => (
         <View style={styles.separator} />
     );
 
     const onStarPressed = (key) => {
-        if (key === defaultRating && key === 0)
-            setDefaultRating(-1);
+        if (key === review.rating && key === 0)
+            dispatch(updateRating(-1));
+        // setDefaultRating(-1);
         else
-            setDefaultRating(key);
+            dispatch(updateRating(key));
+        // setDefaultRating(key);
         setTimeout(() => {
-            navigation.navigate('Review', { rating: key });
+            navigation.navigate('Review', { currentRating: currentRating });
         }, 200);
-        setTimeout(() => {
-            setDefaultRating(-1);
-        }, 500);
+        // setTimeout(() => {
+        //     setDefaultRating(-1);
+        // }, 500);
     }
 
     return (
@@ -36,7 +43,7 @@ const RatingBar = ({ defaultRating, setDefaultRating }) => {
                         activeOpacity={1}
                         onPress={() => onStarPressed(item)}
                     >
-                        {item <= defaultRating ?
+                        {item <= review.rating ?
                             <AntDesign name="star" size={24} color="black" />
                             :
                             <AntDesign name="staro" size={24} color="black" />

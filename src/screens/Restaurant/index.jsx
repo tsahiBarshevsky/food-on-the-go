@@ -30,16 +30,16 @@ const RestaurantScreen = ({ route }) => {
         // Calculate each rating sum
         const sum = {};
         [...Array(5).keys()].forEach((item) => {
-            sum[item + 1] = restaurant.reviews.filter((review) => review.rating === item + 1).length;
+            sum[item + 1] = restaurant.reviews.filter((review) => review.rating === item).length;
         });
         setRatingSum(sum);
         // Calculate rating average
-        const ratings = restaurant.reviews.map(({ rating }) => rating);
+        const ratings = restaurant.reviews.map(({ rating }) => rating + 1);
         setRatingAverage(ratings.reduce((a, b) => a + b, 0) / ratings.length);
         // Get user rating
         const review = restaurant.reviews.find((review) => review.user.uid === authentication.currentUser.uid);
         dispatch({ type: 'SET_REVIEW', review: review ? review : {} });
-        setUserRating(review?.rating - 1);
+        setUserRating(review?.rating);
     }, []);
 
     return (
@@ -105,11 +105,7 @@ const RestaurantScreen = ({ route }) => {
                     </View>
                     <List list={restaurant.openingHours} />
                     <Text style={styles.subtitle}>Rate and review</Text>
-                    <RatingBar
-                        origin='restaurant'
-                        defaultRating={userRating}
-                        setDefaultRating={setUserRating}
-                    />
+                    <RatingBar currentRating={userRating} />
                     <Text style={styles.subtitle}>Reviews</Text>
                     {restaurant.reviews.length > 0 ?
                         <View>
