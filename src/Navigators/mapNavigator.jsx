@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { MapScreen, RestaurantScreen } from '../screens';
+import { MapScreen, RestaurantScreen, ReviewScreen } from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +14,7 @@ const MapNavigator = () => {
             >
                 <Stack.Screen name='Map' component={MapScreen} />
                 <Stack.Screen name='Restaurant' component={RestaurantScreen} />
+                <Stack.Screen name='Review' component={ReviewScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     )

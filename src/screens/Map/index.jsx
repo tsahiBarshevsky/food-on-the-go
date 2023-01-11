@@ -4,7 +4,7 @@ import MapView, { Marker, Callout } from 'react-native-maps';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { LocationBox, RatingBar, RestaurantCard } from '../../components';
-import { CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
+import { CARD_WIDTH, mapStyleLight, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 
 // firebase
 import { collection, getDocs } from 'firebase/firestore/lite';
@@ -86,6 +86,7 @@ const MapScreen = () => {
                     showsBuildings={false}
                     toolbarEnabled={false}
                     style={styles.map}
+                    customMapStyle={mapStyleLight}
                     region={{
                         latitude: location.latitude,
                         longitude: location.longitude,

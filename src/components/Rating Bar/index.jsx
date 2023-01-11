@@ -17,7 +17,7 @@ const RatingBar = ({ defaultRating, setDefaultRating }) => {
         else
             setDefaultRating(key);
         setTimeout(() => {
-            navigation.navigate('Review', { rating: key + 1 });
+            navigation.navigate('Review', { rating: key });
         }, 200);
         setTimeout(() => {
             setDefaultRating(-1);

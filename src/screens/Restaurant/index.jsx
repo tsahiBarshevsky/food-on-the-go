@@ -8,14 +8,17 @@ import { hours } from '../../utils/constants';
 import { authentication } from '../../utils/firebase';
 import { ReviewCard, RatingBar, List, SavePanel } from '../../components';
 import globalStyles from '../../utils/globalStyles';
+import { useDispatch, useSelector } from 'react-redux';
 
 const RestaurantScreen = ({ route }) => {
     const { restaurant } = route.params;
     const [userRating, setUserRating] = useState(-1);
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
+    const review = useSelector(state => state.review);
     const navigation = useNavigation();
     const savePanelRef = useRef(null);
+    const dispatch = useDispatch();
 
     // is open stuff
     const today = moment().format('dddd');
@@ -35,7 +38,8 @@ const RestaurantScreen = ({ route }) => {
         setRatingAverage(ratings.reduce((a, b) => a + b, 0) / ratings.length);
         // Get user rating
         const review = restaurant.reviews.find((review) => review.user.uid === authentication.currentUser.uid);
-        setUserRating(review?.rating);
+        dispatch({ type: 'SET_REVIEW', review: review ? review : {} });
+        setUserRating(review?.rating - 1);
     }, []);
 
     return (
@@ -102,6 +106,7 @@ const RestaurantScreen = ({ route }) => {
                     <List list={restaurant.openingHours} />
                     <Text style={styles.subtitle}>Rate and review</Text>
                     <RatingBar
+                        origin='restaurant'
                         defaultRating={userRating}
                         setDefaultRating={setUserRating}
                     />

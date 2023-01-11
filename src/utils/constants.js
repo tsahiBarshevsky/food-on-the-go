@@ -87,8 +87,8 @@ const restaurant = {
 
 const mapStyleLight = [
     {
-        "featureType": "administrative.land_parcel",
-        "elementType": "labels",
+        "featureType": "administrative",
+        "elementType": "geometry",
         "stylers": [
             {
                 "visibility": "off"
@@ -97,7 +97,6 @@ const mapStyleLight = [
     },
     {
         "featureType": "poi",
-        "elementType": "labels.text",
         "stylers": [
             {
                 "visibility": "off"
@@ -105,7 +104,8 @@ const mapStyleLight = [
         ]
     },
     {
-        "featureType": "poi.business",
+        "featureType": "road",
+        "elementType": "labels.icon",
         "stylers": [
             {
                 "visibility": "off"
@@ -113,24 +113,14 @@ const mapStyleLight = [
         ]
     },
     {
-        "featureType": "poi.park",
-        "elementType": "labels.text",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
-        "featureType": "road.local",
-        "elementType": "labels",
+        "featureType": "transit",
         "stylers": [
             {
                 "visibility": "off"
             }
         ]
     }
-];
+]
 
 const mapStyleDark = [
     {
@@ -158,8 +148,8 @@ const mapStyleDark = [
         ]
     },
     {
-        "featureType": "administrative.land_parcel",
-        "elementType": "labels",
+        "featureType": "administrative",
+        "elementType": "geometry",
         "stylers": [
             {
                 "visibility": "off"
@@ -177,7 +167,6 @@ const mapStyleDark = [
     },
     {
         "featureType": "poi",
-        "elementType": "labels.text",
         "stylers": [
             {
                 "visibility": "off"
@@ -194,28 +183,11 @@ const mapStyleDark = [
         ]
     },
     {
-        "featureType": "poi.business",
-        "stylers": [
-            {
-                "visibility": "off"
-            }
-        ]
-    },
-    {
         "featureType": "poi.park",
         "elementType": "geometry",
         "stylers": [
             {
                 "color": "#263c3f"
-            }
-        ]
-    },
-    {
-        "featureType": "poi.park",
-        "elementType": "labels.text",
-        "stylers": [
-            {
-                "visibility": "off"
             }
         ]
     },
@@ -243,6 +215,15 @@ const mapStyleDark = [
         "stylers": [
             {
                 "color": "#212a37"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+                "visibility": "off"
             }
         ]
     },
@@ -283,8 +264,7 @@ const mapStyleDark = [
         ]
     },
     {
-        "featureType": "road.local",
-        "elementType": "labels",
+        "featureType": "transit",
         "stylers": [
             {
                 "visibility": "off"
