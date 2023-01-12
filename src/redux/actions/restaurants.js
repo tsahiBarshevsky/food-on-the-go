@@ -15,4 +15,15 @@ const addNewReview = (index, newReview) => {
     }
 };
 
-export { addNewRestaurant, addNewReview };
+const editReview = (restaurantIndex, reviewIndex, editedReview) => {
+    return {
+        type: 'EDIT_REVIEW',
+        payload: {
+            restaurantIndex: restaurantIndex,
+            reviewIndex: reviewIndex,
+            editedReview: editedReview
+        }
+    }
+};
+
+export { addNewRestaurant, addNewReview, editReview };

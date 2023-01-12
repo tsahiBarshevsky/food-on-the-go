@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateRating } from '../../redux/actions/review';
 import { RatingBar } from '../../components';
 import { authentication } from '../../utils/firebase';
-import { addNewReview } from '../../redux/actions/restaurants';
+import { addNewReview, editReview } from '../../redux/actions/restaurants';
 import globalStyles from '../../utils/globalStyles';
 
 // React Native components
@@ -34,6 +34,7 @@ const ReviewScreen = ({ route }) => {
     const review = useSelector(state => state.review);
     const restaurants = useSelector(state => state.restaurants);
     const [comment, setComment] = useState(Object.keys(review).length === 1 ? '' : review.comment);
+    const [isFocused, setIsFocused] = useState(false)
     const user = authentication.currentUser;
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -50,6 +51,7 @@ const ReviewScreen = ({ route }) => {
     const onPostReview = async () => {
         Keyboard.dismiss();
         const restaurantRef = doc(db, "restaurants", restaurant.id);
+        const index = restaurants.findIndex((item) => item.id === restaurant.id); // Index in restaurants array
         const newReview = {
             comment: comment,
             date: moment().format('DD/MM/YYYY'),
@@ -61,7 +63,6 @@ const ReviewScreen = ({ route }) => {
             }
         };
         if (Object.keys(review).length === 1) { // add new review
-            const index = restaurants.findIndex((item) => item.id === restaurant.id);
             const newReviews = update(restaurant.reviews, {
                 $push: [newReview]
             });
@@ -77,11 +78,33 @@ const ReviewScreen = ({ route }) => {
                 console.log(error.message);
             }
         }
+        else { // Edit existing review
+            const reviews = restaurants[index].reviews;
+            const reviewIndex = reviews.findIndex((review) => review.user.uid === user.uid);
+            const editedReviews = update(restaurant.reviews, {
+                [reviewIndex]: {
+                    $set: newReview
+                }
+            });
+            try {
+                await updateDoc(restaurantRef, { reviews: editedReviews }); // Update document on Firestore
+                dispatch(editReview(index, reviewIndex, newReview)); // Update store
+                dispatch({
+                    type: 'SET_REVIEW',
+                    review: newReview
+                });
+            }
+            catch (error) {
+                console.log(error.message);
+            }
+        }
+        if (isFocused) { // Check if comment's textinput focused
+            setTimeout(() => {
+                navigation.goBack();
+            }, 500);
+        }
         else
-            console.log('edit existing review')
-        setTimeout(() => {
             navigation.goBack();
-        }, 500);
     }
 
     useFocusEffect(
@@ -151,6 +174,8 @@ const ReviewScreen = ({ route }) => {
                             // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
                             multiline
                             blurOnSubmit={false}
+                            onBlur={() => setIsFocused(false)}
+                            onFocus={() => setIsFocused(true)}
                             style={styles.textInput}
                         />
                     </View>

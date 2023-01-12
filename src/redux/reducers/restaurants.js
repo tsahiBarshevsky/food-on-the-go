@@ -18,6 +18,16 @@ const restaurantsReducer = (state = INITIAL_STATE, action) => {
                     }
                 }
             });
+        case 'EDIT_REVIEW':
+            return update(state, {
+                [action.payload.restaurantIndex]: {
+                    reviews: {
+                        [action.payload.reviewIndex]: {
+                            $set: action.payload.editedReview
+                        }
+                    }
+                }
+            });
         default:
             return state;
     }
