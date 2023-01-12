@@ -5,4 +5,14 @@ const addNewRestaurant = (restaurant) => {
     }
 };
 
-export { addNewRestaurant };
+const addNewReview = (index, newReview) => {
+    return {
+        type: 'ADD_NEW_REVIEW',
+        payload: {
+            newReview: newReview,
+            index: index
+        }
+    }
+};
+
+export { addNewRestaurant, addNewReview };

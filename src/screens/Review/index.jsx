@@ -1,11 +1,14 @@
 import React, { useState, useCallback } from 'react';
+import moment from 'moment/moment';
+import update from 'immutability-helper';
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateRating } from '../../redux/actions/review';
-import globalStyles from '../../utils/globalStyles';
 import { RatingBar } from '../../components';
 import { authentication } from '../../utils/firebase';
+import { addNewReview } from '../../redux/actions/restaurants';
+import globalStyles from '../../utils/globalStyles';
 
 // React Native components
 import {
@@ -16,15 +19,22 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     TextInput,
-    BackHandler
+    BackHandler,
+    Keyboard
 } from 'react-native';
+
+// firebase
+import { doc, updateDoc } from 'firebase/firestore/lite';
+import { db } from '../../utils/firebase';
 
 const AVATAR_SIZE = 45;
 
 const ReviewScreen = ({ route }) => {
-    const { currentRating } = route.params;
-    const [comment, setComment] = useState('');
+    const { currentRating, restaurant } = route.params;
     const review = useSelector(state => state.review);
+    const restaurants = useSelector(state => state.restaurants);
+    const [comment, setComment] = useState(Object.keys(review).length === 1 ? '' : review.comment);
+    const user = authentication.currentUser;
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
@@ -33,8 +43,45 @@ const ReviewScreen = ({ route }) => {
     }
 
     const onCancelReview = () => {
-        dispatch(updateRating(currentRating));
+        resetReview();
         navigation.goBack();
+    }
+
+    const onPostReview = async () => {
+        Keyboard.dismiss();
+        const restaurantRef = doc(db, "restaurants", restaurant.id);
+        const newReview = {
+            comment: comment,
+            date: moment().format('DD/MM/YYYY'),
+            rating: review.rating,
+            user: {
+                displayName: user.displayName,
+                email: user.email,
+                uid: user.uid
+            }
+        };
+        if (Object.keys(review).length === 1) { // add new review
+            const index = restaurants.findIndex((item) => item.id === restaurant.id);
+            const newReviews = update(restaurant.reviews, {
+                $push: [newReview]
+            });
+            try {
+                await updateDoc(restaurantRef, { reviews: newReviews }); // Update document on Firestore
+                dispatch(addNewReview(index, newReview)); // Update store
+                dispatch({
+                    type: 'SET_REVIEW',
+                    review: newReview
+                });
+            }
+            catch (error) {
+                console.log(error.message);
+            }
+        }
+        else
+            console.log('edit existing review')
+        setTimeout(() => {
+            navigation.goBack();
+        }, 500);
     }
 
     useFocusEffect(
@@ -57,8 +104,10 @@ const ReviewScreen = ({ route }) => {
                 >
                     <Entypo name="chevron-left" size={22} color="black" />
                 </TouchableOpacity>
-                <Text>TBA: Restaurant</Text>
-                <TouchableOpacity>
+                <Text>{restaurant.name}</Text>
+                <TouchableOpacity
+                    onPress={onPostReview}
+                >
                     <Text>Post</Text>
                 </TouchableOpacity>
             </View>
@@ -76,16 +125,20 @@ const ReviewScreen = ({ route }) => {
                     <View style={styles.user}>
                         <View style={styles.avatar}>
                             <Text style={styles.letter}>
-                                {authentication.currentUser.email.charAt(0)}
+                                {user.email.charAt(0)}
                             </Text>
                         </View>
                         <View>
-                            <Text>{authentication.currentUser.displayName}</Text>
-                            <Text>{authentication.currentUser.email}</Text>
+                            <Text>{user.displayName}</Text>
+                            <Text>{user.email}</Text>
                         </View>
                     </View>
                     <View style={styles.ratingBar}>
-                        <RatingBar currentRating={currentRating} />
+                        <RatingBar
+                            origin='review'
+                            currentRating={currentRating}
+                            restaurant={restaurant}
+                        />
                     </View>
                     <Text>Share some thoughts about...</Text>
                     <View style={styles.textInputWrapper}>

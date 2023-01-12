@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import moment from 'moment/moment';
 import { AntDesign } from '@expo/vector-icons';
 
 const AVATAR_SIZE = 35;
@@ -28,7 +27,7 @@ const ReviewCard = ({ review }) => {
                             return (<AntDesign key={item} name="staro" size={20} color="black" />);
                     })}
                 </View>
-                <Text>On {moment.unix(review.date.seconds).format('DD/MM/YYYY')}</Text>
+                <Text>On {review.date}</Text>
             </View>
             <Text>{review.comment}</Text>
         </View>

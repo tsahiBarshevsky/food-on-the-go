@@ -10,6 +10,14 @@ const restaurantsReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 $push: [action.payload]
             });
+        case 'ADD_NEW_REVIEW':
+            return update(state, {
+                [action.payload.index]: {
+                    reviews: {
+                        $push: [action.payload.newReview]
+                    }
+                }
+            });
         default:
             return state;
     }

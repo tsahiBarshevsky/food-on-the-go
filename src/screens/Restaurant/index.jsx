@@ -105,7 +105,11 @@ const RestaurantScreen = ({ route }) => {
                     </View>
                     <List list={restaurant.openingHours} />
                     <Text style={styles.subtitle}>Rate and review</Text>
-                    <RatingBar currentRating={userRating} />
+                    <RatingBar
+                        origin='restaurant'
+                        currentRating={userRating}
+                        restaurant={restaurant}
+                    />
                     <Text style={styles.subtitle}>Reviews</Text>
                     {restaurant.reviews.length > 0 ?
                         <View>

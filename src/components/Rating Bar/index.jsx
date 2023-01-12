@@ -1,12 +1,11 @@
 import React from 'react';
-import update from 'immutability-helper';
 import { StyleSheet, FlatList, TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateRating } from '../../redux/actions/review';
 
-const RatingBar = ({ currentRating, defaultRating, setDefaultRating }) => {
+const RatingBar = ({ origin, currentRating, restaurant }) => {
     const maxRating = [...Array(5).keys()];
     const review = useSelector(state => state.review);
     const navigation = useNavigation();
@@ -19,16 +18,12 @@ const RatingBar = ({ currentRating, defaultRating, setDefaultRating }) => {
     const onStarPressed = (key) => {
         if (key === review.rating && key === 0)
             dispatch(updateRating(-1));
-        // setDefaultRating(-1);
         else
             dispatch(updateRating(key));
-        // setDefaultRating(key);
-        setTimeout(() => {
-            navigation.navigate('Review', { currentRating: currentRating });
-        }, 200);
-        // setTimeout(() => {
-        //     setDefaultRating(-1);
-        // }, 500);
+        if (origin === 'restaurant')
+            setTimeout(() => {
+                navigation.navigate('Review', { currentRating, restaurant });
+            }, 300);
     }
 
     return (

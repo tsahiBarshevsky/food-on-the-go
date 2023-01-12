@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { LocationBox, RatingBar, RestaurantCard } from '../../components';
 import { CARD_WIDTH, mapStyleLight, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 
+import moment from 'moment/moment';
+
 // firebase
 import { collection, getDocs } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';

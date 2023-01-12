@@ -13,7 +13,10 @@ const BottomBarNavigator = () => {
         <Host>
             <Tab.Navigator
                 initialRouteName='Map'
-                screenOptions={{ headerShown: false }}
+                screenOptions={{
+                    headerShown: false,
+                    tabBarHideOnKeyboard: true
+                }}
             >
                 <Tab.Screen name="Map" component={MapNavigator} />
                 <Tab.Screen name="Saved" component={SavedScreen} />
