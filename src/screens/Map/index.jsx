@@ -84,9 +84,6 @@ const MapScreen = () => {
                 </View>
                 <SearchBar />
             </View>
-            {/* <LocationBox street={location.street} />
-            <FilterButton />
-            <SearchBar /> */}
             <View style={styles.mapContainer}>
                 <MapView
                     ref={mapRef}
