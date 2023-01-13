@@ -26,4 +26,14 @@ const editReview = (restaurantIndex, reviewIndex, editedReview) => {
     }
 };
 
-export { addNewRestaurant, addNewReview, editReview };
+const deleteReview = (restaurantIndex, reviewIndex) => {
+    return {
+        type: 'DELETE_REVIEW',
+        payload: {
+            restaurantIndex: restaurantIndex,
+            reviewIndex: reviewIndex
+        }
+    }
+};
+
+export { addNewRestaurant, addNewReview, editReview, deleteReview };

@@ -1,22 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Entypo } from '@expo/vector-icons';
+import { authentication } from '../../utils/firebase';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import { Menu, MenuItem } from 'react-native-material-menu';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { deleteReview } from '../../redux/actions/restaurants';
 
 const AVATAR_SIZE = 35;
 
 const ReviewCard = ({ review }) => {
+    const [visible, setVisible] = useState(false);
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
+
+    const hideMenu = () => {
+        setVisible(false);
+    }
+
+    const showMenu = () => {
+        setVisible(true);
+    }
+
+    const onDeleteReview = () => {
+        dispatch(deleteReview(0, 0));
+        hideMenu();
+    }
+
     return (
         <View style={styles.container}>
-            <View style={styles.user}>
-                <View style={styles.avatar}>
-                    <Text style={styles.letter}>
-                        {review.user.email.charAt(0)}
-                    </Text>
+            <View style={styles.header}>
+                <View style={styles.user}>
+                    <View style={styles.avatar}>
+                        <Text style={styles.letter}>
+                            {review.user.email.charAt(0)}
+                        </Text>
+                    </View>
+                    <View>
+                        <Text>{review.user.displayName}</Text>
+                        <Text>{review.user.email}</Text>
+                    </View>
                 </View>
-                <View>
-                    <Text>{review.user.displayName}</Text>
-                    <Text>{review.user.email}</Text>
-                </View>
+                {review.user.uid === authentication.currentUser.uid &&
+                    <View>
+                        <Menu
+                            visible={visible}
+                            anchor={
+                                <TouchableOpacity onPress={showMenu}>
+                                    <Entypo name="dots-three-vertical" size={20} color="black" />
+                                </TouchableOpacity>
+                            }
+                            onRequestClose={hideMenu}
+                        >
+                            <MenuItem>Edit review</MenuItem>
+                            <MenuItem onPress={onDeleteReview}>Delete review</MenuItem>
+                        </Menu>
+                    </View>
+                }
             </View>
             <View style={styles.review}>
                 <View style={styles.stars}>
@@ -37,10 +79,15 @@ const ReviewCard = ({ review }) => {
 export default ReviewCard;
 
 const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between'
+    },
     user: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start'
+        justifyContent: 'center'
     },
     avatar: {
         alignItems: 'center',

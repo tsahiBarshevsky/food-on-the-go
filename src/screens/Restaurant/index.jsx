@@ -11,11 +11,12 @@ import globalStyles from '../../utils/globalStyles';
 import { useDispatch, useSelector } from 'react-redux';
 
 const RestaurantScreen = ({ route }) => {
-    const { restaurant } = route.params;
+    const { index } = route.params;
     const [userRating, setUserRating] = useState(-1);
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
-    const review = useSelector(state => state.review);
+    const restaurants = useSelector(state => state.restaurants);
+    const restaurant = restaurants[index];
     const navigation = useNavigation();
     const savePanelRef = useRef(null);
     const dispatch = useDispatch();
@@ -40,7 +41,7 @@ const RestaurantScreen = ({ route }) => {
         const review = restaurant.reviews.find((review) => review.user.uid === authentication.currentUser.uid);
         dispatch({ type: 'SET_REVIEW', review: review ? review : {} });
         setUserRating(review?.rating);
-    }, []);
+    }, [restaurants]);
 
     return (
         <>

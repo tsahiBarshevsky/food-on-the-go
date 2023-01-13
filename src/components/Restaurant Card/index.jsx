@@ -3,12 +3,12 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { CARD_WIDTH } from '../../utils/constants';
 
-const RestaurantCard = ({ restaurant }) => {
+const RestaurantCard = ({ index, restaurant }) => {
     const naviation = useNavigation();
 
     return (
         <TouchableOpacity
-            onPress={() => naviation.navigate('Restaurant', { restaurant })}
+            onPress={() => naviation.navigate('Restaurant', { index })}
             style={styles.container}
             activeOpacity={1}
         >

@@ -28,6 +28,14 @@ const restaurantsReducer = (state = INITIAL_STATE, action) => {
                     }
                 }
             });
+        case 'DELETE_REVIEW':
+            return update(state, {
+                [action.payload.restaurantIndex]: {
+                    reviews: {
+                        $splice: [[action.payload.reviewIndex, 1]]
+                    }
+                }
+            });
         default:
             return state;
     }

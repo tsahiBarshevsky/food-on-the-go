@@ -141,10 +141,11 @@ const MapScreen = () => {
                     { useNativeDriver: true }
                 )}
             >
-                {restaurants.map((restaurant) => {
+                {restaurants.map((restaurant, index) => {
                     return (
                         <RestaurantCard
                             key={restaurant.id}
+                            index={index}
                             restaurant={restaurant}
                         />
                     )
