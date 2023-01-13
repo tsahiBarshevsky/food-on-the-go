@@ -5,4 +5,10 @@ const updateRating = (key) => {
     }
 };
 
-export { updateRating };
+const resetReview = () => {
+    return {
+        type: 'RESET_REVIEW'
+    }
+};
+
+export { updateRating, resetReview };

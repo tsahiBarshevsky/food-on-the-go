@@ -9,7 +9,9 @@ const reviewReducer = (state = INITIAL_STATE, action) => {
         case 'UPDATE_RATING':
             return update(state, {
                 rating: { $set: action.payload }
-            })
+            });
+        case 'RESET_REVIEW':
+            return INITIAL_STATE;
         default:
             return state;
     }

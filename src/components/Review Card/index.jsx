@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
+import update from 'immutability-helper';
 import { StyleSheet, Text, View } from 'react-native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
-import { authentication } from '../../utils/firebase';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
 import { Menu, MenuItem } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteReview } from '../../redux/actions/restaurants';
+import { authentication } from '../../utils/firebase';
+
+// firebase
+import { doc, updateDoc } from 'firebase/firestore/lite';
+import { db } from '../../utils/firebase';
 
 const AVATAR_SIZE = 35;
 
-const ReviewCard = ({ review }) => {
+const ReviewCard = ({ review, currentRating, restaurant }) => {
     const [visible, setVisible] = useState(false);
+    const restaurants = useSelector(state => state.restaurants);
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
@@ -24,9 +29,27 @@ const ReviewCard = ({ review }) => {
         setVisible(true);
     }
 
-    const onDeleteReview = () => {
-        dispatch(deleteReview(0, 0));
+    const onEditReview = () => {
+        navigation.navigate('Review', { currentRating, restaurant });
         hideMenu();
+    }
+
+    const onDeleteReview = async () => {
+        const index = restaurants.findIndex((item) => item.id === restaurant.id); // Index in restaurants array
+        const restaurantRef = doc(db, "restaurants", restaurant.id);
+        const reviews = restaurants[index].reviews;
+        const reviewIndex = reviews.findIndex((review) => review.user.uid === authentication.currentUser.uid);
+        const updatedReviews = update(restaurant.reviews, {
+            $splice: [[reviewIndex, 1]]
+        });
+        try {
+            await updateDoc(restaurantRef, { reviews: updatedReviews }); // Update document on Firestore
+            dispatch(deleteReview(index, reviewIndex)); // Update store
+            hideMenu();
+        }
+        catch (error) {
+            console.log(error.message);
+        }
     }
 
     return (
@@ -54,7 +77,7 @@ const ReviewCard = ({ review }) => {
                             }
                             onRequestClose={hideMenu}
                         >
-                            <MenuItem>Edit review</MenuItem>
+                            <MenuItem onPress={onEditReview}>Edit review</MenuItem>
                             <MenuItem onPress={onDeleteReview}>Delete review</MenuItem>
                         </Menu>
                     </View>

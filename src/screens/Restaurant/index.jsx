@@ -141,7 +141,12 @@ const RestaurantScreen = ({ route }) => {
                             </View>
                             {restaurant.reviews.map((review) => {
                                 return (
-                                    <ReviewCard key={review.user.uid} review={review} />
+                                    <ReviewCard
+                                        key={review.user.uid}
+                                        review={review}
+                                        currentRating={userRating}
+                                        restaurant={restaurant}
+                                    />
                                 )
                             })}
                         </View>
