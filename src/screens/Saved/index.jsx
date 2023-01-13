@@ -6,6 +6,10 @@ import globalStyles from '../../utils/globalStyles';
 
 const SavedScreen = () => {
     const user = useSelector(state => state.user);
+    // const restaurants = useSelector(state => state.restaurants);
+    // const favorites = user.saved.favorites;
+    // const res = restaurants.filter((item) => favorites.includes(item.id));
+    // console.log('res', res)
 
     return (
         <View style={globalStyles.container}>

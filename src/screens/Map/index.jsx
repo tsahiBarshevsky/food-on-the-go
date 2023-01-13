@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Animated, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import { Animated, Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
-import { LocationBox, RatingBar, RestaurantCard } from '../../components';
+import { FilterButton, LocationBox, SearchBar, RestaurantCard } from '../../components';
 import { CARD_WIDTH, mapStyleLight, SPACING_FOR_CARD_INSET } from '../../utils/constants';
-
-import moment from 'moment/moment';
 
 // firebase
 import { collection, getDocs } from 'firebase/firestore/lite';
@@ -80,7 +77,16 @@ const MapScreen = () => {
 
     return (
         <View style={styles.container}>
-            <LocationBox street={location.street} />
+            <View style={styles.header}>
+                <View style={styles.subHeader}>
+                    <LocationBox street={location.street} />
+                    <FilterButton />
+                </View>
+                <SearchBar />
+            </View>
+            {/* <LocationBox street={location.street} />
+            <FilterButton />
+            <SearchBar /> */}
             <View style={styles.mapContainer}>
                 <MapView
                     ref={mapRef}
@@ -160,6 +166,19 @@ export default MapScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1
+    },
+    header: {
+        width: '100%',
+        position: 'absolute',
+        top: Platform.OS === 'android' ? StatusBar.currentHeight + 5 : 5,
+        paddingHorizontal: 15,
+        zIndex: 2
+    },
+    subHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 7
     },
     mapContainer: {
         zIndex: 1,

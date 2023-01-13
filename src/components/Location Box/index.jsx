@@ -5,7 +5,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 const LocationBox = ({ street }) => {
     return (
         <View style={styles.container}>
-            <FontAwesome5 name="map-marker-alt" size={18} color="black" />
+            <FontAwesome5 name="map-marker-alt" size={18} color="orange" />
             <Text style={styles.text}>{street}</Text>
         </View>
     )
@@ -16,10 +16,7 @@ export default LocationBox;
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        position: 'absolute',
-        top: Platform.OS === 'android' ? StatusBar.currentHeight + 5 : 5,
-        left: 15,
-        zIndex: 2,
+        height: 40,
         alignItems: 'center',
         justifyContent: 'flex-start',
         backgroundColor: 'white',
