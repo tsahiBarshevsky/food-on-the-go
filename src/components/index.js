@@ -10,3 +10,4 @@ export { default as SavePanel } from './Save Panel';
 export { default as FilterButton } from './Filter Button';
 export { default as SearchBar } from './Search Bar';
 export { default as SearchCard } from './Search Card';
+export { default as HistoryCard } from './History Card';

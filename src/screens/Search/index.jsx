@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import HistoryCard from '../../components/History Card';
 import SearchCard from '../../components/Search Card';
 import globalStyles from '../../utils/globalStyles';
 
 const SearchScreen = () => {
     const [keyword, setKeyword] = useState('');
     const restaurants = useSelector(state => state.restaurants);
+    const history = useSelector(state => state.history);
 
     const Separator = () => (
         <View style={styles.separator}>
@@ -30,13 +32,28 @@ const SearchScreen = () => {
                         autoFocus
                     />
                 </View>
-                {keyword &&
+                {keyword ?
                     <FlatList
-                        data={[...restaurants].filter((restaurant) => restaurant.name.includes(keyword))}
+                        data={[...restaurants].filter((restaurant) => restaurant.name.toLowerCase().includes(keyword.toLowerCase()))}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Separator}
                         renderItem={({ item }) => {
-                            return (<SearchCard item={item} />);
+                            return (
+                                <SearchCard
+                                    item={item}
+                                    keyword={keyword} />
+                            );
+                        }}
+                    />
+                    :
+                    <FlatList
+                        data={[...restaurants].filter((restaurant) => history.includes(restaurant.id))}
+                        keyExtractor={(item) => item.id}
+                        ItemSeparatorComponent={Separator}
+                        ListHeaderComponent={() => <Text>Recent</Text>}
+                        ListEmptyComponent={() => <Text>None</Text>}
+                        renderItem={({ item }) => {
+                            return (<HistoryCard item={item} />);
                         }}
                     />
                 }

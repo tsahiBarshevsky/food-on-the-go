@@ -1,13 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { FontAwesome5, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { getHistoryFromStorage, updateHistoryInStorage } from '../../utils/AsyncStorageManagement';
+import { addNewTermToHistory } from '../../redux/actions/hisorty';
+import { string } from 'yup';
 
-const SearchCard = ({ item }) => {
+const SearchCard = ({ item, keyword }) => {
     const location = useSelector(state => state.location);
     const restaurants = useSelector(state => state.restaurants);
-    const naviation = useNavigation();
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
 
     const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
         var R = 6371; // Radius of the earth in km
@@ -28,9 +32,28 @@ const SearchCard = ({ item }) => {
         return deg * (Math.PI / 180)
     }
 
+    const boldString = (str, find) => {
+        var re = new RegExp(find.toLowerCase(), 'g');
+        var bl = str.toLowerCase().replace(re, `<Text style={{fontWeight: 'bold'}}>${find.toLowerCase()}</Text>`);
+        return bl;
+    }
+
     const onCardPressed = () => {
         const index = restaurants.findIndex((restaurant) => restaurant.id === item.id);
-        naviation.navigate('Restaurant', { index });
+        navigation.navigate('Restaurant', { index });
+        getHistoryFromStorage().then((storage) => {
+            if (!storage.includes(item.id)) {
+                if (storage.length === 0) { //First insertion
+                    updateHistoryInStorage(JSON.stringify([item.id])); //Update AsyncStorage
+                    dispatch(addNewTermToHistory(item.id)) //Update store
+                }
+                else {
+                    storage.push(restaurants.id);
+                    updateHistoryInStorage(JSON.stringify(storage)); //Update AsyncStorage
+                    dispatch(addNewTermToHistory(item.id)) //Update store
+                }
+            }
+        });
     }
 
     return (
@@ -54,7 +77,12 @@ const SearchCard = ({ item }) => {
                     </Text>
                 </View>
                 <View>
-                    <Text>{item.name}</Text>
+                    {/* <View style={styles.nameWrapper}>
+                        <Text>{keyword}</Text>
+                        <Text style={styles.bold}>{item.name.slice(keyword.length)}</Text>
+                    </View> */}
+                    <Text>{boldString(item.name, keyword)}</Text>
+                    {/* <Text>{item.name}</Text> */}
                     <Text>{item.location.city}</Text>
                 </View>
             </View>
@@ -100,5 +128,13 @@ const styles = StyleSheet.create({
         borderRadius: 17,
         marginBottom: 3,
         backgroundColor: 'grey'
+    },
+    nameWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+    bold: {
+        fontWeight: 'bold'
     }
 });

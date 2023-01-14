@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { getHistoryFromStorage } from '../../utils/AsyncStorageManagement';
 
 // firebase
 import { collection, getDocs, query, where } from 'firebase/firestore/lite';
@@ -65,6 +66,10 @@ const SplashScreen = () => {
                             location: location
                         });
                     });
+            });
+            // Get history search
+            getHistoryFromStorage().then((history) => {
+                dispatch({ type: 'SET_HISTORY', history: history })
             });
         }
         catch (error) {
