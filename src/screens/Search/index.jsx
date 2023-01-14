@@ -32,9 +32,9 @@ const SearchScreen = () => {
                         autoFocus
                     />
                 </View>
-                {keyword ?
+                {keyword.trim() ?
                     <FlatList
-                        data={[...restaurants].filter((restaurant) => restaurant.name.toLowerCase().includes(keyword.toLowerCase()))}
+                        data={[...restaurants].filter((restaurant) => restaurant.name.toLowerCase().includes(keyword.toLowerCase().trim()))}
                         keyExtractor={(item) => item.id}
                         ItemSeparatorComponent={Separator}
                         renderItem={({ item }) => {

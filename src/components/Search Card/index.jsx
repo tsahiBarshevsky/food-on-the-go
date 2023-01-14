@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { getHistoryFromStorage, updateHistoryInStorage } from '../../utils/AsyncStorageManagement';
 import { addNewTermToHistory } from '../../redux/actions/hisorty';
-import { string } from 'yup';
 
 const SearchCard = ({ item, keyword }) => {
     const location = useSelector(state => state.location);
@@ -32,10 +31,20 @@ const SearchCard = ({ item, keyword }) => {
         return deg * (Math.PI / 180)
     }
 
-    const boldString = (str, find) => {
-        var re = new RegExp(find.toLowerCase(), 'g');
-        var bl = str.toLowerCase().replace(re, `<Text style={{fontWeight: 'bold'}}>${find.toLowerCase()}</Text>`);
-        return bl;
+    const boldKeyword = (str, find) => {
+        // var re = new RegExp(find.toLowerCase(), 'g');
+        // var bl = str.toLowerCase().replace(re, `<Text>${find.toLowerCase()}</Text>`);
+        // return bl;
+        const strSplit = str.split('')
+        const keywordSplit = keyword.toLowerCase().split('')
+        const arr = [];
+        strSplit.forEach((item) => {
+            if (keywordSplit.includes(item.toLowerCase()))
+                arr.push(<Text style={{ fontWeight: 'bold' }}>{item}</Text>)
+            else
+                arr.push(<Text>{item}</Text>)
+        });
+        return arr;
     }
 
     const onCardPressed = () => {
@@ -81,7 +90,10 @@ const SearchCard = ({ item, keyword }) => {
                         <Text>{keyword}</Text>
                         <Text style={styles.bold}>{item.name.slice(keyword.length)}</Text>
                     </View> */}
-                    <Text>{boldString(item.name, keyword)}</Text>
+                    {/* {boldKeyword(item.name, keyword).forEach((item, index) => {
+                        return <View key={index}>{item}</View>;
+                    })} */}
+                    <Text>{boldKeyword(item.name, keyword)}</Text>
                     {/* <Text>{item.name}</Text> */}
                     <Text>{item.location.city}</Text>
                 </View>
