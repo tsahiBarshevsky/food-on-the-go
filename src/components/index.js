@@ -9,3 +9,4 @@ export { default as List } from './List';
 export { default as SavePanel } from './Save Panel';
 export { default as FilterButton } from './Filter Button';
 export { default as SearchBar } from './Search Bar';
+export { default as SearchCard } from './Search Card';

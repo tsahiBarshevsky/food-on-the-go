@@ -46,7 +46,7 @@ const SplashScreen = () => {
             if (user.type === 'owner') {
                 const ownedRestaurants = restaurants.filter((restaurant) => restaurant.owner === user.uid);
                 dispatch({
-                    type: 'SET_OWNED_RESTAURANT',
+                    type: 'SET_OWNED_RESTAURANTS',
                     ownedRestaurants: ownedRestaurants
                 });
             }

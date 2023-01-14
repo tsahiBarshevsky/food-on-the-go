@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import * as Progress from 'react-native-progress';
-import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity, Linking, BackHandler } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment/moment';
 import { hours } from '../../utils/constants';
 import { authentication } from '../../utils/firebase';
 import { ReviewCard, RatingBar, List, SavePanel } from '../../components';
 import globalStyles from '../../utils/globalStyles';
-import { useDispatch, useSelector } from 'react-redux';
 
 const RestaurantScreen = ({ route }) => {
-    const { index } = route.params;
+    const { index } = route.params; // index of restaurant in restaurants array
     const [userRating, setUserRating] = useState(-1);
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
@@ -26,6 +26,18 @@ const RestaurantScreen = ({ route }) => {
     const item = restaurant.openingHours[moment().format('d')];
     const openTime = moment(hours[item.open], "HH:mm");
     const closeTime = moment(hours[item.close], "HH:mm");
+
+    const onGoBack = () => {
+        const routes = navigation.getState()?.routes;
+        const prevRoute = routes[routes.length - 2];
+        if (prevRoute.name === 'Search')
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Map' }]
+            });
+        else
+            navigation.goBack();
+    }
 
     useEffect(() => {
         // Calculate each rating sum
@@ -43,6 +55,18 @@ const RestaurantScreen = ({ route }) => {
         setUserRating(review?.rating);
     }, [restaurants]);
 
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                onGoBack();
+                return true;
+            };
+            BackHandler.addEventListener('hardwareBackPress', onBackPress);
+            return () =>
+                BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }, [])
+    );
+
     return (
         <>
             <View style={globalStyles.container}>
@@ -53,7 +77,7 @@ const RestaurantScreen = ({ route }) => {
                             style={styles.image}
                         />
                         <TouchableOpacity
-                            onPress={() => navigation.goBack()}
+                            onPress={onGoBack}
                             style={[styles.button, styles.back]}
                         >
                             <Entypo name="chevron-left" size={25} color="white" />

@@ -1,12 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const SearchBar = () => {
+    const navigation = useNavigation();
+
     return (
         <View style={styles.container}>
             <FontAwesome name="search" size={17} color="black" />
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+                onPress={() => navigation.navigate('Search')}
+                style={styles.button}
+            >
                 <Text style={styles.text}>Search food truck or coffee cart...</Text>
             </TouchableOpacity>
         </View>
