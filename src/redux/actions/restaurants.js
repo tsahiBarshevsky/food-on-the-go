@@ -5,6 +5,23 @@ const addNewRestaurant = (restaurant) => {
     }
 };
 
+const editRestaurant = (index, restaurant) => {
+    return {
+        type: 'EDIT_RESTAURANT',
+        payload: {
+            index: index,
+            restaurant: restaurant
+        }
+    }
+};
+
+const removeRestaurant = (index) => {
+    return {
+        type: 'REMOVE_RESTAURANT',
+        payload: index
+    }
+};
+
 const addNewReview = (index, newReview) => {
     return {
         type: 'ADD_NEW_REVIEW',
@@ -36,4 +53,11 @@ const deleteReview = (restaurantIndex, reviewIndex) => {
     }
 };
 
-export { addNewRestaurant, addNewReview, editReview, deleteReview };
+export {
+    addNewRestaurant,
+    editRestaurant,
+    removeRestaurant,
+    addNewReview,
+    editReview,
+    deleteReview
+};

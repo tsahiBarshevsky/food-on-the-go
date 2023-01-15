@@ -10,6 +10,28 @@ const restaurantsReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 $push: [action.payload]
             });
+        case 'EDIT_RESTAURANT':
+            const restaurant = action.payload.restaurant;
+            return update(state, {
+                [action.payload.index]: {
+                    $merge: {
+                        name: restaurant.name,
+                        description: restaurant.description,
+                        link: restaurant.link,
+                        type: restaurant.type,
+                        phone: restaurant.phone,
+                        kosher: restaurant.kosher,
+                        vegetarian: restaurant.vegetarian,
+                        vegan: restaurant.vegan,
+                        glutenFree: restaurant.glutenFree,
+                        priceRange: restaurant.priceRange,
+                        openingHours: restaurant.openingHours,
+                        location: restaurant.location
+                    }
+                }
+            });
+        case 'REMOVE_RESTAURANT':
+            return update(state, { $splice: [[action.payload, 1]] });
         case 'ADD_NEW_REVIEW':
             return update(state, {
                 [action.payload.index]: {

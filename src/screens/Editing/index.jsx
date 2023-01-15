@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import update from 'immutability-helper';
-import uuid from 'react-native-uuid';
 import { Formik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Checkbox, TimePicker } from '../../components';
-import { hours, restaurant, schedule } from '../../utils/constants';
-import { addNewRestaurant } from '../../redux/actions/restaurants';
+import { hours } from '../../utils/constants';
+import { editRestaurant } from '../../redux/actions/restaurants';
 import globalStyles from '../../utils/globalStyles';
 import { CLOUDINARY_KEY } from '@env';
 
@@ -28,28 +27,30 @@ import {
 } from 'react-native';
 
 // Firebase
-import { authentication, db } from '../../utils/firebase';
-import { doc, setDoc } from 'firebase/firestore/lite';
+import { db } from '../../utils/firebase';
+import { doc, updateDoc } from 'firebase/firestore/lite';
 
-const InsertionScreen = () => {
+const EditingScreen = ({ route }) => {
+    const { restaurant } = route.params;
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
     const [index, setIndex] = useState(0);
     const [open, setOpen] = useState(0);
     const [close, setClose] = useState(0);
-    const [openHours, setOpenHours] = useState(schedule);
-    const [image, setImage] = useState(null);
+    const [openHours, setOpenHours] = useState(restaurant.openingHours);
+    const [image, setImage] = useState(restaurant.image.url);
     const [disabled, setDisabled] = useState(false);
     const location = useSelector(state => state.location);
+    const restaurants = useSelector(state => state.restaurants);
     const navigation = useNavigation();
 
     // Boolean states
-    const [kosher, setKosher] = useState(false);
-    const [vegetarian, setVegetarian] = useState(false);
-    const [vegan, setVegan] = useState(false);
-    const [glutenFree, setGlutenFree] = useState(false);
+    const [kosher, setKosher] = useState(restaurant.kosher);
+    const [vegetarian, setVegetarian] = useState(restaurant.vegetarian);
+    const [vegan, setVegan] = useState(restaurant.vegan);
+    const [glutenFree, setGlutenFree] = useState(restaurant.glutenFree);
     const [restaurantType, setRestaurantType] = useState({
-        foodTruck: true,
-        coffeeCart: false
+        foodTruck: restaurant.type === 'Food Truck' ? true : false,
+        coffeeCart: restaurant.type === 'Coffee Cart' ? true : false
     });
 
     // Refs
@@ -61,6 +62,18 @@ const InsertionScreen = () => {
     const phoneRef = useRef(null);
     const lowestRef = useRef(null);
     const highestRef = useRef(null);
+
+    // Initial values
+    const initialValues = {
+        name: restaurant.name,
+        description: restaurant.description,
+        link: restaurant.link,
+        phone: restaurant.phone,
+        priceRange: {
+            lowest: restaurant.priceRange.lowest,
+            highest: restaurant.priceRange.highest
+        }
+    };
 
     // Redux dispatch
     const dispatch = useDispatch();
@@ -120,27 +133,41 @@ const InsertionScreen = () => {
             timePickerRef.current?.open();
     }
 
-    const handleAddDocument = async (newRestaurant) => {
+    const handleAddDocument = async (editedRestaurant) => {
+        const restaurantRef = doc(db, "restaurants", restaurant.id);
         try {
-            await setDoc(doc(db, 'restaurants', newRestaurant.id), newRestaurant); // Add new doc
+            // Update document on Firestore
+            await updateDoc(restaurantRef, {
+                name: editedRestaurant.name,
+                description: editedRestaurant.description,
+                link: editedRestaurant.link,
+                type: editedRestaurant.type,
+                phone: editedRestaurant.phone,
+                kosher: editedRestaurant.kosher,
+                vegetarian: editedRestaurant.vegetarian,
+                vegan: editedRestaurant.vegan,
+                glutenFree: editedRestaurant.glutenFree,
+                priceRange: editedRestaurant.priceRange,
+                openingHours: editedRestaurant.openingHours,
+                location: editedRestaurant.location
+            });
         }
         catch (error) {
             console.log(error.message);
             setDisabled(false);
         }
         finally {
-            dispatch(addNewRestaurant(newRestaurant)); // Update store
-            dispatch({ type: 'SET_OWNED_RESTAURANT', ownedRestaurant: newRestaurant }); // Update store
+            const index = restaurants.findIndex((item) => item.id === restaurant.id);
+            dispatch(editRestaurant(index, editedRestaurant)); // Update store
+            dispatch({ type: 'SET_OWNED_RESTAURANT', ownedRestaurant: editedRestaurant }); // Update store
             navigation.goBack();
         }
     }
 
-    const onAddNewRestaurant = (values) => {
+    const onEditRestaurant = (values) => {
         const { description, link, name, phone, priceRange } = values;
-        setDisabled(true);
-        const newRestaurant = {
-            id: uuid.v4(),
-            owner: authentication.currentUser.uid,
+        // setDisabled(true);
+        const editedRestaurant = {
             name: name,
             description: description,
             link: link,
@@ -151,36 +178,41 @@ const InsertionScreen = () => {
             vegan: vegan,
             glutenFree: glutenFree,
             priceRange: priceRange,
-            reviews: [],
             openingHours: openHours,
             location: location
         };
-        const newFile = {
-            uri: image,
-            type: `test/${image.split(".")[1]}`,
-            name: `test.${image.split(".")[1]}`
+        if (image.includes('cloudinary')) {// Image hasn't changed
+            editedRestaurant.image = image;
+            handleAddDocument(editedRestaurant);
         }
-        const data = new FormData();
-        data.append('file', newFile);
-        data.append('upload_preset', 'foodOnTheGo');
-        data.append('folder', 'Food on the go images');
-        data.append('cloud_name', CLOUDINARY_KEY);
-        fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_KEY}/image/upload`, {
-            method: 'POST',
-            body: data
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                newRestaurant.image = {
-                    url: data.url,
-                    public_id: data.public_id
-                };
-                handleAddDocument(newRestaurant);
+        else {
+            const newFile = {
+                uri: image,
+                type: `test/${image.split(".")[1]}`,
+                name: `test.${image.split(".")[1]}`
+            }
+            const data = new FormData();
+            data.append('file', newFile);
+            data.append('upload_preset', 'foodOnTheGo');
+            data.append('folder', 'Food on the go images');
+            data.append('cloud_name', CLOUDINARY_KEY);
+            fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_KEY}/image/upload`, {
+                method: 'POST',
+                body: data
             })
-            .catch((error) => {
-                console.log("error while upload image:", error.message)
-                setDisabled(false);
-            });
+                .then((res) => res.json())
+                .then((data) => {
+                    editedRestaurant.image = {
+                        url: data.url,
+                        public_id: data.public_id
+                    };
+                    handleAddDocument(editedRestaurant);
+                })
+                .catch((error) => {
+                    console.log("error while upload image:", error.message)
+                    setDisabled(false);
+                });
+        }
     }
 
     useEffect(() => {
@@ -210,9 +242,9 @@ const InsertionScreen = () => {
                         behavior={Platform.OS === 'ios' ? 'padding' : null}
                     >
                         <Formik
-                            initialValues={restaurant}
+                            initialValues={initialValues}
                             enableReinitialize
-                            onSubmit={(values) => onAddNewRestaurant(values)}
+                            onSubmit={(values) => onEditRestaurant(values)}
                             innerRef={formRef}
                         >
                             {({ handleChange, handleBlur, handleSubmit, values, errors, setErrors, touched }) => {
@@ -397,7 +429,7 @@ const InsertionScreen = () => {
                             {disabled ?
                                 <Text>...</Text>
                                 :
-                                <Text>Save</Text>
+                                <Text>Save changes</Text>
                             }
                         </TouchableOpacity>
                     </KeyboardAvoidingView>
@@ -417,7 +449,7 @@ const InsertionScreen = () => {
     )
 }
 
-export default InsertionScreen;
+export default EditingScreen;
 
 const styles = StyleSheet.create({
     title: {
