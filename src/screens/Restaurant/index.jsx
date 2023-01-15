@@ -73,7 +73,12 @@ const RestaurantScreen = ({ route }) => {
                 <ScrollView contentContainerStyle={styles.scrollView}>
                     <View style={styles.header}>
                         <Image
-                            source={{ uri: restaurant.image }}
+                            source={
+                                typeof restaurant.image === 'string' ?
+                                    { uri: restaurant.image }
+                                    :
+                                    { uri: restaurant.image.url }
+                            }
                             style={styles.image}
                         />
                         <TouchableOpacity

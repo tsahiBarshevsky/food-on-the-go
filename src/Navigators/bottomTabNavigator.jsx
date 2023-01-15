@@ -1,10 +1,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SavedScreen, ProfileScreen } from '../screens';
+import { SavedScreen } from '../screens';
+import { Host } from 'react-native-portalize';
 
 // Navigators
 import MapNavigator from './mapNavigator';
-import { Host } from 'react-native-portalize';
+import ProfileNavigator from './profileNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,7 +21,7 @@ const BottomBarNavigator = () => {
             >
                 <Tab.Screen name="Map" component={MapNavigator} />
                 <Tab.Screen name="Saved" component={SavedScreen} />
-                <Tab.Screen name="Profile" component={ProfileScreen} />
+                <Tab.Screen name="Profile" component={ProfileNavigator} />
             </Tab.Navigator>
         </Host>
     )

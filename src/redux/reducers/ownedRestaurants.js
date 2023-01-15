@@ -1,12 +1,12 @@
 const INITIAL_STATE = {};
 
-const ownedRestaurantsReducer = (state = INITIAL_STATE, action) => {
+const ownedRestaurantReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case 'SET_OWNED_RESTAURANTS':
-            return action.ownedRestaurants;
+        case 'SET_OWNED_RESTAURANT':
+            return action.ownedRestaurant;
         default:
             return state;
     }
 }
 
-export default ownedRestaurantsReducer;
+export default ownedRestaurantReducer;

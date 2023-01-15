@@ -34,7 +34,12 @@ const RestaurantCard = ({ index, restaurant }) => {
             activeOpacity={1}
         >
             <Image
-                source={{ uri: restaurant.image }}
+                source={
+                    typeof restaurant.image === 'string' ?
+                        { uri: restaurant.image }
+                        :
+                        { uri: restaurant.image.url }
+                }
                 style={styles.image}
             />
             <View>

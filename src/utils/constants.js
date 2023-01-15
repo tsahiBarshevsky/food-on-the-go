@@ -77,12 +77,14 @@ const schedule = [
 ];
 
 const restaurant = {
-    email: '',
-    password: '',
     name: '',
     description: '',
     link: '',
-    phone: ''
+    phone: '',
+    priceRange: {
+        lowest: 0,
+        highest: 0
+    }
 };
 
 const mapStyleLight = [

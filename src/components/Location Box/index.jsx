@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, Platform, StatusBar, Text, View } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 
-const LocationBox = ({ street }) => {
+const LocationBox = ({ city }) => {
     return (
         <View style={styles.container}>
             <FontAwesome5 name="map-marker-alt" size={18} color="orange" />
-            <Text style={styles.text}>{street}</Text>
+            <Text style={styles.text}>{city}</Text>
         </View>
     )
 }

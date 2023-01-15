@@ -79,7 +79,7 @@ const MapScreen = () => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.subHeader}>
-                    <LocationBox street={location.street} />
+                    <LocationBox city={location.city} />
                     <FilterButton />
                 </View>
                 <SearchBar />

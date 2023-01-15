@@ -22,8 +22,8 @@ const ProfileScreen = () => {
         <View style={globalStyles.container}>
             <Text>{authentication.currentUser.email}</Text>
             <Text>{authentication.currentUser.displayName}</Text>
-            <TouchableOpacity onPress={onSignOut}>
-                <Text>Sign Out</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
+                <Text>Add new restaurant</Text>
             </TouchableOpacity>
         </View>
     )

@@ -45,21 +45,23 @@ const SplashScreen = () => {
             });
             // Check if user is food truck's owner
             if (user.type === 'owner') {
-                const ownedRestaurants = restaurants.filter((restaurant) => restaurant.owner === user.uid);
-                dispatch({
-                    type: 'SET_OWNED_RESTAURANTS',
-                    ownedRestaurants: ownedRestaurants
-                });
+                const ownedRestaurant = restaurants.find((restaurant) => restaurant.owner === user.uid);
+                if (ownedRestaurant)
+                    dispatch({
+                        type: 'SET_OWNED_RESTAURANT',
+                        ownedRestaurant: ownedRestaurant
+                    });
             }
             // Get actual location
             getLocation().then((coordinates) => {
+                console.log('coordinates', coordinates)
                 fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}&localityLanguage=en`)
                     .then((res) => res.json())
                     .then((res) => {
                         const location = {
                             latitude: coordinates.latitude,
                             longitude: coordinates.longitude,
-                            street: `${res.city}, ${res.countryName}`
+                            city: `${res.city}, ${res.countryName}`
                         };
                         dispatch({
                             type: 'SET_LOCATION',

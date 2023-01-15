@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import ownedRestaurantsReducer from "./ownedRestaurants";
+import ownedRestaurantReducer from "./ownedRestaurants";
 import restaurantsReducer from "./restaurants";
 import userReducer from './user';
 import locationReducer from './location';
@@ -8,7 +8,7 @@ import historyReducer from './history';
 
 const rootReducer = combineReducers({
     restaurants: restaurantsReducer,
-    ownedRestaurants: ownedRestaurantsReducer,
+    ownedRestaurant: ownedRestaurantReducer,
     user: userReducer,
     location: locationReducer,
     review: reviewReducer,
