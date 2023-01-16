@@ -72,7 +72,11 @@ const RegistrationScreen = () => {
                 const user = {
                     uid: auth.user.uid,
                     type: type.visitor ? 'visitor' : 'owner',
-                    favourites: []
+                    image: null,
+                    saved: {
+                        favorites: [],
+                        interested: []
+                    }
                 };
                 updateProfile(authentication.currentUser, {
                     displayName: `${firstName.trim()} ${lastName.trim()}`
@@ -83,11 +87,6 @@ const RegistrationScreen = () => {
                 }
                 catch (error) {
                     console.log(error.message);
-                }
-                finally {
-                    console.log('done')
-                    // dispatch({ type: 'SET_MY_RESTAURANT', myRestaurant: restaurant });
-                    // dispatch(addNewRestaurant(restaurant));
                 }
             });
     }

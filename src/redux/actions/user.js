@@ -1,3 +1,10 @@
+const updateImage = (url) => {
+    return {
+        type: 'UPDATE_IMAGE',
+        payload: url
+    }
+};
+
 const addRestaurantToSaved = (list, id) => {
     return {
         type: 'ADD_RESTAURANT_TO_SAVED',
@@ -18,4 +25,8 @@ const removeRestaurantFromSaved = (list, index) => {
     }
 };
 
-export { addRestaurantToSaved, removeRestaurantFromSaved };
+export {
+    updateImage,
+    addRestaurantToSaved,
+    removeRestaurantFromSaved
+};

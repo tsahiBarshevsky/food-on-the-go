@@ -3,7 +3,7 @@ import React from 'react';
 import { I18nManager } from "react-native";
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import RootNavigator from './src/navigators/RootNavigator';
+import RootNavigator from './src/navigators/rootNavigator';
 import rootReducer from './src/redux/reducers';
 
 I18nManager.allowRTL(false);

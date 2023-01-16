@@ -6,6 +6,12 @@ const userReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case 'SET_USER':
             return action.user;
+        case 'UPDATE_IMAGE':
+            return update(state, {
+                $merge: {
+                    image: action.payload
+                }
+            });
         case 'ADD_RESTAURANT_TO_SAVED':
             return update(state, {
                 saved: {
