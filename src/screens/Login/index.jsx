@@ -20,6 +20,7 @@ import {
     TouchableOpacity,
     Keyboard
 } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 const LoginScreen = () => {
     const [loaded, setLoaded] = useState(false);
@@ -27,6 +28,7 @@ const LoginScreen = () => {
     const formRef = useRef(null);
     const passwordRef = useRef(null);
     const navigation = useNavigation();
+    const dispatch = useDispatch();
 
     const onSignIn = (values) => {
         const { email, password } = values;
@@ -37,8 +39,10 @@ const LoginScreen = () => {
 
     useEffect(() => {
         const unsubscribe = authentication.onAuthStateChanged((user) => {
-            if (user)
-                navigation.replace('Splash');
+            if (user) {
+                // navigation.replace('Splash');
+                dispatch({ type: 'SET_IS_LOGGED_IN', isLoggedIn: true });
+            }
             else
                 setTimeout(() => {
                     setLoaded(true);

@@ -5,6 +5,7 @@ import userReducer from './user';
 import locationReducer from './location';
 import reviewReducer from "./review";
 import historyReducer from './history';
+import isLoggedInReducer from "./isLoggedIn";
 
 const rootReducer = combineReducers({
     restaurants: restaurantsReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     user: userReducer,
     location: locationReducer,
     review: reviewReducer,
-    history: historyReducer
+    history: historyReducer,
+    isLoggedIn: isLoggedInReducer
 });
 
 export default rootReducer;

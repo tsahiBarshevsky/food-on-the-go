@@ -3,7 +3,7 @@ import React from 'react';
 import { I18nManager } from "react-native";
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { AppNavigator } from './src/components';
+import RootNavigator from './src/navigators/RootNavigator';
 import rootReducer from './src/redux/reducers';
 
 I18nManager.allowRTL(false);
@@ -13,7 +13,7 @@ const store = createStore(rootReducer);
 export default function App() {
     return (
         <Provider store={store}>
-            <AppNavigator />
+            <RootNavigator />
         </Provider>
     );
 }

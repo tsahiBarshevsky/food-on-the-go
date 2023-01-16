@@ -34,10 +34,11 @@ const ProfileScreen = () => {
     }
 
     const onSignOut = () => {
-        signOut(authentication);
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }]
+        console.log(authentication.currentUser.email);
+        signOut(authentication).then(() => {
+            dispatch({ type: 'SET_IS_LOGGED_IN', isLoggedIn: false });
+        }).catch((e) => {
+            console.log(e)
         });
     }
 
@@ -46,6 +47,9 @@ const ProfileScreen = () => {
             <Text>{authentication.currentUser.email}</Text>
             <Text>{authentication.currentUser.displayName}</Text>
             <Text>{user.type}</Text>
+            <TouchableOpacity onPress={onSignOut}>
+                <Text>Sign out</Text>
+            </TouchableOpacity>
             {Object.keys(ownedRestaurant).length === 0 ?
                 <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
                     <Text>Add new restaurant</Text>
