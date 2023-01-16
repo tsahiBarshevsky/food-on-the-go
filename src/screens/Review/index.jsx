@@ -20,7 +20,8 @@ import {
     KeyboardAvoidingView,
     TextInput,
     BackHandler,
-    Keyboard
+    Keyboard,
+    Image
 } from 'react-native';
 
 // firebase
@@ -59,7 +60,8 @@ const ReviewScreen = ({ route }) => {
             user: {
                 displayName: user.displayName,
                 email: user.email,
-                uid: user.uid
+                uid: user.uid,
+                image: user.photoURL
             }
         };
         if (Object.keys(review).length === 1) { // add new review
@@ -146,11 +148,18 @@ const ReviewScreen = ({ route }) => {
                     behavior={Platform.OS === 'ios' ? 'padding' : null}
                 >
                     <View style={styles.user}>
-                        <View style={styles.avatar}>
-                            <Text style={styles.letter}>
-                                {user.email.charAt(0)}
-                            </Text>
-                        </View>
+                        {user.photoURL ?
+                            <Image
+                                source={{ uri: user.photoURL }}
+                                style={styles.image}
+                            />
+                            :
+                            <View style={styles.avatar}>
+                                <Text style={styles.letter}>
+                                    {user.displayName.charAt(0)}
+                                </Text>
+                            </View>
+                        }
                         <View>
                             <Text>{user.displayName}</Text>
                             <Text>{user.email}</Text>
@@ -200,6 +209,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start'
+    },
+    image: {
+        width: AVATAR_SIZE,
+        height: AVATAR_SIZE,
+        borderRadius: AVATAR_SIZE / 2,
+        marginRight: 10
     },
     avatar: {
         alignItems: 'center',

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import update from 'immutability-helper';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Menu, MenuItem } from 'react-native-material-menu';
@@ -56,11 +56,18 @@ const ReviewCard = ({ review, currentRating, restaurant }) => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.user}>
-                    <View style={styles.avatar}>
-                        <Text style={styles.letter}>
-                            {review.user.email.charAt(0)}
-                        </Text>
-                    </View>
+                    {review.user.image ?
+                        <Image
+                            source={{ uri: review.user.image }}
+                            style={styles.image}
+                        />
+                        :
+                        <View style={styles.avatar}>
+                            <Text style={styles.letter}>
+                                {review.user.displayName.charAt(0)}
+                            </Text>
+                        </View>
+                    }
                     <View>
                         <Text>{review.user.displayName}</Text>
                         <Text>{review.user.email}</Text>
@@ -111,6 +118,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    image: {
+        width: AVATAR_SIZE,
+        height: AVATAR_SIZE,
+        borderRadius: AVATAR_SIZE / 2,
+        marginRight: 10
     },
     avatar: {
         alignItems: 'center',
