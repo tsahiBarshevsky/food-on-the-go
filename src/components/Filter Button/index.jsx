@@ -4,15 +4,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const BUTTON_SIZE = 40;
 
-const FilterButton = () => {
+const FilterButton = ({ bottomSheetRef }) => {
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity
+            onPress={() => bottomSheetRef.current?.open()}
+            style={styles.container}
+        >
             <MaterialCommunityIcons name="tune-variant" size={24} color="black" />
         </TouchableOpacity>
     )
 }
 
-export default FilterButton
+export default FilterButton;
 
 const styles = StyleSheet.create({
     container: {
