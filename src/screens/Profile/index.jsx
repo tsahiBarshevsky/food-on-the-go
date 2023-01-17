@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
-import { StyleSheet, Text, ToastAndroid, TouchableOpacity, View, Image } from 'react-native';
+import { StyleSheet, Text, ToastAndroid, TouchableOpacity, View, Image, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons';
@@ -15,10 +15,12 @@ import { CLOUDINARY_KEY } from '@env';
 import { updateProfile, signOut } from 'firebase/auth';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore/lite';
 import { authentication, db } from '../../utils/firebase';
+import MinimalReviewCard from '../../components/Minimal Review Card';
 
 const AVATAR_SIZE = 90;
 
 const ProfileScreen = () => {
+    const [userReviews, setUserReviews] = useState([]);
     const user = useSelector(state => state.user);
     const ownedRestaurant = useSelector(state => state.ownedRestaurant);
     const restaurants = useSelector(state => state.restaurants);
@@ -97,6 +99,16 @@ const ProfileScreen = () => {
         });
     }
 
+    useEffect(() => {
+        const myReviews = [...restaurants].filter((item) => item.reviews.some((review) => review.user.uid === currentUser.uid));
+        const arr = [];
+        myReviews.forEach((item) => {
+            const review = item.reviews.find((review) => review.user.uid === currentUser.uid);
+            arr.push({ id: item.id, name: item.name, type: item.type, city: item.location.city, review: review })
+        });
+        setUserReviews(arr);
+    }, [restaurants]);
+
     return (
         <View style={globalStyles.container}>
             <View style={styles.header}>
@@ -123,6 +135,20 @@ const ProfileScreen = () => {
                 <Text>{currentUser.displayName}</Text>
                 <Text>{currentUser.email}</Text>
             </View>
+            <Text style={{ fontSize: 20 }}>Restaurants I've been reviewd ({userReviews.length})</Text>
+            <FlatList
+                data={userReviews}
+                keyExtractor={(item) => item.id}
+                style={{ flexGrow: 0 }}
+                renderItem={({ item }) => {
+                    return (
+                        <MinimalReviewCard
+                            restaurant={item}
+                            review={item.review}
+                        />
+                    )
+                }}
+            />
             <Text>{user.type}</Text>
             <TouchableOpacity onPress={onSignOut}>
                 <Text>Sign out</Text>
