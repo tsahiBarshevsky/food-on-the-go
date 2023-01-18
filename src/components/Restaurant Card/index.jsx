@@ -66,7 +66,7 @@ const RestaurantCard = ({ restaurant }) => {
                         location.longitude
                     )}
                 </Text>
-                <Text>{ratingAverage}</Text>
+                <Text>{ratingAverage} stars</Text>
             </View>
         </TouchableOpacity>
     )

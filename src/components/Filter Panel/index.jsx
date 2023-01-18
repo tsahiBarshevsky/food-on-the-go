@@ -6,32 +6,26 @@ import { Slider } from '@miblanchard/react-native-slider';
 import { GlobalContext } from '../../utils/context';
 import Checkbox from '../Checkbox';
 
-const FilterPanel = ({
-    // setTriggerFilter,
-    bottomSheetRef,
-    foodTruck,
-    setFoodTruck,
-    coffeeCart,
-    setCoffeeCart,
-    isKosher,
-    setIsKosher,
-    isOpenOnSaturday,
-    setIsOpenOnSaturday,
-    isVegetarian,
-    setIsVegetarian,
-    isVegan,
-    setIsVegan,
-    isGlutenFree,
-    setIsGlutenFree,
-    isOpenNow,
-    setIsOpenNow,
-    prices,
-    setPrices
-}) => {
+const FilterPanel = (props) => {
+    const {
+        panelRef,
+        foodTruck, setFoodTruck,
+        coffeeCart, setCoffeeCart,
+        isKosher, setIsKosher,
+        isOpenOnSaturday, setIsOpenOnSaturday,
+        isVegetarian, setIsVegetarian,
+        isVegan, setIsVegan,
+        isGlutenFree, setIsGlutenFree,
+        isOpenNow, setIsOpenNow,
+        prices, setPrices,
+        threeStarsRating, setThreeStarsRating,
+        fourStarsRating, setFourStarsRating,
+        fiveStarsRating, setFiveStarsRating
+    } = props;
     const { onTriggerFilter } = useContext(GlobalContext);
 
     const closeBottomSheet = () => {
-        bottomSheetRef.current?.close();
+        panelRef.current?.close();
     }
 
     const onApplyFilters = () => {
@@ -51,29 +45,52 @@ const FilterPanel = ({
         setIsGlutenFree(false);
         setIsOpenNow(false);
         setPrices([1, 1000]);
+        setThreeStarsRating(false);
+        setFourStarsRating(false);
+        setFiveStarsRating(false);
     }
 
-    const selectType = (type) => {
+    const onSelectType = (type) => {
         if (type === 'foodTruck') {
-            setFoodTruck(true);
+            setFoodTruck(!foodTruck);
             setCoffeeCart(false)
         }
         else {
             setFoodTruck(false);
-            setCoffeeCart(true)
+            setCoffeeCart(!coffeeCart)
+        }
+    }
+
+    const onSelectRating = (rating) => {
+        switch (rating) {
+            case 'threeStars':
+                setThreeStarsRating(!threeStarsRating);
+                setFourStarsRating(false);
+                setFiveStarsRating(false);
+                break;
+            case 'fourStars':
+                setThreeStarsRating(false);
+                setFourStarsRating(!fourStarsRating);
+                setFiveStarsRating(false);
+                break;
+            default:
+                setThreeStarsRating(false);
+                setFourStarsRating(false);
+                setFiveStarsRating(!fiveStarsRating);
         }
     }
 
     return (
         <Portal>
             <Modalize
-                ref={bottomSheetRef}
+                ref={panelRef}
                 threshold={50}
                 adjustToContentHeight
                 withHandle={false}
                 modalStyle={styles.modalStyle}
                 openAnimationConfig={{ timing: { duration: 200 } }}
                 closeAnimationConfig={{ timing: { duration: 500 } }}
+                scrollViewProps={{ showsVerticalScrollIndicator: false }}
                 useNativeDriver
             >
                 <View style={styles.bottomSheetContainer}>
@@ -90,12 +107,12 @@ const FilterPanel = ({
                     />
                     <Checkbox
                         checked={foodTruck}
-                        setChecked={() => selectType('foodTruck')}
+                        setChecked={() => onSelectType('foodTruck')}
                         caption='Food Truck'
                     />
                     <Checkbox
                         checked={coffeeCart}
-                        setChecked={() => selectType('coffeeCart')}
+                        setChecked={() => onSelectType('coffeeCart')}
                         caption='Coffee Cart'
                     />
                     <Checkbox
@@ -136,6 +153,21 @@ const FilterPanel = ({
                         // minimumTrackTintColor={lightMode.primary}
                         trackClickable
                         animateTransitions
+                    />
+                    <Checkbox
+                        checked={fiveStarsRating}
+                        setChecked={() => onSelectRating('fiveStars')}
+                        caption='5 stars'
+                    />
+                    <Checkbox
+                        checked={fourStarsRating}
+                        setChecked={() => onSelectRating('fourStars')}
+                        caption='4 stars & up'
+                    />
+                    <Checkbox
+                        checked={threeStarsRating}
+                        setChecked={() => onSelectRating('threeStars')}
+                        caption='3 stars & up'
                     />
                 </View>
             </Modalize>

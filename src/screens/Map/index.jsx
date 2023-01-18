@@ -18,7 +18,6 @@ const MapScreen = () => {
     let mapAnimation = new Animated.Value(0);
 
     // Filters' states
-    // const [triggerFilter, setTriggerFilter] = useState(false)
     const [filtered, setFiltered] = useState([...restaurants]);
     const [foodTruck, setFoodTruck] = useState(false);
     const [coffeeCart, setCoffeeCart] = useState(false);
@@ -29,6 +28,25 @@ const MapScreen = () => {
     const [isGlutenFree, setIsGlutenFree] = useState(false);
     const [isOpenNow, setIsOpenNow] = useState(false);
     const [prices, setPrices] = useState([1, 1000]);
+    const [threeStarsRating, setThreeStarsRating] = useState(false);
+    const [fourStarsRating, setFourStarsRating] = useState(false);
+    const [fiveStarsRating, setFiveStarsRating] = useState(false);
+
+    const filterPanelProps = {
+        panelRef,
+        foodTruck, setFoodTruck,
+        coffeeCart, setCoffeeCart,
+        isKosher, setIsKosher,
+        isOpenOnSaturday, setIsOpenOnSaturday,
+        isVegetarian, setIsVegetarian,
+        isVegan, setIsVegan,
+        isGlutenFree, setIsGlutenFree,
+        isOpenNow, setIsOpenNow,
+        prices, setPrices,
+        threeStarsRating, setThreeStarsRating,
+        fourStarsRating, setFourStarsRating,
+        fiveStarsRating, setFiveStarsRating
+    };
 
     const applyFilters = () => {
         let updatedList = [...restaurants];
@@ -66,6 +84,27 @@ const MapScreen = () => {
         // Prices filter
         if (prices[0] > 1 || prices[1] < 1000)
             updatedList = updatedList.filter((item) => item.priceRange.lowest <= prices[0] && item.priceRange.highest >= prices[1]);
+        // Three stars rating
+        if (threeStarsRating) {
+            updatedList = updatedList.filter((item) => {
+                const ratings = item.reviews.map(({ rating }) => rating + 1);
+                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 3;
+            });
+        }
+        // Four stars rating
+        if (fourStarsRating) {
+            updatedList = updatedList.filter((item) => {
+                const ratings = item.reviews.map(({ rating }) => rating + 1);
+                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 4;
+            });
+        }
+        // Five stars rating
+        if (fiveStarsRating) {
+            updatedList = updatedList.filter((item) => {
+                const ratings = item.reviews.map(({ rating }) => rating + 1);
+                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) === 5;
+            });
+        }
         setFiltered(updatedList);
         onTriggerFilter(false);
     }
@@ -188,28 +227,7 @@ const MapScreen = () => {
                     })}
                 </Animated.ScrollView>
             </View>
-            <FilterPanel
-                bottomSheetRef={panelRef}
-                // setTriggerFilter={setTriggerFilter}
-                foodTruck={foodTruck}
-                setFoodTruck={setFoodTruck}
-                coffeeCart={coffeeCart}
-                setCoffeeCart={setCoffeeCart}
-                isKosher={isKosher}
-                setIsKosher={setIsKosher}
-                isOpenOnSaturday={isOpenOnSaturday}
-                setIsOpenOnSaturday={setIsOpenOnSaturday}
-                isVegetarian={isVegetarian}
-                setIsVegetarian={setIsVegetarian}
-                isVegan={isVegan}
-                setIsVegan={setIsVegan}
-                isGlutenFree={isGlutenFree}
-                setIsGlutenFree={setIsGlutenFree}
-                isOpenNow={isOpenNow}
-                setIsOpenNow={setIsOpenNow}
-                prices={prices}
-                setPrices={setPrices}
-            />
+            <FilterPanel {...filterPanelProps} />
         </>
     )
 }
