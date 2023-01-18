@@ -37,16 +37,17 @@ const FilterPanel = ({
     }
 
     const onResetFilters = () => {
-        // setTriggerFilter(true);
-        // setFoodTruck(false);
-        // setCoffeeCart(false);
-        // setIsKosher(false);
-        // setIsOpenOnSaturday(false);
-        // setIsVegetarian(false);
-        // setIsVegan(false);
-        // setIsGlutenFree(false);
-        // setIsOpenNow(false);
         closeBottomSheet();
+        setTriggerFilter(true);
+        setFoodTruck(false);
+        setCoffeeCart(false);
+        setIsKosher(false);
+        setIsOpenOnSaturday(false);
+        setIsVegetarian(false);
+        setIsVegan(false);
+        setIsGlutenFree(false);
+        setIsOpenNow(false);
+        setPrices([1, 1000]);
     }
 
     const selectType = (type) => {

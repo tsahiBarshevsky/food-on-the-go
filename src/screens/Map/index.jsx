@@ -62,9 +62,8 @@ const MapScreen = () => {
             });
         }
         // Prices filter
-        console.log('prices', prices)
         if (prices[0] > 1 || prices[1] < 1000)
-            updatedList = updatedList.filter((item) => item.priceRange.lowest >= 100 && item.priceRange.highest <= 200);
+            updatedList = updatedList.filter((item) => item.priceRange.lowest <= prices[0] && item.priceRange.highest >= prices[1]);
         setFiltered(updatedList);
         setTriggerFilter(false);
     }
