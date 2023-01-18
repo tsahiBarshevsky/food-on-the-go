@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Animated, Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
+import moment from 'moment/moment';
 import MapView, { Marker } from 'react-native-maps';
+import { Animated, Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import { FilterButton, LocationBox, SearchBar, RestaurantCard, FilterPanel } from '../../components';
-import { CARD_WIDTH, mapStyleLight, SPACING_FOR_CARD_INSET } from '../../utils/constants';
+import { hours, mapStyleLight, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 
 const MapScreen = () => {
     const restaurants = useSelector(state => state.restaurants);
     const location = useSelector(state => state.location);
     const mapRef = useRef(null);
     const panelRef = useRef(null);
-    const flatlistRef = useRef(null);
+    const scrollViewRef = useRef(null);
     let mapIndex = 0;
     let mapAnimation = new Animated.Value(0);
 
@@ -19,15 +20,46 @@ const MapScreen = () => {
     const [filtered, setFiltered] = useState([...restaurants]);
     const [foodTruck, setFoodTruck] = useState(false);
     const [coffeeCart, setCoffeeCart] = useState(false);
+    const [isKosher, setIsKosher] = useState(false);
+    const [isOpenOnSaturday, setIsOpenOnSaturday] = useState(false);
+    const [isVegetarian, setIsVegetarian] = useState(false);
+    const [isVegan, setIsVegan] = useState(false);
+    const [isGlutenFree, setIsGlutenFree] = useState(false);
+    const [isOpenNow, setIsOpenNow] = useState(false);
 
     const applyFilters = () => {
         let updatedList = [...restaurants];
 
-        // Type Filters
+        // Type filters
         if (foodTruck)
             updatedList = updatedList.filter((item) => item.type === 'Food Truck');
         if (coffeeCart)
             updatedList = updatedList.filter((item) => item.type === 'Coffee Cart');
+        // Is kosher filter
+        if (isKosher)
+            updatedList = updatedList.filter((item) => item.kosher);
+        // Is open on Saturday filter
+        if (isOpenOnSaturday)
+            updatedList = updatedList.filter((item) => item.openingHours[6].isOpen);
+        // Is vegetarian filter
+        if (isVegetarian)
+            updatedList = updatedList.filter((item) => item.vegetarian);
+        // Is vegan filter
+        if (isVegan)
+            updatedList = updatedList.filter((item) => item.vegan);
+        // Is gluten free filter
+        if (isGlutenFree)
+            updatedList = updatedList.filter((item) => item.glutenFree);
+        // Is open now
+        if (isOpenNow) {
+            const today = moment().format('dddd');
+            updatedList = updatedList.filter((item) => {
+                const t = item.openingHours[moment().format('d')];
+                const openTime = moment(hours[t.open], "HH:mm");
+                const closeTime = moment(hours[t.close], "HH:mm");
+                return t.isOpen && today === t.day && moment().isBetween(openTime, closeTime);
+            });
+        }
         setFiltered(updatedList);
         setTriggerFilter(false);
     }
@@ -38,15 +70,15 @@ const MapScreen = () => {
             x = x - 15;
         else
             x = x - 26;
-        flatlistRef.current?.scrollTo({ x: x, y: 0, animated: true });
+        scrollViewRef.current?.scrollTo({ x: x, y: 0, animated: true });
     }
 
     // Animation control
     useEffect(() => {
         mapAnimation.addListener(({ value }) => {
             let index = Math.floor(value / CARD_WIDTH + 0.3);
-            if (index >= restaurants.length)
-                index = restaurants.length - 1;
+            if (index >= filtered.length)
+                index = filtered.length - 1;
             if (index <= 0)
                 index = 0
 
@@ -54,7 +86,7 @@ const MapScreen = () => {
             const regionTimoute = setTimeout(() => {
                 if (mapIndex !== index) {
                     mapIndex = index;
-                    const coordinate = restaurants[index].location;
+                    const coordinate = filtered[index].location;
                     mapRef.current?.animateToRegion(
                         {
                             ...coordinate,
@@ -119,9 +151,7 @@ const MapScreen = () => {
                     </MapView>
                 </View>
                 <Animated.ScrollView
-                    // data={restaurants}
-                    ref={flatlistRef}
-                    // keyExtractor={(item) => item.id}
+                    ref={scrollViewRef}
                     horizontal
                     overScrollMode='never'
                     showsHorizontalScrollIndicator={false}
@@ -155,11 +185,23 @@ const MapScreen = () => {
             </View>
             <FilterPanel
                 bottomSheetRef={panelRef}
+                setTriggerFilter={setTriggerFilter}
                 foodTruck={foodTruck}
                 setFoodTruck={setFoodTruck}
                 coffeeCart={coffeeCart}
                 setCoffeeCart={setCoffeeCart}
-                setTriggerFilter={setTriggerFilter}
+                isKosher={isKosher}
+                setIsKosher={setIsKosher}
+                isOpenOnSaturday={isOpenOnSaturday}
+                setIsOpenOnSaturday={setIsOpenOnSaturday}
+                isVegetarian={isVegetarian}
+                setIsVegetarian={setIsVegetarian}
+                isVegan={isVegan}
+                setIsVegan={setIsVegan}
+                isGlutenFree={isGlutenFree}
+                setIsGlutenFree={setIsGlutenFree}
+                isOpenNow={isOpenNow}
+                setIsOpenNow={setIsOpenNow}
             />
         </>
     )
