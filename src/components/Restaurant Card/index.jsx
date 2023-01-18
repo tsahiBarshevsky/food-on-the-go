@@ -4,9 +4,15 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { CARD_WIDTH } from '../../utils/constants';
 
-const RestaurantCard = ({ index, restaurant }) => {
+const RestaurantCard = ({ restaurant }) => {
+    const restaurants = useSelector(state => state.restaurants);
     const location = useSelector(state => state.location);
     const naviation = useNavigation();
+
+    const onCardPressed = () => {
+        const index = restaurants.findIndex((item) => item.id === restaurant.id);
+        naviation.navigate('Restaurant', { index });
+    }
 
     const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
         var R = 6371; // Radius of the earth in km
@@ -29,7 +35,7 @@ const RestaurantCard = ({ index, restaurant }) => {
 
     return (
         <TouchableOpacity
-            onPress={() => naviation.navigate('Restaurant', { index })}
+            onPress={() => onCardPressed()}
             style={styles.container}
             activeOpacity={1}
         >

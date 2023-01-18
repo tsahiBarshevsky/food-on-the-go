@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
+import { Slider } from '@miblanchard/react-native-slider';
 import Checkbox from '../Checkbox';
 
 const FilterPanel = ({
@@ -22,7 +23,9 @@ const FilterPanel = ({
     isGlutenFree,
     setIsGlutenFree,
     isOpenNow,
-    setIsOpenNow
+    setIsOpenNow,
+    prices,
+    setPrices
 }) => {
     const closeBottomSheet = () => {
         bottomSheetRef.current?.close();
@@ -34,15 +37,15 @@ const FilterPanel = ({
     }
 
     const onResetFilters = () => {
-        setTriggerFilter(true);
-        setFoodTruck(false);
-        setCoffeeCart(false);
-        setIsKosher(false);
-        setIsOpenOnSaturday(false);
-        setIsVegetarian(false);
-        setIsVegan(false);
-        setIsGlutenFree(false);
-        setIsOpenNow(false);
+        // setTriggerFilter(true);
+        // setFoodTruck(false);
+        // setCoffeeCart(false);
+        // setIsKosher(false);
+        // setIsOpenOnSaturday(false);
+        // setIsVegetarian(false);
+        // setIsVegan(false);
+        // setIsGlutenFree(false);
+        // setIsOpenNow(false);
         closeBottomSheet();
     }
 
@@ -115,6 +118,20 @@ const FilterPanel = ({
                         checked={isGlutenFree}
                         setChecked={() => setIsGlutenFree(!isGlutenFree)}
                         caption='Gluten Free'
+                    />
+                    <Text>Prices: {prices[0]}-{prices[1]}</Text>
+                    <Slider
+                        value={prices}
+                        onValueChange={(value) => setPrices(value)}
+                        minimumValue={1}
+                        maximumValue={1000}
+                        step={1}
+                        // onSlidingComplete={() => onSlidingComplete('ages')}
+                        thumbTintColor="#5F7ADB"
+                        maximumTrackTintColor="#d3d3d3"
+                        // minimumTrackTintColor={lightMode.primary}
+                        trackClickable
+                        animateTransitions
                     />
                 </View>
             </Modalize>

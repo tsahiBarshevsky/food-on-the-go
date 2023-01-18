@@ -26,6 +26,7 @@ const MapScreen = () => {
     const [isVegan, setIsVegan] = useState(false);
     const [isGlutenFree, setIsGlutenFree] = useState(false);
     const [isOpenNow, setIsOpenNow] = useState(false);
+    const [prices, setPrices] = useState([1, 1000]);
 
     const applyFilters = () => {
         let updatedList = [...restaurants];
@@ -54,15 +55,20 @@ const MapScreen = () => {
         if (isOpenNow) {
             const today = moment().format('dddd');
             updatedList = updatedList.filter((item) => {
-                const t = item.openingHours[moment().format('d')];
-                const openTime = moment(hours[t.open], "HH:mm");
-                const closeTime = moment(hours[t.close], "HH:mm");
-                return t.isOpen && today === t.day && moment().isBetween(openTime, closeTime);
+                const todayItem = item.openingHours[moment().format('d')];
+                const openTime = moment(hours[todayItem.open], "HH:mm");
+                const closeTime = moment(hours[todayItem.close], "HH:mm");
+                return todayItem.isOpen && today === todayItem.day && moment().isBetween(openTime, closeTime);
             });
         }
+        // Prices filter
+        console.log('prices', prices)
+        if (prices[0] > 1 || prices[1] < 1000)
+            updatedList = updatedList.filter((item) => item.priceRange.lowest >= 100 && item.priceRange.highest <= 200);
         setFiltered(updatedList);
         setTriggerFilter(false);
     }
+
 
     const onMarkerPressed = (index) => {
         let x = (index * CARD_WIDTH) + (index * 20);
@@ -172,11 +178,10 @@ const MapScreen = () => {
                         { useNativeDriver: true }
                     )}
                 >
-                    {filtered.map((restaurant, index) => {
+                    {filtered.map((restaurant) => {
                         return (
                             <RestaurantCard
                                 key={restaurant.id}
-                                index={index}
                                 restaurant={restaurant}
                             />
                         )
@@ -202,6 +207,8 @@ const MapScreen = () => {
                 setIsGlutenFree={setIsGlutenFree}
                 isOpenNow={isOpenNow}
                 setIsOpenNow={setIsOpenNow}
+                prices={prices}
+                setPrices={setPrices}
             />
         </>
     )
