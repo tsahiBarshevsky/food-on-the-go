@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import moment from 'moment/moment';
 import update from 'immutability-helper';
 import { Entypo } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import { updateRating } from '../../redux/actions/review';
 import { RatingBar } from '../../components';
 import { authentication } from '../../utils/firebase';
 import { addNewReview, editReview } from '../../redux/actions/restaurants';
+import { GlobalContext } from '../../utils/context';
 import globalStyles from '../../utils/globalStyles';
 
 // React Native components
@@ -32,6 +33,7 @@ const AVATAR_SIZE = 45;
 
 const ReviewScreen = ({ route }) => {
     const { currentRating, restaurant } = route.params;
+    const { onTriggerFilter } = useContext(GlobalContext);
     const review = useSelector(state => state.review);
     const restaurants = useSelector(state => state.restaurants);
     const [comment, setComment] = useState(Object.keys(review).length === 1 ? '' : review.comment);
@@ -100,10 +102,11 @@ const ReviewScreen = ({ route }) => {
                 console.log(error.message);
             }
         }
+        onTriggerFilter(true);
         if (isFocused) { // Check if comment's textinput focused
             setTimeout(() => {
                 navigation.goBack();
-            }, 500);
+            }, 200);
         }
         else
             navigation.goBack();

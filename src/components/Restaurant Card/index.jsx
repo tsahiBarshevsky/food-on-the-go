@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { CARD_WIDTH } from '../../utils/constants';
+import { GlobalContext } from '../../utils/context';
 
 const RestaurantCard = ({ restaurant }) => {
+    const { triggerFilter } = useContext(GlobalContext);
+    const [ratingAverage, setRatingAverage] = useState(0);
     const restaurants = useSelector(state => state.restaurants);
     const location = useSelector(state => state.location);
     const naviation = useNavigation();
@@ -30,8 +33,13 @@ const RestaurantCard = ({ restaurant }) => {
     }
 
     const deg2rad = (deg) => {
-        return deg * (Math.PI / 180)
+        return deg * (Math.PI / 180);
     }
+
+    useEffect(() => {
+        const ratings = restaurant.reviews.map(({ rating }) => rating + 1);
+        setRatingAverage(ratings.reduce((a, b) => a + b, 0) / ratings.length);
+    }, [triggerFilter]);
 
     return (
         <TouchableOpacity
@@ -58,6 +66,7 @@ const RestaurantCard = ({ restaurant }) => {
                         location.longitude
                     )}
                 </Text>
+                <Text>{ratingAverage}</Text>
             </View>
         </TouchableOpacity>
     )

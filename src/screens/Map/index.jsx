@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import moment from 'moment/moment';
 import MapView, { Marker } from 'react-native-maps';
 import { Animated, Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
+import { GlobalContext } from '../../utils/context';
 import { FilterButton, LocationBox, SearchBar, RestaurantCard, FilterPanel } from '../../components';
 import { hours, mapStyleLight, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 
 const MapScreen = () => {
+    const { triggerFilter, onTriggerFilter } = useContext(GlobalContext);
     const restaurants = useSelector(state => state.restaurants);
     const location = useSelector(state => state.location);
     const mapRef = useRef(null);
@@ -16,7 +18,7 @@ const MapScreen = () => {
     let mapAnimation = new Animated.Value(0);
 
     // Filters' states
-    const [triggerFilter, setTriggerFilter] = useState(false)
+    // const [triggerFilter, setTriggerFilter] = useState(false)
     const [filtered, setFiltered] = useState([...restaurants]);
     const [foodTruck, setFoodTruck] = useState(false);
     const [coffeeCart, setCoffeeCart] = useState(false);
@@ -65,9 +67,8 @@ const MapScreen = () => {
         if (prices[0] > 1 || prices[1] < 1000)
             updatedList = updatedList.filter((item) => item.priceRange.lowest <= prices[0] && item.priceRange.highest >= prices[1]);
         setFiltered(updatedList);
-        setTriggerFilter(false);
+        onTriggerFilter(false);
     }
-
 
     const onMarkerPressed = (index) => {
         let x = (index * CARD_WIDTH) + (index * 20);
@@ -189,7 +190,7 @@ const MapScreen = () => {
             </View>
             <FilterPanel
                 bottomSheetRef={panelRef}
-                setTriggerFilter={setTriggerFilter}
+                // setTriggerFilter={setTriggerFilter}
                 foodTruck={foodTruck}
                 setFoodTruck={setFoodTruck}
                 coffeeCart={coffeeCart}

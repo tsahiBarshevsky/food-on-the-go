@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { Slider } from '@miblanchard/react-native-slider';
+import { GlobalContext } from '../../utils/context';
 import Checkbox from '../Checkbox';
 
 const FilterPanel = ({
-    setTriggerFilter,
+    // setTriggerFilter,
     bottomSheetRef,
     foodTruck,
     setFoodTruck,
@@ -27,18 +28,20 @@ const FilterPanel = ({
     prices,
     setPrices
 }) => {
+    const { onTriggerFilter } = useContext(GlobalContext);
+
     const closeBottomSheet = () => {
         bottomSheetRef.current?.close();
     }
 
     const onApplyFilters = () => {
-        setTriggerFilter(true);
+        onTriggerFilter(true);
         closeBottomSheet();
     }
 
     const onResetFilters = () => {
         closeBottomSheet();
-        setTriggerFilter(true);
+        onTriggerFilter(true);
         setFoodTruck(false);
         setCoffeeCart(false);
         setIsKosher(false);
