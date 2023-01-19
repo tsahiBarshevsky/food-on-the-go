@@ -18,6 +18,7 @@ const FilterPanel = (props) => {
         isGlutenFree, setIsGlutenFree,
         isOpenNow, setIsOpenNow,
         prices, setPrices,
+        distance, setDistance,
         threeStarsRating, setThreeStarsRating,
         fourStarsRating, setFourStarsRating,
         fiveStarsRating, setFiveStarsRating
@@ -44,6 +45,7 @@ const FilterPanel = (props) => {
         setIsVegan(false);
         setIsGlutenFree(false);
         setIsOpenNow(false);
+        setDistance([0, 350]);
         setPrices([1, 1000]);
         setThreeStarsRating(false);
         setFourStarsRating(false);
@@ -139,6 +141,20 @@ const FilterPanel = (props) => {
                         checked={isGlutenFree}
                         setChecked={() => setIsGlutenFree(!isGlutenFree)}
                         caption='Gluten Free'
+                    />
+                    <Text>Distance: {distance[0]}-{distance[1]}</Text>
+                    <Slider
+                        value={distance}
+                        onValueChange={(value) => setDistance(value)}
+                        minimumValue={0}
+                        maximumValue={350}
+                        step={0.1}
+                        // onSlidingComplete={() => onSlidingComplete('ages')}
+                        thumbTintColor="#5F7ADB"
+                        maximumTrackTintColor="#d3d3d3"
+                        // minimumTrackTintColor={lightMode.primary}
+                        trackClickable
+                        animateTransitions
                     />
                     <Text>Prices: {prices[0]}-{prices[1]}</Text>
                     <Slider

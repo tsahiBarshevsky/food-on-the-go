@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { GlobalContext } from '../../utils/context';
 import { FilterButton, LocationBox, SearchBar, RestaurantCard, FilterPanel } from '../../components';
 import { hours, mapStyleLight, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
+import { calculateDistance } from '../../utils/functions';
 
 const MapScreen = () => {
     const { triggerFilter, onTriggerFilter } = useContext(GlobalContext);
@@ -28,6 +29,7 @@ const MapScreen = () => {
     const [isGlutenFree, setIsGlutenFree] = useState(false);
     const [isOpenNow, setIsOpenNow] = useState(false);
     const [prices, setPrices] = useState([1, 1000]);
+    const [distance, setDistance] = useState([0, 350])
     const [threeStarsRating, setThreeStarsRating] = useState(false);
     const [fourStarsRating, setFourStarsRating] = useState(false);
     const [fiveStarsRating, setFiveStarsRating] = useState(false);
@@ -43,6 +45,7 @@ const MapScreen = () => {
         isGlutenFree, setIsGlutenFree,
         isOpenNow, setIsOpenNow,
         prices, setPrices,
+        distance, setDistance,
         threeStarsRating, setThreeStarsRating,
         fourStarsRating, setFourStarsRating,
         fiveStarsRating, setFiveStarsRating
@@ -79,6 +82,13 @@ const MapScreen = () => {
                 const openTime = moment(hours[todayItem.open], "HH:mm");
                 const closeTime = moment(hours[todayItem.close], "HH:mm");
                 return todayItem.isOpen && today === todayItem.day && moment().isBetween(openTime, closeTime);
+            });
+        }
+        // Distance filter
+        if (distance[0] > 0 || distance[1] < 350) {
+            updatedList = updatedList.filter((item) => {
+                const d = calculateDistance(item.location.latitude, item.location.longitude, location.latitude, location.longitude);
+                return d >= distance[0] && d <= distance[1];
             });
         }
         // Prices filter

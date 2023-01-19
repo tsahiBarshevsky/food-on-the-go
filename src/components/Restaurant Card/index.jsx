@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { CARD_WIDTH } from '../../utils/constants';
@@ -44,6 +44,7 @@ const RestaurantCard = ({ restaurant }) => {
     return (
         <TouchableOpacity
             onPress={() => onCardPressed()}
+            // onPress={() => Linking.openURL(`google.navigation:q=${restaurant.location.latitude}+${restaurant.location.longitude}`)}
             style={styles.container}
             activeOpacity={1}
         >
