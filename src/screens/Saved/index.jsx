@@ -2,20 +2,26 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { AntDesign, Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../../utils/globalStyles';
 
 const SavedScreen = () => {
     const user = useSelector(state => state.user);
-    // const restaurants = useSelector(state => state.restaurants);
-    // const favorites = user.saved.favorites;
-    // const res = restaurants.filter((item) => favorites.includes(item.id));
-    // console.log('res', res)
+    const navigation = useNavigation();
+
+    const onListPressed = (list) => {
+        navigation.navigate('SavedMap', { list });
+    }
 
     return (
         <View style={globalStyles.container}>
             <View style={styles.wrapper}>
                 <Text style={styles.title}>Your lists</Text>
-                <TouchableOpacity style={styles.listItem}>
+                <TouchableOpacity
+                    onPress={() => onListPressed('favorites')}
+                    disabled={user.saved.favorites.length === 0}
+                    style={styles.listItem}
+                >
                     <View style={styles.icon}>
                         <AntDesign name="hearto" size={22} color="red" />
                     </View>
@@ -23,9 +29,14 @@ const SavedScreen = () => {
                         <Text>Favorites</Text>
                         <Text>{user.saved.favorites.length} Places</Text>
                     </View>
+                    <AntDesign name="arrowright" size={24} color="black" />
                 </TouchableOpacity>
                 <View style={styles.divider} />
-                <TouchableOpacity style={styles.listItem}>
+                <TouchableOpacity
+                    onPress={() => onListPressed('interested')}
+                    disabled={user.saved.interested.length === 0}
+                    style={styles.listItem}
+                >
                     <View style={styles.icon}>
                         <Feather name="flag" size={24} color="green" />
                     </View>
@@ -33,6 +44,7 @@ const SavedScreen = () => {
                         <Text>Interested</Text>
                         <Text>{user.saved.interested.length} Places</Text>
                     </View>
+                    <AntDesign name="arrowright" size={24} color="black" />
                 </TouchableOpacity>
             </View>
         </View>
