@@ -28,6 +28,18 @@ const userReducer = (state = INITIAL_STATE, action) => {
                     }
                 }
             });
+        case 'ADD_CUSTOM_LIST':
+            return update(state, {
+                saved: {
+                    [action.payload.listName]: { $set: [] }
+                }
+            });
+        case 'REMOVE_CUSTOM_LIST':
+            return update(state, {
+                saved: {
+                    $unset: [action.payload.listName]
+                }
+            });
         default:
             return state;
     }

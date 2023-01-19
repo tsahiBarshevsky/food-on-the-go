@@ -4,7 +4,7 @@ import { Host } from 'react-native-portalize';
 
 // Navigators
 import MapNavigator from './mapNavigator';
-import SavedNavigator from './savedNavigators';
+import SavedNavigator from './savedNavigator';
 import ProfileNavigator from './profileNavigator';
 
 const Tab = createBottomTabNavigator();

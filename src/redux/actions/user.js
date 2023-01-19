@@ -25,8 +25,28 @@ const removeRestaurantFromSaved = (list, index) => {
     }
 };
 
+const addCustomList = (listName) => {
+    return {
+        type: 'ADD_CUSTOM_LIST',
+        payload: {
+            listName: listName
+        }
+    }
+};
+
+const removeCustomList = (listName) => {
+    return {
+        type: 'REMOVE_CUSTOM_LIST',
+        payload: {
+            listName: listName
+        }
+    }
+};
+
 export {
     updateImage,
     addRestaurantToSaved,
-    removeRestaurantFromSaved
+    removeRestaurantFromSaved,
+    addCustomList,
+    removeCustomList
 };

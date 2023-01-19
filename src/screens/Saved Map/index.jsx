@@ -80,6 +80,7 @@ const SavedMapScreen = ({ route }) => {
                                     latitude: latitude,
                                     longitude: longitude
                                 }}
+                                pinColor='#125626'
                                 onPress={() => onMarkerPressed(index)}
                             />
                         )
