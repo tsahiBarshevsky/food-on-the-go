@@ -1,9 +1,9 @@
 import React from 'react';
 import update from 'immutability-helper';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { addRestaurantToSaved, removeRestaurantFromSaved } from '../../redux/actions/user';
 
@@ -13,12 +13,22 @@ import { db } from '../../utils/firebase';
 
 const SavePanel = ({ bottomSheetRef, restaurant }) => {
     const user = useSelector(state => state.user);
-    const { favorites, interested } = user.saved;
     const dispatch = useDispatch();
+
+    const renderIcon = (list) => {
+        switch (list) {
+            case 'favorites':
+                return <AntDesign name="hearto" size={22} color="red" />;
+            case 'interested':
+                return <Feather name="flag" size={24} color="green" />;
+            default:
+                return <Ionicons name="list" size={26} color="black" />;
+        }
+    }
 
     const handleChangeSavedList = async (list, id) => {
         const userRef = doc(db, "users", user.uid);
-        const index = eval(list).findIndex((id) => id === restaurant.id);
+        const index = user.saved[list].findIndex((id) => id === restaurant.id);
         if (index !== -1) { // Remove restaurant from saved list
             const saved = update(user.saved, {
                 [list]: {
@@ -60,33 +70,28 @@ const SavePanel = ({ bottomSheetRef, restaurant }) => {
             >
                 <View style={styles.bottomSheetContainer}>
                     <Text>Save to...</Text>
-                    <TouchableOpacity
-                        onPress={() => handleChangeSavedList("favorites", restaurant.id)}
-                        style={styles.item}
-                    >
-                        <View style={styles.iconAndCaption}>
-                            <View style={styles.icon}>
-                                <AntDesign name="hearto" size={22} color="red" />
-                            </View>
-                            <Text>Favorites</Text>
-                        </View>
-                        {favorites.some((id) => id === restaurant.id) &&
-                            <AntDesign name="check" size={24} color="black" />
-                        }
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleChangeSavedList("interested", restaurant.id)}
-                        style={styles.item}>
-                        <View style={styles.iconAndCaption}>
-                            <View style={styles.icon}>
-                                <Feather name="flag" size={24} color="green" />
-                            </View>
-                            <Text>Interested</Text>
-                        </View>
-                        {interested.some((id) => id === restaurant.id) &&
-                            <AntDesign name="check" size={24} color="black" />
-                        }
-                    </TouchableOpacity>
+                    <FlatList
+                        data={Object.keys(user.saved)}
+                        keyExtractor={(item) => item.toString()}
+                        renderItem={({ item }) => {
+                            return (
+                                <TouchableOpacity
+                                    onPress={() => handleChangeSavedList(item, restaurant.id)}
+                                    style={styles.item}
+                                >
+                                    <View style={styles.iconAndCaption}>
+                                        <View style={styles.icon}>
+                                            {renderIcon(item)}
+                                        </View>
+                                        <Text style={styles.title}>{item}</Text>
+                                    </View>
+                                    {user.saved[item].some((id) => id === restaurant.id) &&
+                                        <AntDesign name="check" size={24} color="black" />
+                                    }
+                                </TouchableOpacity>
+                            );
+                        }}
+                    />
                 </View>
             </Modalize>
         </Portal>
@@ -121,5 +126,8 @@ const styles = StyleSheet.create({
         width: 35,
         height: 30,
         justifyContent: 'center'
+    },
+    title: {
+        textTransform: 'capitalize'
     }
 });
