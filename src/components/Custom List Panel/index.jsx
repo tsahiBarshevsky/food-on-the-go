@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import update from 'immutability-helper';
+import { useDispatch, useSelector } from 'react-redux';
 import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { addCustomList } from '../../redux/actions/user';
 
+// firebase
+import { doc, updateDoc } from 'firebase/firestore/lite';
+import { db } from '../../utils/firebase';
+
 const CustomListPanel = ({ bottomSheetRef }) => {
     const [listName, setListName] = useState('');
+    const user = useSelector(state => state.user);
     const dispatch = useDispatch();
 
-    const onAddNewCustomList = () => {
-        dispatch(addCustomList(listName.toLowerCase().trim()));
-        setListName('');
-        bottomSheetRef.current?.close();
+    const onAddNewCustomList = async () => {
+        const userRef = doc(db, "users", user.uid);
+        const saved = update(user.saved, {
+            [listName.toLowerCase().trim()]: { $set: [] }
+        });
+        try {
+            await updateDoc(userRef, { saved: saved }); // Update document on Firestore
+            dispatch(addCustomList(listName.toLowerCase().trim())); // Update store
+            setListName('');
+            bottomSheetRef.current?.close();
+        }
+        catch (error) {
+            console.log(error.message);
+        }
     }
 
     const onCloseModal = () => {
