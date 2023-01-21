@@ -28,11 +28,13 @@ const SavePanel = ({ bottomSheetRef, restaurant }) => {
 
     const handleChangeSavedList = async (list, id) => {
         const userRef = doc(db, "users", user.uid);
-        const index = user.saved[list].findIndex((id) => id === restaurant.id);
+        const index = user.saved[list].list.findIndex((id) => id === restaurant.id);
         if (index !== -1) { // Remove restaurant from saved list
             const saved = update(user.saved, {
                 [list]: {
-                    $splice: [[index, 1]]
+                    list: {
+                        $splice: [[index, 1]]
+                    }
                 }
             });
             try {
@@ -45,7 +47,9 @@ const SavePanel = ({ bottomSheetRef, restaurant }) => {
         }
         else { // Add restaurant to saved list
             const saved = update(user.saved, {
-                [list]: { $push: [id] }
+                [list]: {
+                    list: { $push: [id] }
+                }
             });
             try {
                 await updateDoc(userRef, { saved: saved }); // Update document on Firestore
@@ -85,7 +89,7 @@ const SavePanel = ({ bottomSheetRef, restaurant }) => {
                                         </View>
                                         <Text style={styles.title}>{item}</Text>
                                     </View>
-                                    {user.saved[item].some((id) => id === restaurant.id) &&
+                                    {user.saved[item].list.some((id) => id === restaurant.id) &&
                                         <AntDesign name="check" size={24} color="black" />
                                     }
                                 </TouchableOpacity>

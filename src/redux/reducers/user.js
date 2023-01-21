@@ -16,7 +16,9 @@ const userReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 saved: {
                     [action.payload.list]: {
-                        $push: [action.payload.id]
+                        list: {
+                            $push: [action.payload.id]
+                        }
                     }
                 }
             });
@@ -24,7 +26,9 @@ const userReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 saved: {
                     [action.payload.list]: {
-                        $splice: [[action.payload.index, 1]]
+                        list: {
+                            $splice: [[action.payload.index, 1]]
+                        }
                     }
                 }
             });
