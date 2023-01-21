@@ -11,7 +11,7 @@ import { removeCustomList, updateCustomListName } from '../../redux/actions/user
 import { doc, updateDoc } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
 
-const ListCard = ({ list, length, setAction, setList, bottomSheetRef }) => {
+const ListCard = ({ item, name }) => {
     const [visible, setVisible] = useState(false);
     const user = useSelector(state => state.user);
     const navigation = useNavigation();
@@ -25,28 +25,23 @@ const ListCard = ({ list, length, setAction, setList, bottomSheetRef }) => {
         setVisible(true);
     }
 
-    const onListPressed = (list) => {
-        navigation.navigate('SavedMap', { list });
+    const onListPressed = () => {
+        navigation.navigate('SavedMap', { list: name });
     }
 
-    const check = () => {
+    const onEditCustomList = () => {
         hideMenu();
-        setAction('edit');
-        setList(list);
-        bottomSheetRef.current?.open();
-        // const array = user.saved[list];
-        // dispatch(removeCustomList(list));
-        // dispatch(updateCustomListName('b list', array));
+        navigation.navigate('CustomListEditing', { list: item, listName: name });
     }
 
     const onRemoveCustomList = async () => {
         const userRef = doc(db, "users", user.uid);
         const saved = update(user.saved, {
-            $unset: [list]
+            $unset: [name]
         });
         try {
             await updateDoc(userRef, { saved: saved }); // Update document on Firestore
-            dispatch(removeCustomList(list)); // Update store
+            dispatch(removeCustomList(name)); // Update store
             hideMenu();
         }
         catch (error) {
@@ -55,7 +50,7 @@ const ListCard = ({ list, length, setAction, setList, bottomSheetRef }) => {
     }
 
     const renderIcon = () => {
-        switch (list) {
+        switch (name) {
             case 'favorites':
                 return <AntDesign name="hearto" size={22} color="red" />;
             case 'interested':
@@ -67,18 +62,18 @@ const ListCard = ({ list, length, setAction, setList, bottomSheetRef }) => {
 
     return (
         <TouchableOpacity
-            onPress={() => onListPressed(list)}
-            disabled={length === 0}
+            onPress={onListPressed}
+            disabled={item.list.length === 0}
             style={styles.container}
         >
             <View style={styles.icon}>
                 {renderIcon()}
             </View>
             <View>
-                <Text style={styles.title}>{list}</Text>
-                <Text>{length} Places</Text>
+                <Text style={styles.title}>{name}</Text>
+                <Text>{item.list.length} Places</Text>
             </View>
-            {list !== 'favorites' && list !== 'interested' &&
+            {name !== 'favorites' && name !== 'interested' &&
                 <View>
                     <Menu
                         visible={visible}
@@ -89,7 +84,7 @@ const ListCard = ({ list, length, setAction, setList, bottomSheetRef }) => {
                         }
                         onRequestClose={hideMenu}
                     >
-                        <MenuItem onPress={check}>Edit list</MenuItem>
+                        <MenuItem onPress={onEditCustomList}>Edit list</MenuItem>
                         <MenuItem onPress={onRemoveCustomList}>Delete list</MenuItem>
                     </Menu>
                 </View>

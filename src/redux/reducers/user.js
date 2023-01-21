@@ -34,16 +34,11 @@ const userReducer = (state = INITIAL_STATE, action) => {
                     [action.payload.listName]: { $set: action.payload.customList }
                 }
             });
-        // return update(state, {
-        //     saved: {
-        //         [action.payload.listName]: { $set: [] }
-        //     }
-        // });
-        case 'UPDATE_CUSTOM_LIST_NAME':
+        case 'UPDATE_CUSTOM_LIST':
             return update(state, {
                 saved: {
                     [action.payload.listName]: {
-                        $set: action.payload.list
+                        $set: action.payload.customList
                     }
                 }
             });

@@ -1,15 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import globalStyles from '../../utils/globalStyles';
-import { CustomListPanel, ListCard } from '../../components';
+import { ListCard } from '../../components';
 import { useNavigation } from '@react-navigation/native';
 
 const SavedScreen = () => {
-    const [action, setAction] = useState('insertion');
-    const [list, setList] = useState('');
     const user = useSelector(state => state.user);
-    const bottomSheetRef = useRef(null);
     const navigation = useNavigation();
 
     const Header = () => (
@@ -17,7 +14,6 @@ const SavedScreen = () => {
             <Text style={styles.title}>Your lists</Text>
             <TouchableOpacity
                 onPress={() => navigation.navigate('CustomListInsertion')}
-            // onPress={() => { bottomSheetRef.current?.open(); setAction('insertion') }}
             >
                 <Text>Add list</Text>
             </TouchableOpacity>
@@ -40,21 +36,13 @@ const SavedScreen = () => {
                     renderItem={({ item }) => {
                         return (
                             <ListCard
-                                list={item}
-                                length={user.saved[item].list.length}
-                                setAction={setAction}
-                                setList={setList}
-                                bottomSheetRef={bottomSheetRef}
+                                item={user.saved[item]}
+                                name={item}
                             />
                         );
                     }}
                 />
             </View>
-            <CustomListPanel
-                bottomSheetRef={bottomSheetRef}
-                action={action}
-                list={list}
-            />
         </>
     )
 }

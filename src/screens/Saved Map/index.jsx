@@ -12,7 +12,7 @@ const SavedMapScreen = ({ route }) => {
     const user = useSelector(state => state.user);
     const location = useSelector(state => state.location);
     const restaurants = useSelector(state => state.restaurants);
-    const listArray = user.saved[list];
+    const listArray = user.saved[list].list;
     const filtered = [...restaurants].filter((item) => listArray.includes(item.id));
 
     let mapIndex = 0;

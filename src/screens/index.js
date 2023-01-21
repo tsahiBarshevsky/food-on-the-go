@@ -12,3 +12,4 @@ export { default as SearchScreen } from './Search';
 export { default as InsertionScreen } from './Insertion';
 export { default as EditingScreen } from './Editing';
 export { default as CustomListInsertion } from './Custom List/Insertion';
+export { default as CustomListEditing } from './Custom List/Editing';
