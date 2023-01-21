@@ -37,7 +37,7 @@ const ReviewScreen = ({ route }) => {
     const review = useSelector(state => state.review);
     const restaurants = useSelector(state => state.restaurants);
     const [comment, setComment] = useState(Object.keys(review).length === 1 ? '' : review.comment);
-    const [isFocused, setIsFocused] = useState(false)
+    const [isFocused, setIsFocused] = useState(false);
     const user = authentication.currentUser;
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -59,6 +59,7 @@ const ReviewScreen = ({ route }) => {
             comment: comment,
             date: moment().format('DD/MM/YYYY'),
             rating: review.rating,
+            likes: Object.keys(review).length === 1 ? [] : review.likes,
             user: {
                 displayName: user.displayName,
                 email: user.email,

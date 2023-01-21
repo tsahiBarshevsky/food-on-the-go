@@ -58,6 +58,30 @@ const restaurantsReducer = (state = INITIAL_STATE, action) => {
                     }
                 }
             });
+        case 'LIKE_REVIEW':
+            return update(state, {
+                [action.payload.restaurantIndex]: {
+                    reviews: {
+                        [action.payload.reviewIndex]: {
+                            likes: {
+                                $push: [action.payload.uid]
+                            }
+                        }
+                    }
+                }
+            });
+        case 'DISLIKE_REVIEW':
+            return update(state, {
+                [action.payload.restaurantIndex]: {
+                    reviews: {
+                        [action.payload.reviewIndex]: {
+                            likes: {
+                                $splice: [[action.payload.likeIndex, 1]]
+                            }
+                        }
+                    }
+                }
+            });
         default:
             return state;
     }

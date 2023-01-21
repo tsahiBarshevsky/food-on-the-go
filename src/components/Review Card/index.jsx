@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Menu, MenuItem } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteReview } from '../../redux/actions/restaurants';
+import { deleteReview, dislikeReview, likeReview } from '../../redux/actions/restaurants';
 import { authentication } from '../../utils/firebase';
 
 // firebase
@@ -15,8 +15,9 @@ import { db } from '../../utils/firebase';
 
 const AVATAR_SIZE = 35;
 
-const ReviewCard = ({ review, currentRating, restaurant }) => {
+const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
     const [visible, setVisible] = useState(false);
+    const currentUser = authentication.currentUser;
     const restaurants = useSelector(state => state.restaurants);
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -38,7 +39,7 @@ const ReviewCard = ({ review, currentRating, restaurant }) => {
         const index = restaurants.findIndex((item) => item.id === restaurant.id); // Index in restaurants array
         const restaurantRef = doc(db, "restaurants", restaurant.id);
         const reviews = restaurants[index].reviews;
-        const reviewIndex = reviews.findIndex((review) => review.user.uid === authentication.currentUser.uid);
+        const reviewIndex = reviews.findIndex((review) => review.user.uid === currentUser.uid);
         const updatedReviews = update(restaurant.reviews, {
             $splice: [[reviewIndex, 1]]
         });
@@ -49,6 +50,44 @@ const ReviewCard = ({ review, currentRating, restaurant }) => {
         }
         catch (error) {
             console.log(error.message);
+        }
+    }
+
+    const handleLikeReview = async () => {
+        const restaurantRef = doc(db, "restaurants", restaurant.id);
+        const restaurantIndex = restaurants.findIndex((item) => item.id === restaurant.id);
+        if (review.likes.includes(currentUser.uid)) { // dislike
+            const likeIndex = restaurant.reviews[reviewIndex].likes.findIndex((item) => item === currentUser.uid);
+            const updatedReviews = update(restaurant.reviews, {
+                [reviewIndex]: {
+                    likes: {
+                        $splice: [[likeIndex, 1]]
+                    }
+                }
+            });
+            try {
+                await updateDoc(restaurantRef, { reviews: updatedReviews }); // Update document on Firestore
+                dispatch(dislikeReview(restaurantIndex, reviewIndex, likeIndex)); // Update store
+            }
+            catch (error) {
+                console.log(error.message);
+            }
+        }
+        else { // like
+            const updatedReviews = update(restaurant.reviews, {
+                [reviewIndex]: {
+                    likes: {
+                        $push: [currentUser.uid]
+                    }
+                }
+            });
+            try {
+                await updateDoc(restaurantRef, { reviews: updatedReviews }); // Update document on Firestore
+                dispatch(likeReview(restaurantIndex, reviewIndex, currentUser.uid)); // Update store
+            }
+            catch (error) {
+                console.log(error.message);
+            }
         }
     }
 
@@ -73,7 +112,7 @@ const ReviewCard = ({ review, currentRating, restaurant }) => {
                         <Text>{review.user.email}</Text>
                     </View>
                 </View>
-                {review.user.uid === authentication.currentUser.uid &&
+                {review.user.uid === currentUser.uid &&
                     <View>
                         <Menu
                             visible={visible}
@@ -101,7 +140,21 @@ const ReviewCard = ({ review, currentRating, restaurant }) => {
                 </View>
                 <Text>On {review.date}</Text>
             </View>
-            <Text>{review.comment}</Text>
+            {review.comment &&
+                <Text>{review.comment}</Text>
+            }
+            <View>
+                {currentUser.uid !== review.user.uid &&
+                    <TouchableOpacity onPress={handleLikeReview}>
+                        {review.likes.includes(currentUser.uid) ?
+                            <AntDesign name="like1" size={24} color="black" />
+                            :
+                            <AntDesign name="like2" size={24} color="black" />
+                        }
+                    </TouchableOpacity>
+                }
+                <Text>{review.likes.length}</Text>
+            </View>
         </View>
     )
 }
@@ -109,6 +162,9 @@ const ReviewCard = ({ review, currentRating, restaurant }) => {
 export default ReviewCard;
 
 const styles = StyleSheet.create({
+    container: {
+        marginBottom: 20
+    },
     header: {
         flexDirection: 'row',
         alignItems: 'flex-start',

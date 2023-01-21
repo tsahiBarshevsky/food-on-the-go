@@ -168,13 +168,14 @@ const RestaurantScreen = ({ route }) => {
                                 <Text>sum: {ratingAverage}</Text>
                                 <Text>{restaurant.reviews.length} Reviews</Text>
                             </View>
-                            {restaurant.reviews.map((review) => {
+                            {restaurant.reviews.map((review, index) => {
                                 return (
                                     <ReviewCard
                                         key={review.user.uid}
                                         review={review}
                                         currentRating={userRating}
                                         restaurant={restaurant}
+                                        reviewIndex={index}
                                     />
                                 )
                             })}

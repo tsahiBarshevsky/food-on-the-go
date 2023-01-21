@@ -53,11 +53,35 @@ const deleteReview = (restaurantIndex, reviewIndex) => {
     }
 };
 
+const likeReview = (restaurantIndex, reviewIndex, uid) => {
+    return {
+        type: 'LIKE_REVIEW',
+        payload: {
+            restaurantIndex: restaurantIndex,
+            reviewIndex: reviewIndex,
+            uid: uid
+        }
+    }
+};
+
+const dislikeReview = (restaurantIndex, reviewIndex, likeIndex) => {
+    return {
+        type: 'DISLIKE_REVIEW',
+        payload: {
+            restaurantIndex: restaurantIndex,
+            reviewIndex: reviewIndex,
+            likeIndex: likeIndex
+        }
+    }
+};
+
 export {
     addNewRestaurant,
     editRestaurant,
     removeRestaurant,
     addNewReview,
     editReview,
-    deleteReview
+    deleteReview,
+    likeReview,
+    dislikeReview
 };
