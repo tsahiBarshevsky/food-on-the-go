@@ -25,11 +25,22 @@ const removeRestaurantFromSaved = (list, index) => {
     }
 };
 
-const addCustomList = (listName) => {
+const addCustomList = (listName, customList) => {
     return {
         type: 'ADD_CUSTOM_LIST',
         payload: {
-            listName: listName
+            listName: listName,
+            customList: customList
+        }
+    }
+};
+
+const updateCustomListName = (listName, list) => {
+    return {
+        type: 'UPDATE_CUSTOM_LIST_NAME',
+        payload: {
+            listName: listName,
+            list: list
         }
     }
 };
@@ -48,5 +59,6 @@ export {
     addRestaurantToSaved,
     removeRestaurantFromSaved,
     addCustomList,
+    updateCustomListName,
     removeCustomList
 };

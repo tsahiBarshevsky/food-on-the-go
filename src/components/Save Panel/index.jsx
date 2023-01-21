@@ -71,7 +71,7 @@ const SavePanel = ({ bottomSheetRef, restaurant }) => {
                 <View style={styles.bottomSheetContainer}>
                     <Text>Save to...</Text>
                     <FlatList
-                        data={Object.keys(user.saved)}
+                        data={Object.keys(user.saved).sort((a, b) => a.localeCompare(b))}
                         keyExtractor={(item) => item.toString()}
                         renderItem={({ item }) => {
                             return (

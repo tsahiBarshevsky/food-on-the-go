@@ -11,3 +11,4 @@ export { default as ReviewScreen } from './Review';
 export { default as SearchScreen } from './Search';
 export { default as InsertionScreen } from './Insertion';
 export { default as EditingScreen } from './Editing';
+export { default as CustomListInsertion } from './Custom List/Insertion';

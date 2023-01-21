@@ -5,13 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import { AntDesign, Feather, Ionicons, Entypo } from '@expo/vector-icons';
 import { Menu, MenuItem } from 'react-native-material-menu';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeCustomList } from '../../redux/actions/user';
+import { removeCustomList, updateCustomListName } from '../../redux/actions/user';
 
 // firebase
 import { doc, updateDoc } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
 
-const ListCard = ({ list, length }) => {
+const ListCard = ({ list, length, setAction, setList, bottomSheetRef }) => {
     const [visible, setVisible] = useState(false);
     const user = useSelector(state => state.user);
     const navigation = useNavigation();
@@ -27,6 +27,16 @@ const ListCard = ({ list, length }) => {
 
     const onListPressed = (list) => {
         navigation.navigate('SavedMap', { list });
+    }
+
+    const check = () => {
+        hideMenu();
+        setAction('edit');
+        setList(list);
+        bottomSheetRef.current?.open();
+        // const array = user.saved[list];
+        // dispatch(removeCustomList(list));
+        // dispatch(updateCustomListName('b list', array));
     }
 
     const onRemoveCustomList = async () => {
@@ -79,7 +89,7 @@ const ListCard = ({ list, length }) => {
                         }
                         onRequestClose={hideMenu}
                     >
-                        <MenuItem>Edit list</MenuItem>
+                        <MenuItem onPress={check}>Edit list</MenuItem>
                         <MenuItem onPress={onRemoveCustomList}>Delete list</MenuItem>
                     </Menu>
                 </View>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import update from 'immutability-helper';
 import { useDispatch, useSelector } from 'react-redux';
-import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { addCustomList } from '../../redux/actions/user';
@@ -10,7 +10,7 @@ import { addCustomList } from '../../redux/actions/user';
 import { doc, updateDoc } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
 
-const CustomListPanel = ({ bottomSheetRef }) => {
+const CustomListPanel = ({ bottomSheetRef, action, list }) => {
     const [listName, setListName] = useState('');
     const user = useSelector(state => state.user);
     const dispatch = useDispatch();
@@ -33,7 +33,20 @@ const CustomListPanel = ({ bottomSheetRef }) => {
 
     const onCloseModal = () => {
         Keyboard.dismiss();
+        // setListName('')
     }
+
+    useEffect(() => {
+        if (action === 'insertion')
+            setListName('');
+        else
+            setListName(list.replace(
+                /\w\S*/g,
+                function (txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                }
+            ));
+    }, [bottomSheetRef]);
 
     return (
         <Portal>
@@ -49,6 +62,7 @@ const CustomListPanel = ({ bottomSheetRef }) => {
                 scrollViewProps={{ showsVerticalScrollIndicator: false }}
                 useNativeDriver
             >
+                <Text>{action}</Text>
                 <View style={styles.textInputWrapper}>
                     <TextInput
                         placeholder='List name...'

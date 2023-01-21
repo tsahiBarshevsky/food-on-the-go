@@ -1,17 +1,24 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import globalStyles from '../../utils/globalStyles';
 import { CustomListPanel, ListCard } from '../../components';
+import { useNavigation } from '@react-navigation/native';
 
 const SavedScreen = () => {
-    const bottomSheetRef = useRef(null);
+    const [action, setAction] = useState('insertion');
+    const [list, setList] = useState('');
     const user = useSelector(state => state.user);
+    const bottomSheetRef = useRef(null);
+    const navigation = useNavigation();
 
     const Header = () => (
         <View style={styles.header}>
             <Text style={styles.title}>Your lists</Text>
-            <TouchableOpacity onPress={() => bottomSheetRef.current?.open()}>
+            <TouchableOpacity
+                onPress={() => navigation.navigate('CustomListInsertion')}
+            // onPress={() => { bottomSheetRef.current?.open(); setAction('insertion') }}
+            >
                 <Text>Add list</Text>
             </TouchableOpacity>
         </View>
@@ -25,7 +32,7 @@ const SavedScreen = () => {
         <>
             <View style={globalStyles.container}>
                 <FlatList
-                    data={Object.keys(user.saved)}
+                    data={Object.keys(user.saved).sort((a, b) => a.localeCompare(b))}
                     keyExtractor={(item) => item.toString()}
                     contentContainerStyle={styles.flatlist}
                     ListHeaderComponent={Header}
@@ -34,13 +41,20 @@ const SavedScreen = () => {
                         return (
                             <ListCard
                                 list={item}
-                                length={user.saved[item].length}
+                                length={user.saved[item].list.length}
+                                setAction={setAction}
+                                setList={setList}
+                                bottomSheetRef={bottomSheetRef}
                             />
                         );
                     }}
                 />
             </View>
-            <CustomListPanel bottomSheetRef={bottomSheetRef} />
+            <CustomListPanel
+                bottomSheetRef={bottomSheetRef}
+                action={action}
+                list={list}
+            />
         </>
     )
 }
