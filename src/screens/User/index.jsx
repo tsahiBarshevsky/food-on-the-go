@@ -98,7 +98,11 @@ const UserScreen = ({ route }) => {
                 style={{ flexGrow: 0 }}
                 renderItem={({ item }) => {
                     return (
-                        <Text>{item.name}</Text>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('SavedMap', { list: item.name, user: user })}
+                        >
+                            <Text>{item.name} - {item.list.length} places</Text>
+                        </TouchableOpacity>
                     )
                 }}
             />

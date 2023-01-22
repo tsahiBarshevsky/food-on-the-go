@@ -6,13 +6,13 @@ import { RestaurantCard } from '../../components';
 import { mapStyleLight, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 
 const SavedMapScreen = ({ route }) => {
-    const { list } = route.params;
+    const { list, user } = route.params;
     const mapRef = useRef(null);
     const scrollViewRef = useRef(null);
-    const user = useSelector(state => state.user);
+    // const user = useSelector(state => state.user);
     const location = useSelector(state => state.location);
     const restaurants = useSelector(state => state.restaurants);
-    const listArray = user.saved[list].list;
+    const listArray = user.saved[list].list; // Array of restaurants ids
     const filtered = [...restaurants].filter((item) => listArray.includes(item.id));
 
     let mapIndex = 0;

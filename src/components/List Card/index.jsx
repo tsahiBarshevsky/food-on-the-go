@@ -26,7 +26,7 @@ const ListCard = ({ item, name }) => {
     }
 
     const onListPressed = () => {
-        navigation.navigate('SavedMap', { list: name });
+        navigation.navigate('SavedMap', { list: name, user: user });
     }
 
     const onEditCustomList = () => {

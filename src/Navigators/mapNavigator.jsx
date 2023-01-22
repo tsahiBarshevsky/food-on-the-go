@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { MapScreen, RestaurantScreen, ReviewScreen, SearchScreen, UserScreen } from '../screens';
+import { MapScreen, RestaurantScreen, ReviewScreen, SearchScreen, UserScreen, SavedMapScreen } from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +16,7 @@ const MapNavigator = () => {
             <Stack.Screen name='Review' component={ReviewScreen} />
             <Stack.Screen name='Search' component={SearchScreen} />
             <Stack.Screen name='User' component={UserScreen} />
+            <Stack.Screen name='SavedMap' component={SavedMapScreen} />
         </Stack.Navigator>
     )
 }
