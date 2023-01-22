@@ -7,16 +7,14 @@ const Stack = createStackNavigator();
 
 const ProfileNavigator = () => {
     return (
-        <NavigationContainer independent>
-            <Stack.Navigator
-                initialRouteName='Profile'
-                screenOptions={{ headerShown: false }}
-            >
-                <Stack.Screen name='Profile' component={ProfileScreen} />
-                <Stack.Screen name='Insertion' component={InsertionScreen} />
-                <Stack.Screen name='Editing' component={EditingScreen} />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <Stack.Navigator
+            initialRouteName='ProfileMain'
+            screenOptions={{ headerShown: false }}
+        >
+            <Stack.Screen name='ProfileMain' component={ProfileScreen} />
+            <Stack.Screen name='Insertion' component={InsertionScreen} />
+            <Stack.Screen name='Editing' component={EditingScreen} />
+        </Stack.Navigator>
     )
 }
 

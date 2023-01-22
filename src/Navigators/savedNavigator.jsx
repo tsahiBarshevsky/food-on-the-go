@@ -7,18 +7,16 @@ const Stack = createStackNavigator();
 
 const SavedNavigator = () => {
     return (
-        <NavigationContainer independent>
-            <Stack.Navigator
-                initialRouteName='Saved'
-                screenOptions={{ headerShown: false }}
-            >
-                <Stack.Screen name="Saved" component={SavedScreen} />
-                <Stack.Screen name='SavedMap' component={SavedMapScreen} />
-                <Stack.Screen name='Restaurant' component={RestaurantScreen} />
-                <Stack.Screen name='CustomListInsertion' component={CustomListInsertion} />
-                <Stack.Screen name='CustomListEditing' component={CustomListEditing} />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <Stack.Navigator
+            initialRouteName='SavedMain'
+            screenOptions={{ headerShown: false }}
+        >
+            <Stack.Screen name='SavedMain' component={SavedScreen} />
+            <Stack.Screen name='SavedMap' component={SavedMapScreen} />
+            <Stack.Screen name='Restaurant' component={RestaurantScreen} />
+            <Stack.Screen name='CustomListInsertion' component={CustomListInsertion} />
+            <Stack.Screen name='CustomListEditing' component={CustomListEditing} />
+        </Stack.Navigator>
     )
 }
 
