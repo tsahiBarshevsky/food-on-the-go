@@ -20,6 +20,7 @@ const MinimalReviewCard = ({ restaurant, review }) => {
                 <Text>On {review.date}</Text>
             </View>
             <Text>{review.comment}</Text>
+            <Text>{review.likes.length} Likes</Text>
         </View>
     )
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SavedScreen, SavedMapScreen, RestaurantScreen, CustomListInsertion, CustomListEditing } from '../screens';
+import { SavedScreen, SavedMapScreen, RestaurantScreen, CustomListInsertion, CustomListEditing, UserScreen } from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +16,7 @@ const SavedNavigator = () => {
             <Stack.Screen name='Restaurant' component={RestaurantScreen} />
             <Stack.Screen name='CustomListInsertion' component={CustomListInsertion} />
             <Stack.Screen name='CustomListEditing' component={CustomListEditing} />
+            <Stack.Screen name='User' component={UserScreen} />
         </Stack.Navigator>
     )
 }

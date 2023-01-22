@@ -10,7 +10,7 @@ import { deleteReview, dislikeReview, likeReview } from '../../redux/actions/res
 import { authentication } from '../../utils/firebase';
 
 // firebase
-import { doc, updateDoc } from 'firebase/firestore/lite';
+import { doc, updateDoc, collection, getDocs, query, where } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
 
 const AVATAR_SIZE = 35;
@@ -33,6 +33,18 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
     const onEditReview = () => {
         navigation.navigate('Review', { currentRating, restaurant });
         hideMenu();
+    }
+
+    const navigateToProfile = async () => {
+        if (currentUser.uid === review.user.uid)
+            navigation.getParent().navigate('Profile');
+        else {
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, where("uid", "==", review.user.uid));
+            const userQuerySnapshot = await getDocs(q);
+            const user = userQuerySnapshot.docs[0].data();
+            navigation.navigate('User', { user: user, name: review.user.displayName });
+        }
     }
 
     const onDeleteReview = async () => {
@@ -96,21 +108,28 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
             <View style={styles.header}>
                 <View style={styles.user}>
                     {review.user.image ?
-                        <Image
-                            source={{ uri: review.user.image }}
-                            style={styles.image}
-                        />
+                        <TouchableOpacity onPress={navigateToProfile}>
+                            <Image
+                                source={{ uri: review.user.image }}
+                                style={styles.image}
+                            />
+                        </TouchableOpacity>
                         :
-                        <View style={styles.avatar}>
+                        <TouchableOpacity
+                            onPress={navigateToProfile}
+                            style={styles.avatar}
+                        >
                             <Text style={styles.letter}>
                                 {review.user.displayName.charAt(0)}
                             </Text>
-                        </View>
+                        </TouchableOpacity>
                     }
-                    <View>
-                        <Text>{review.user.displayName}</Text>
-                        <Text>{review.user.email}</Text>
-                    </View>
+                    <TouchableOpacity onPress={navigateToProfile}>
+                        <View>
+                            <Text>{review.user.displayName}</Text>
+                            <Text>{review.user.email}</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
                 {review.user.uid === currentUser.uid &&
                     <View>
