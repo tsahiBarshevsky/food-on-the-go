@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import * as Progress from 'react-native-progress';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity, Linking, BackHandler } from 'react-native';
-import { FontAwesome, Entypo } from '@expo/vector-icons';
+import { FontAwesome, Entypo, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment/moment';
 import { hours } from '../../utils/constants';
 import { authentication } from '../../utils/firebase';
-import { ReviewCard, RatingBar, List, SavePanel } from '../../components';
+import { ReviewCard, RatingBar, List, SavePanel, SortingPanel } from '../../components';
 import globalStyles from '../../utils/globalStyles';
 
 const RestaurantScreen = ({ route }) => {
@@ -19,7 +19,17 @@ const RestaurantScreen = ({ route }) => {
     const restaurant = restaurants[index];
     const navigation = useNavigation();
     const savePanelRef = useRef(null);
+    const sortingPanelRef = useRef(null);
     const dispatch = useDispatch();
+
+    // Sorting reviews states
+    const [isSorting, setIsSorting] = useState(false);
+    const [sortingType, setSortingType] = useState(null);
+    const props = {
+        sortingPanelRef,
+        isSorting, setIsSorting,
+        sortingType, setSortingType
+    };
 
     // is open stuff
     const today = moment().format('dddd');
@@ -37,6 +47,21 @@ const RestaurantScreen = ({ route }) => {
             });
         else
             navigation.goBack();
+    }
+
+    const sortReviews = (a, b) => {
+        switch (sortingType) {
+            case 'rating':
+                return b.rating - a.rating;
+            case 'likes':
+                return b.likes.length > a.likes.length;
+            case 'date':
+                var a_date = a.date.split("/");
+                var b_date = b.date.split("/");
+                var a_dateObject = new Date(+a_date[2], a_date[1] - 1, +a_date[0]);
+                var b_dateObject = new Date(+b_date[2], b_date[1] - 1, +b_date[0]);
+                return b_dateObject - a_dateObject;
+        }
     }
 
     useEffect(() => {
@@ -168,17 +193,34 @@ const RestaurantScreen = ({ route }) => {
                                 <Text>sum: {ratingAverage}</Text>
                                 <Text>{restaurant.reviews.length} Reviews</Text>
                             </View>
-                            {restaurant.reviews.map((review, index) => {
-                                return (
-                                    <ReviewCard
-                                        key={review.user.uid}
-                                        review={review}
-                                        currentRating={userRating}
-                                        restaurant={restaurant}
-                                        reviewIndex={index}
-                                    />
-                                )
-                            })}
+                            <TouchableOpacity onPress={() => sortingPanelRef.current?.open()}>
+                                <MaterialIcons name="sort" size={24} color="black" />
+                            </TouchableOpacity>
+                            {!isSorting ?
+                                restaurant.reviews.map((review, index) => {
+                                    return (
+                                        <ReviewCard
+                                            key={review.user.uid}
+                                            review={review}
+                                            currentRating={userRating}
+                                            restaurant={restaurant}
+                                            reviewIndex={index}
+                                        />
+                                    )
+                                })
+                                :
+                                [...restaurant.reviews].sort(sortReviews).map((review, index) => {
+                                    return (
+                                        <ReviewCard
+                                            key={review.user.uid}
+                                            review={review}
+                                            currentRating={userRating}
+                                            restaurant={restaurant}
+                                            reviewIndex={restaurant.reviews.findIndex((r) => r.user.uid === review.user.uid)}
+                                        />
+                                    )
+                                })
+                            }
                         </View>
                         :
                         <Text>No reviews yet</Text>
@@ -189,6 +231,7 @@ const RestaurantScreen = ({ route }) => {
                 bottomSheetRef={savePanelRef}
                 restaurant={restaurant}
             />
+            <SortingPanel {...props} />
         </>
     )
 }

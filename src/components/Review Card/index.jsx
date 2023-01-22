@@ -105,6 +105,7 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
 
     return (
         <View style={styles.container}>
+            <Text>index{reviewIndex}</Text>
             <View style={styles.header}>
                 <View style={styles.user}>
                     {review.user.image ?

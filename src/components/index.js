@@ -14,3 +14,4 @@ export { default as MinimalReviewCard } from './Minimal Review Card';
 export { default as FilterPanel } from './Filter Panel';
 export { default as ListCard } from './List Card';
 export { default as StatBox } from './Stat Box';
+export { default as SortingPanel } from './Sorting Panel';
