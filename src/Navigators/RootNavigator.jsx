@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { background } from '../utils/theme';
+import { lightTheme, darkTheme } from '../utils/themes';
+import { GlobalContext } from '../utils/context';
 import BottomBarNavigator from './bottomTabNavigator';
 
 // App screens
@@ -13,19 +14,21 @@ import {
 } from '../screens';
 
 const Stack = createStackNavigator();
-const navigatorTheme = {
-    ...DefaultTheme,
-    colors: {
-        ...DefaultTheme.colors,
-        background: background
-    }
-};
-const options = {
-    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
-};
 
 const RootNavigator = () => {
+    const { theme } = useContext(GlobalContext);
     const isLoggedIn = useSelector(state => state.isLoggedIn);
+
+    const options = {
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
+    };
+    const navigatorTheme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            background: theme === 'Light' ? lightTheme.background : darkTheme.background
+        }
+    };
 
     return (
         <NavigationContainer theme={navigatorTheme}>

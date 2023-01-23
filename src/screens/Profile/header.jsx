@@ -1,6 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { background } from '../../utils/theme';
 import { useSelector } from 'react-redux';
 
 const AVATAR_SIZE = 90;
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     letter: {
         fontSize: 55,
         fontWeight: 'bold',
-        color: background,
+        // color: background,
         textTransform: 'uppercase',
         transform: [{ translateY: -1 }]
     },

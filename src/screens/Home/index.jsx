@@ -109,9 +109,9 @@ const HomeScreen = () => {
                                 key={restaurant.id}
                                 image={
                                     restaurant.type === 'Food Truck' ?
-                                        require('../../../assets/food-truck.png')
+                                        require('../../../assets/images/food-truck.png')
                                         :
-                                        require('../../../assets/coffee-shop.png')
+                                        require('../../../assets/images/coffee-shop.png')
                                 }
                                 coordinate={{
                                     latitude: latitude,

@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import { FontAwesome5, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { CARD_WIDTH } from '../../utils/constants';
 import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 const RestaurantCard = ({ restaurant }) => {
-    const { triggerFilter } = useContext(GlobalContext);
+    const { theme, triggerFilter } = useContext(GlobalContext);
     const [ratingAverage, setRatingAverage] = useState(0);
     const restaurants = useSelector(state => state.restaurants);
     const location = useSelector(state => state.location);
@@ -28,8 +30,8 @@ const RestaurantCard = ({ restaurant }) => {
         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         var d = R * c; // Distance in km
         if (d > 1) // More than km
-            return `${d.toFixed(1)}km from you`;
-        return `${(d * 1000).toFixed(1)}m from you`;
+            return `${d.toFixed(1)}km`;
+        return `${(d * 1000).toFixed(1)}m`;
     }
 
     const deg2rad = (deg) => {
@@ -45,7 +47,7 @@ const RestaurantCard = ({ restaurant }) => {
         <TouchableOpacity
             onPress={() => onCardPressed()}
             // onPress={() => Linking.openURL(`google.navigation:q=${restaurant.location.latitude}+${restaurant.location.longitude}`)}
-            style={styles.container}
+            style={[styles.container, styles[`container${theme}`]]}
             activeOpacity={1}
         >
             <Image
@@ -57,17 +59,39 @@ const RestaurantCard = ({ restaurant }) => {
                 }
                 style={styles.image}
             />
-            <View>
-                <Text style={styles.title}>{restaurant.name}</Text>
-                <Text>
-                    {getDistanceFromLatLonInKm(
-                        restaurant.location.latitude,
-                        restaurant.location.longitude,
-                        location.latitude,
-                        location.longitude
-                    )}
-                </Text>
-                <Text>{ratingAverage} stars</Text>
+            <View style={{ flex: 1 }}>
+                <Text style={[styles.title, styles[`text${theme}`]]}>{restaurant.name}</Text>
+                <View style={styles.data}>
+                    <View style={styles.icon}>
+                        <FontAwesome5 name="map-marker-alt" size={16} color="#f57c00" />
+                    </View>
+                    <Text style={[styles.text, styles[`text${theme}`]]}>
+                        {restaurant.location.city}
+                    </Text>
+                </View>
+                <View style={styles.data}>
+                    <View style={styles.icon}>
+                        <MaterialCommunityIcons name="map-marker-distance" size={18} color="#388e3c" />
+                    </View>
+                    <Text style={[styles.text, styles[`text${theme}`]]}>
+                        {getDistanceFromLatLonInKm(
+                            restaurant.location.latitude,
+                            restaurant.location.longitude,
+                            location.latitude,
+                            location.longitude
+                        )}
+                    </Text>
+                </View>
+                {ratingAverage &&
+                    <View style={styles.data}>
+                        <View style={styles.icon}>
+                            <AntDesign name="star" size={17} color="#fbc02d" />
+                        </View>
+                        <Text style={[styles.text, styles[`text${theme}`]]}>
+                            {ratingAverage.toFixed(1)}
+                        </Text>
+                    </View>
+                }
             </View>
         </TouchableOpacity>
     )
@@ -79,21 +103,57 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         width: CARD_WIDTH,
-        backgroundColor: 'royalblue',
-        borderRadius: 10,
+        borderRadius: 25,
         padding: 10,
+        marginBottom: 2,
         zIndex: 2,
         marginHorizontal: 10,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        elevation: 2
+    },
+    containerLight: {
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.0125)'
+    },
+    containerDark: {
+        backgroundColor: darkTheme.box,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.0925)'
     },
     image: {
         width: 110,
         height: 110,
         resizeMode: 'cover',
-        borderRadius: 5,
+        borderRadius: 20,
         marginRight: 10
     },
+    data: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        marginBottom: 3
+    },
+    icon: {
+        width: 18,
+        height: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 4
+    },
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
     title: {
-        fontWeight: 'bold'
+        fontFamily: 'QuicksandBold',
+        fontSize: 17,
+        marginBottom: 5
     }
 });

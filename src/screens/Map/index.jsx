@@ -5,11 +5,11 @@ import { Animated, Platform, StatusBar, StyleSheet, View, Text } from 'react-nat
 import { useSelector } from 'react-redux';
 import { GlobalContext } from '../../utils/context';
 import { FilterButton, LocationBox, SearchBar, RestaurantCard, FilterPanel } from '../../components';
-import { hours, mapStyleLight, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
+import { hours, mapStyleLight, mapStyleDark, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 import { calculateDistance } from '../../utils/functions';
 
 const MapScreen = () => {
-    const { triggerFilter, onTriggerFilter } = useContext(GlobalContext);
+    const { theme, triggerFilter, onTriggerFilter } = useContext(GlobalContext);
     const restaurants = useSelector(state => state.restaurants);
     const location = useSelector(state => state.location);
     const mapRef = useRef(null);
@@ -176,7 +176,7 @@ const MapScreen = () => {
                         showsBuildings={false}
                         toolbarEnabled={false}
                         style={styles.map}
-                        customMapStyle={mapStyleLight}
+                        customMapStyle={theme === 'Light' ? mapStyleLight : mapStyleDark}
                         region={{
                             latitude: location.latitude,
                             longitude: location.longitude,
@@ -191,9 +191,9 @@ const MapScreen = () => {
                                     key={restaurant.id}
                                     image={
                                         restaurant.type === 'Food Truck' ?
-                                            require('../../../assets/food-truck.png')
+                                            require('../../../assets/images/food-truck.png')
                                             :
-                                            require('../../../assets/coffee-shop.png')
+                                            require('../../../assets/images/coffee-shop.png')
                                     }
                                     coordinate={{
                                         latitude: latitude,

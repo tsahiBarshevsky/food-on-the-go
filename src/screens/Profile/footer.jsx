@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
+import { GlobalContext } from '../../utils/context';
 
 const Footer = (props) => {
     const { navigation, userReviews, appearancePanelRef, isUsinSystemScheme, onClearSearchHistory, onSignOut } = props;
+    const { theme } = useContext(GlobalContext);
 
     return (
         <View>
