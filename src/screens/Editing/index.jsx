@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import update from 'immutability-helper';
 import { Formik } from 'formik';
@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Checkbox, TimePicker } from '../../components';
 import { hours } from '../../utils/constants';
+import { GlobalContext } from '../../utils/context';
 import { editRestaurant } from '../../redux/actions/restaurants';
 import globalStyles from '../../utils/globalStyles';
 import { CLOUDINARY_KEY } from '@env';
@@ -32,6 +33,7 @@ import { doc, updateDoc } from 'firebase/firestore/lite';
 
 const EditingScreen = ({ route }) => {
     const { restaurant } = route.params;
+    const { onTriggerFilter } = useContext(GlobalContext);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
     const [index, setIndex] = useState(0);
     const [open, setOpen] = useState(0);
@@ -151,16 +153,15 @@ const EditingScreen = ({ route }) => {
                 openingHours: editedRestaurant.openingHours,
                 location: editedRestaurant.location
             });
+            const index = restaurants.findIndex((item) => item.id === restaurant.id);
+            dispatch(editRestaurant(index, editedRestaurant)); // Update store
+            dispatch({ type: 'SET_OWNED_RESTAURANT', ownedRestaurant: editedRestaurant }); // Update store
+            onTriggerFilter(true);
+            navigation.goBack();
         }
         catch (error) {
             console.log(error.message);
             setDisabled(false);
-        }
-        finally {
-            const index = restaurants.findIndex((item) => item.id === restaurant.id);
-            dispatch(editRestaurant(index, editedRestaurant)); // Update store
-            dispatch({ type: 'SET_OWNED_RESTAURANT', ownedRestaurant: editedRestaurant }); // Update store
-            navigation.goBack();
         }
     }
 
