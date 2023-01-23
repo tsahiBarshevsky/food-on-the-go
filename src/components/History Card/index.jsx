@@ -16,10 +16,9 @@ const HistoryCard = ({ item }) => {
 
     const isOpen = () => {
         if (todayItem.isOpen && today === todayItem.day && moment().isBetween(openTime, closeTime))
-            return (<Text>Open</Text>);
-        else {
-            return (<Text>Closed</Text>);
-        }
+            return 'Open now';
+        else
+            return 'Close';
     }
 
     const onCardPressed = () => {
@@ -39,7 +38,7 @@ const HistoryCard = ({ item }) => {
             <View>
                 <Text>{item.name}</Text>
                 <Text>{item.location.city}</Text>
-                {isOpen()}
+                <Text>{isOpen()}</Text>
             </View>
         </TouchableOpacity>
     )

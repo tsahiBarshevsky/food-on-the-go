@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, Text, ToastAndroid, TouchableOpacity, View, Image, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
+import { GlobalContext } from '../../utils/context';
 import { updateImage } from '../../redux/actions/user';
 import { removeRestaurant } from '../../redux/actions/restaurants';
 import { resetOwnedRestaurant } from '../../redux/actions/ownedRestaurant';
+import { clearHistory } from '../../redux/actions/hisorty';
 import { background } from '../../utils/theme';
+import { AppearancePanelRef, MinimalReviewCard } from '../../components';
 import globalStyles from '../../utils/globalStyles';
 import { CLOUDINARY_KEY } from '@env';
 
@@ -15,12 +18,15 @@ import { CLOUDINARY_KEY } from '@env';
 import { updateProfile, signOut } from 'firebase/auth';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore/lite';
 import { authentication, db } from '../../utils/firebase';
-import MinimalReviewCard from '../../components/Minimal Review Card';
+import { clearHistoryInStorage } from '../../utils/AsyncStorageManagement';
 
 const AVATAR_SIZE = 90;
 
 const ProfileScreen = () => {
+    const { theme } = useContext(GlobalContext);
     const [userReviews, setUserReviews] = useState([]);
+    const [isUsinSystemScheme, setIsUsinSystemScheme] = useState('false');
+    const appearancePanelRef = useRef(null);
     const user = useSelector(state => state.user);
     const ownedRestaurant = useSelector(state => state.ownedRestaurant);
     const restaurants = useSelector(state => state.restaurants);
@@ -99,6 +105,12 @@ const ProfileScreen = () => {
         });
     }
 
+    const onClearSearchHistory = () => {
+        clearHistoryInStorage();
+        dispatch(clearHistory());
+        ToastAndroid.show('History cleared', ToastAndroid.SHORT);
+    }
+
     useEffect(() => {
         const myReviews = [...restaurants].filter((item) => item.reviews.some((review) => review.user.uid === currentUser.uid));
         const arr = [];
@@ -110,65 +122,117 @@ const ProfileScreen = () => {
     }, [restaurants]);
 
     return (
-        <View style={globalStyles.container}>
-            <View style={styles.header}>
-                <View style={styles.avatarWrapper}>
-                    <TouchableOpacity
-                        onPress={onUploadNewImage}
-                        style={styles.camera}
-                    >
-                        <FontAwesome name="camera" size={13} color="white" />
-                    </TouchableOpacity>
-                    <View style={styles.avatar}>
-                        {currentUser.photoURL ?
-                            <Image
-                                source={{ uri: currentUser.photoURL }}
-                                style={styles.image}
-                            />
-                            :
-                            <Text style={styles.letter}>
-                                {currentUser.displayName.charAt(0)}
-                            </Text>
-                        }
+        <>
+            <View style={globalStyles.container}>
+                <View style={styles.header}>
+                    <View style={styles.avatarWrapper}>
+                        <TouchableOpacity
+                            onPress={onUploadNewImage}
+                            style={styles.camera}
+                        >
+                            <FontAwesome name="camera" size={13} color="white" />
+                        </TouchableOpacity>
+                        <View style={styles.avatar}>
+                            {currentUser.photoURL ?
+                                <Image
+                                    source={{ uri: currentUser.photoURL }}
+                                    style={styles.image}
+                                />
+                                :
+                                <Text style={styles.letter}>
+                                    {currentUser.displayName.charAt(0)}
+                                </Text>
+                            }
+                        </View>
                     </View>
+                    <Text>{currentUser.displayName}</Text>
+                    <Text>{currentUser.email}</Text>
+                    <Text>{theme}</Text>
                 </View>
-                <Text>{currentUser.displayName}</Text>
-                <Text>{currentUser.email}</Text>
-            </View>
-            <Text style={{ fontSize: 20 }}>Restaurants I've been reviewd ({userReviews.length})</Text>
-            <FlatList
-                data={userReviews}
-                keyExtractor={(item) => item.id}
-                style={{ flexGrow: 0 }}
-                renderItem={({ item }) => {
-                    return (
-                        <MinimalReviewCard
-                            restaurant={item}
-                            review={item.review}
-                        />
-                    )
-                }}
-            />
-            <Text>{user.type}</Text>
-            <TouchableOpacity onPress={onSignOut}>
-                <Text>Sign out</Text>
-            </TouchableOpacity>
-            {Object.keys(ownedRestaurant).length === 0 ?
-                <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
-                    <Text>Add new restaurant</Text>
+                {/* <Text style={styles.title}>Restaurants I've been reviewd ({userReviews.length})</Text>
+                <FlatList
+                    data={userReviews}
+                    keyExtractor={(item) => item.id}
+                    style={{ flexGrow: 0 }}
+                    renderItem={({ item }) => {
+                        return (
+                            <MinimalReviewCard
+                                restaurant={item}
+                                review={item.review}
+                            />
+                        )
+                    }}
+                />
+                <Text>{user.type}</Text>
+                <TouchableOpacity onPress={onSignOut}>
+                    <Text>Sign out</Text>
                 </TouchableOpacity>
-                :
-                <View>
-                    <Text>My restaurant: {ownedRestaurant.name}</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Editing', { restaurant: ownedRestaurant })}>
-                        <Text>Edit</Text>
+                {Object.keys(ownedRestaurant).length === 0 ?
+                    <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
+                        <Text>Add new restaurant</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={onRemoveRestaurant}>
-                        <Text>Delete</Text>
+                    :
+                    <View>
+                        <Text>My restaurant: {ownedRestaurant.name}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Editing', { restaurant: ownedRestaurant })}>
+                            <Text>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={onRemoveRestaurant}>
+                            <Text>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
+                } */}
+                <View>
+                    <Text style={styles.title}>Settings</Text>
+                    <TouchableOpacity
+                        onPress={() => appearancePanelRef.current?.open()}
+                        style={styles.settings}
+                    >
+                        <View style={styles.wrapper}>
+                            <View style={styles.iconWrapper}>
+                                <MaterialCommunityIcons name="theme-light-dark" size={18} color="#80adce" />
+                            </View>
+                            <Text style={styles.settingsTitle}>Appearance</Text>
+                        </View>
+                        <View style={styles.wrapper}>
+                            <Text style={styles.theme}>
+                                {isUsinSystemScheme === 'true' ? 'System' : theme}
+                            </Text>
+                            <Entypo name="chevron-small-right" size={20} color="grey" />
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={onClearSearchHistory}
+                        style={styles.settings}
+                    >
+                        <View style={styles.wrapper}>
+                            <View style={styles.iconWrapper}>
+                                <MaterialIcons name="history" size={18} color="black" />
+                            </View>
+                            <Text style={styles.settingsTitle}>Clear Search History</Text>
+                        </View>
+                        <Entypo name="chevron-small-right" size={20} color="grey" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={onSignOut}
+                        style={styles.settings}
+                    >
+                        <View style={styles.wrapper}>
+                            <View style={styles.iconWrapper}>
+                                <AntDesign name="logout" size={15} color="black" />
+                            </View>
+                            <Text style={styles.settingsTitle}>Sign Out</Text>
+                        </View>
+                        <Entypo name="chevron-small-right" size={20} color="grey" />
                     </TouchableOpacity>
                 </View>
-            }
-        </View>
+            </View>
+            <AppearancePanelRef
+                bottomSheetRef={appearancePanelRef}
+                isUsinSystemScheme={isUsinSystemScheme}
+                setIsUsinSystemScheme={setIsUsinSystemScheme}
+            />
+        </>
     )
 }
 
@@ -223,5 +287,38 @@ const styles = StyleSheet.create({
         right: 0,
         zIndex: 1,
         backgroundColor: 'black'
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    settings: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 5,
+        paddingHorizontal: 15,
+        paddingVertical: 5
+    },
+    settingsTitle: {
+        transform: [{ translateY: -1.5 }]
+    },
+    iconWrapper: {
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 15,
+        marginRight: 10
+    },
+    wrapper: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    theme: {
+        color: 'grey',
+        transform: [{ translateY: -1.5 }],
+        marginRight: 5
     }
 });

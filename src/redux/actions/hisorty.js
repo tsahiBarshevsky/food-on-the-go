@@ -5,4 +5,10 @@ const addNewTermToHistory = (term) => {
     }
 };
 
-export { addNewTermToHistory };
+const clearHistory = () => {
+    return {
+        type: 'CLEAR_HISTORY'
+    }
+}
+
+export { addNewTermToHistory, clearHistory };

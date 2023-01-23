@@ -10,6 +10,8 @@ const historyReducer = (state = INITIAL_STATE, action) => {
             return update(state, {
                 $push: [action.payload]
             });
+        case 'CLEAR_HISTORY':
+            return INITIAL_STATE;
         default:
             return state;
     }
