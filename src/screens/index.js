@@ -14,3 +14,4 @@ export { default as EditingScreen } from './Editing';
 export { default as CustomListInsertion } from './Custom List/Insertion';
 export { default as CustomListEditing } from './Custom List/Editing';
 export { default as UserScreen } from './User';
+export { default as UserReviews } from './User Reviews';

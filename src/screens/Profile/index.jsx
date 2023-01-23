@@ -10,7 +10,7 @@ import { removeRestaurant } from '../../redux/actions/restaurants';
 import { resetOwnedRestaurant } from '../../redux/actions/ownedRestaurant';
 import { clearHistory } from '../../redux/actions/hisorty';
 import { background } from '../../utils/theme';
-import { AppearancePanelRef, MinimalReviewCard } from '../../components';
+import { AppearancePanel, MinimalReviewCard } from '../../components';
 import globalStyles from '../../utils/globalStyles';
 import { CLOUDINARY_KEY } from '@env';
 
@@ -23,11 +23,9 @@ import { clearHistoryInStorage } from '../../utils/AsyncStorageManagement';
 const AVATAR_SIZE = 90;
 
 const ProfileScreen = () => {
-    const { theme } = useContext(GlobalContext);
+    const { theme, isUsinSystemScheme } = useContext(GlobalContext);
     const [userReviews, setUserReviews] = useState([]);
-    const [isUsinSystemScheme, setIsUsinSystemScheme] = useState('false');
     const appearancePanelRef = useRef(null);
-    const user = useSelector(state => state.user);
     const ownedRestaurant = useSelector(state => state.ownedRestaurant);
     const restaurants = useSelector(state => state.restaurants);
     const currentUser = authentication.currentUser;
@@ -124,32 +122,7 @@ const ProfileScreen = () => {
     return (
         <>
             <View style={globalStyles.container}>
-                <View style={styles.header}>
-                    <View style={styles.avatarWrapper}>
-                        <TouchableOpacity
-                            onPress={onUploadNewImage}
-                            style={styles.camera}
-                        >
-                            <FontAwesome name="camera" size={13} color="white" />
-                        </TouchableOpacity>
-                        <View style={styles.avatar}>
-                            {currentUser.photoURL ?
-                                <Image
-                                    source={{ uri: currentUser.photoURL }}
-                                    style={styles.image}
-                                />
-                                :
-                                <Text style={styles.letter}>
-                                    {currentUser.displayName.charAt(0)}
-                                </Text>
-                            }
-                        </View>
-                    </View>
-                    <Text>{currentUser.displayName}</Text>
-                    <Text>{currentUser.email}</Text>
-                    <Text>{theme}</Text>
-                </View>
-                {/* <Text style={styles.title}>Restaurants I've been reviewd ({userReviews.length})</Text>
+                {/* 
                 <FlatList
                     data={userReviews}
                     keyExtractor={(item) => item.id}
@@ -182,56 +155,107 @@ const ProfileScreen = () => {
                         </TouchableOpacity>
                     </View>
                 } */}
-                <View>
-                    <Text style={styles.title}>Settings</Text>
-                    <TouchableOpacity
-                        onPress={() => appearancePanelRef.current?.open()}
-                        style={styles.settings}
-                    >
-                        <View style={styles.wrapper}>
-                            <View style={styles.iconWrapper}>
-                                <MaterialCommunityIcons name="theme-light-dark" size={18} color="#80adce" />
+                <FlatList
+                    data={userReviews.slice(0, 2)}
+                    keyExtractor={(item) => item.id}
+                    ListHeaderComponent={() => {
+                        return (
+                            <View>
+                                <View style={styles.header}>
+                                    <View style={styles.avatarWrapper}>
+                                        <TouchableOpacity
+                                            onPress={onUploadNewImage}
+                                            style={styles.camera}
+                                        >
+                                            <FontAwesome name="camera" size={13} color="white" />
+                                        </TouchableOpacity>
+                                        <View style={styles.avatar}>
+                                            {currentUser.photoURL ?
+                                                <Image
+                                                    source={{ uri: currentUser.photoURL }}
+                                                    style={styles.image}
+                                                />
+                                                :
+                                                <Text style={styles.letter}>
+                                                    {currentUser.displayName.charAt(0)}
+                                                </Text>
+                                            }
+                                        </View>
+                                    </View>
+                                    <Text>{currentUser.displayName}</Text>
+                                    <Text>{currentUser.email}</Text>
+                                </View>
+                                <Text style={styles.title}>Restaurants I've been reviewd ({userReviews.length})</Text>
                             </View>
-                            <Text style={styles.settingsTitle}>Appearance</Text>
-                        </View>
-                        <View style={styles.wrapper}>
-                            <Text style={styles.theme}>
-                                {isUsinSystemScheme === 'true' ? 'System' : theme}
-                            </Text>
-                            <Entypo name="chevron-small-right" size={20} color="grey" />
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={onClearSearchHistory}
-                        style={styles.settings}
-                    >
-                        <View style={styles.wrapper}>
-                            <View style={styles.iconWrapper}>
-                                <MaterialIcons name="history" size={18} color="black" />
+                        )
+                    }}
+                    ListFooterComponent={() => {
+                        return (
+                            <View>
+                                {userReviews.length >= 2 &&
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('UserReviews', { reviews: userReviews })}
+                                        style={styles.button}
+                                    >
+                                        <Text>View all reviews</Text>
+                                    </TouchableOpacity>
+                                }
+                                <Text style={styles.title}>Settings</Text>
+                                <TouchableOpacity
+                                    onPress={() => appearancePanelRef.current?.open()}
+                                    style={styles.settings}
+                                >
+                                    <View style={styles.wrapper}>
+                                        <View style={styles.iconWrapper}>
+                                            <MaterialCommunityIcons name="theme-light-dark" size={18} color="#80adce" />
+                                        </View>
+                                        <Text style={styles.settingsTitle}>Appearance</Text>
+                                    </View>
+                                    <View style={styles.wrapper}>
+                                        <Text style={styles.theme}>
+                                            {isUsinSystemScheme === 'true' ? 'System' : theme}
+                                        </Text>
+                                        <Entypo name="chevron-small-right" size={20} color="grey" />
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={onClearSearchHistory}
+                                    style={styles.settings}
+                                >
+                                    <View style={styles.wrapper}>
+                                        <View style={styles.iconWrapper}>
+                                            <MaterialIcons name="history" size={18} color="black" />
+                                        </View>
+                                        <Text style={styles.settingsTitle}>Clear Search History</Text>
+                                    </View>
+                                    <Entypo name="chevron-small-right" size={20} color="grey" />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={onSignOut}
+                                    style={styles.settings}
+                                >
+                                    <View style={styles.wrapper}>
+                                        <View style={styles.iconWrapper}>
+                                            <AntDesign name="logout" size={15} color="black" />
+                                        </View>
+                                        <Text style={styles.settingsTitle}>Sign Out</Text>
+                                    </View>
+                                    <Entypo name="chevron-small-right" size={20} color="grey" />
+                                </TouchableOpacity>
                             </View>
-                            <Text style={styles.settingsTitle}>Clear Search History</Text>
-                        </View>
-                        <Entypo name="chevron-small-right" size={20} color="grey" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={onSignOut}
-                        style={styles.settings}
-                    >
-                        <View style={styles.wrapper}>
-                            <View style={styles.iconWrapper}>
-                                <AntDesign name="logout" size={15} color="black" />
-                            </View>
-                            <Text style={styles.settingsTitle}>Sign Out</Text>
-                        </View>
-                        <Entypo name="chevron-small-right" size={20} color="grey" />
-                    </TouchableOpacity>
-                </View>
+                        )
+                    }}
+                    renderItem={({ item }) => {
+                        return (
+                            <MinimalReviewCard
+                                restaurant={item}
+                                review={item.review}
+                            />
+                        )
+                    }}
+                />
             </View>
-            <AppearancePanelRef
-                bottomSheetRef={appearancePanelRef}
-                isUsinSystemScheme={isUsinSystemScheme}
-                setIsUsinSystemScheme={setIsUsinSystemScheme}
-            />
+            <AppearancePanel bottomSheetRef={appearancePanelRef} />
         </>
     )
 }
@@ -320,5 +344,8 @@ const styles = StyleSheet.create({
         color: 'grey',
         transform: [{ translateY: -1.5 }],
         marginRight: 5
+    },
+    button: {
+        alignSelf: 'center'
     }
 });

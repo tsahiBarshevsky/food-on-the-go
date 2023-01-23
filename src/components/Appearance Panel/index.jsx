@@ -6,19 +6,19 @@ import { Portal } from 'react-native-portalize';
 import { GlobalContext } from '../../utils/context';
 import { updateIsUsingSystemScheme } from '../../utils/AsyncStorageManagement';
 
-const AppearancePanelRef = ({ bottomSheetRef, isUsinSystemScheme, setIsUsinSystemScheme }) => {
-    const { theme, toggleTheme } = useContext(GlobalContext);
+const AppearancePanel = ({ bottomSheetRef }) => {
+    const { theme, toggleTheme, isUsinSystemScheme, toggleIsUsinSystemScheme } = useContext(GlobalContext);
 
     const onChangeTheme = (newTheme) => {
         bottomSheetRef.current?.close();
         toggleTheme(newTheme);
         if (newTheme === 'System') {
             updateIsUsingSystemScheme('true'); // Update AsyncStorage
-            setIsUsinSystemScheme('true');
+            toggleIsUsinSystemScheme('true');
         }
         else {
             updateIsUsingSystemScheme('false'); // Update AsyncStorage
-            setIsUsinSystemScheme('false');
+            toggleIsUsinSystemScheme('false');
         }
     }
 
@@ -84,7 +84,7 @@ const AppearancePanelRef = ({ bottomSheetRef, isUsinSystemScheme, setIsUsinSyste
     )
 }
 
-export default AppearancePanelRef;
+export default AppearancePanel;
 
 const styles = StyleSheet.create({
     bottomSheetContainer: {

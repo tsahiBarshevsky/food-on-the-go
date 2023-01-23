@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import * as Progress from 'react-native-progress';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity, Linking, BackHandler } from 'react-native';
-import { FontAwesome, Entypo, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome, Entypo } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment/moment';
@@ -19,17 +19,11 @@ const RestaurantScreen = ({ route }) => {
     const restaurant = restaurants[index];
     const navigation = useNavigation();
     const savePanelRef = useRef(null);
-    const sortingPanelRef = useRef(null);
     const dispatch = useDispatch();
 
     // Sorting reviews states
     const [isSorting, setIsSorting] = useState(false);
     const [sortingType, setSortingType] = useState(null);
-    const props = {
-        sortingPanelRef,
-        isSorting, setIsSorting,
-        sortingType, setSortingType
-    };
 
     // is open stuff
     const today = moment().format('dddd');
@@ -193,9 +187,11 @@ const RestaurantScreen = ({ route }) => {
                                 <Text>sum: {ratingAverage}</Text>
                                 <Text>{restaurant.reviews.length} Reviews</Text>
                             </View>
-                            <TouchableOpacity onPress={() => sortingPanelRef.current?.open()}>
-                                <MaterialIcons name="sort" size={24} color="black" />
-                            </TouchableOpacity>
+                            <SortingPanel
+                                sortingType={sortingType}
+                                setSortingType={setSortingType}
+                                setIsSorting={setIsSorting}
+                            />
                             {!isSorting ?
                                 restaurant.reviews.map((review, index) => {
                                     return (
@@ -231,7 +227,6 @@ const RestaurantScreen = ({ route }) => {
                 bottomSheetRef={savePanelRef}
                 restaurant={restaurant}
             />
-            <SortingPanel {...props} />
         </>
     )
 }

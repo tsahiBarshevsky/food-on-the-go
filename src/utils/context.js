@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Appearance } from 'react-native';
-import { getTheme, updateTheme } from './AsyncStorageManagement';
+import { getIsUsingSystemScheme, getTheme, updateTheme } from './AsyncStorageManagement';
 
 export const GlobalContext = React.createContext();
 
 export const GlobalProvider = ({ children }) => {
     const [triggerFilter, setTriggerFilter] = useState(false)
     const [theme, setTheme] = useState('');
+    const [isUsinSystemScheme, setIsUsinSystemScheme] = useState('false');
 
     const onTriggerFilter = (value) => {
         setTriggerFilter(value);
@@ -30,12 +31,23 @@ export const GlobalProvider = ({ children }) => {
         }
     }
 
+    const toggleIsUsinSystemScheme = (newStatus) => {
+        setIsUsinSystemScheme(newStatus);
+    }
+
     useEffect(() => {
         getTheme().then((theme) => setTheme(theme));
+        getIsUsingSystemScheme().then((isUsinSystemScheme) => setIsUsinSystemScheme(isUsinSystemScheme))
     }, []);
 
     return (
-        <GlobalContext.Provider value={{ theme, toggleTheme, triggerFilter, onTriggerFilter }}>
+        <GlobalContext.Provider
+            value={{
+                theme, toggleTheme,
+                isUsinSystemScheme, toggleIsUsinSystemScheme,
+                triggerFilter, onTriggerFilter
+            }}
+        >
             {children}
         </GlobalContext.Provider>
     )
