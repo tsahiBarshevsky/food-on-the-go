@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Host } from 'react-native-portalize';
+import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
+import { GlobalContext } from '../utils/context';
+import { darkTheme, lightTheme } from '../utils/themes';
 
 // Navigators
 import MapNavigator from './mapNavigator';
@@ -10,21 +14,120 @@ import ProfileNavigator from './profileNavigator';
 const Tab = createBottomTabNavigator();
 
 const BottomBarNavigator = () => {
+    const { theme } = useContext(GlobalContext)
+
     return (
         <Host>
             <Tab.Navigator
                 initialRouteName='Map'
                 screenOptions={{
                     headerShown: false,
-                    tabBarHideOnKeyboard: true
+                    tabBarHideOnKeyboard: true,
+                    headerShown: false,
+                    tabBarShowLabel: false,
+                    tabBarStyle: {
+                        backgroundColor: theme === 'Light' ? lightTheme.bottomBar : darkTheme.bottomBar,
+                        borderTopWidth: 1,
+                        borderTopColor: 'rgba(255, 255, 255, 0.1)',
+                    }
                 }}
             >
-                <Tab.Screen name="Map" component={MapNavigator} />
-                <Tab.Screen name="Saved" component={SavedNavigator} />
-                <Tab.Screen name="Profile" component={ProfileNavigator} />
+                <Tab.Screen
+                    name="Map"
+                    component={MapNavigator}
+                    options={{
+                        tabBarIcon: ({ focused }) => {
+                            return focused ? (
+                                <View style={[styles.container, styles[`container${theme}`]]}>
+                                    <Feather
+                                        style={styles.icon}
+                                        name="map"
+                                        size={17}
+                                        color={theme === 'Light' ? lightTheme.icon : darkTheme.icon}
+                                    />
+                                    <Text style={[styles.text, styles[`text${theme}`]]}>Map</Text>
+                                </View>
+                            ) : (
+                                <Feather name="map" size={17} color={focused ? "#ffffff99" : "#a8a9ad"} />
+                            )
+                        }
+                    }}
+                />
+                <Tab.Screen
+                    name="Saved"
+                    component={SavedNavigator}
+                    options={{
+                        tabBarIcon: ({ focused }) => {
+                            return focused ? (
+                                <View style={[styles.container, styles[`container${theme}`]]}>
+                                    <FontAwesome
+                                        style={styles.icon}
+                                        name="bookmark-o"
+                                        size={17}
+                                        color={theme === 'Light' ? lightTheme.icon : darkTheme.icon}
+                                    />
+                                    <Text style={[styles.text, styles[`text${theme}`]]}>Saved</Text>
+                                </View>
+                            ) : (
+                                <FontAwesome name="bookmark-o" size={17} color={focused ? "#ffffff99" : "#a8a9ad"} />
+                            )
+                        }
+                    }}
+                />
+                <Tab.Screen
+                    name="Profile"
+                    component={ProfileNavigator}
+                    options={{
+                        tabBarIcon: ({ focused }) => {
+                            return focused ? (
+                                <View style={[styles.container, styles[`container${theme}`]]}>
+                                    <AntDesign
+                                        style={styles.icon}
+                                        name="user"
+                                        size={17}
+                                        color={theme === 'Light' ? lightTheme.icon : darkTheme.icon}
+                                    />
+                                    <Text style={[styles.text, styles[`text${theme}`]]}>Saved</Text>
+                                </View>
+                            ) : (
+                                <AntDesign name="user" size={17} color={focused ? "#ffffff99" : "#a8a9ad"} />
+                            )
+                        }
+                    }}
+                />
             </Tab.Navigator>
         </Host>
     )
 }
 
 export default BottomBarNavigator;
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        paddingHorizontal: 17,
+        paddingVertical: 7,
+        borderRadius: 50
+    },
+    containerLight: {
+        backgroundColor: lightTheme.focused
+    },
+    containerDark: {
+        backgroundColor: darkTheme.focused
+    },
+    icon: {
+        paddingRight: 7
+    },
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    }
+});

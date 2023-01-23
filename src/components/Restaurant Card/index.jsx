@@ -82,16 +82,14 @@ const RestaurantCard = ({ restaurant }) => {
                         )}
                     </Text>
                 </View>
-                {ratingAverage &&
-                    <View style={styles.data}>
-                        <View style={styles.icon}>
-                            <AntDesign name="star" size={17} color="#fbc02d" />
-                        </View>
-                        <Text style={[styles.text, styles[`text${theme}`]]}>
-                            {ratingAverage.toFixed(1)}
-                        </Text>
+                <View style={styles.data}>
+                    <View style={styles.icon}>
+                        <AntDesign name="star" size={17} color="#fbc02d" />
                     </View>
-                }
+                    <Text style={[styles.text, styles[`text${theme}`]]}>
+                        {ratingAverage.toFixed(1)}
+                    </Text>
+                </View>
             </View>
         </TouchableOpacity>
     )
@@ -112,7 +110,7 @@ const styles = StyleSheet.create({
         elevation: 2
     },
     containerLight: {
-        backgroundColor: 'white',
+        backgroundColor: lightTheme.box,
         borderWidth: 1,
         borderColor: 'rgba(0, 0, 0, 0.0125)'
     },
