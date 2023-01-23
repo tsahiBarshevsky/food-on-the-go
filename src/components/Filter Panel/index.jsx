@@ -106,41 +106,49 @@ const FilterPanel = (props) => {
                         checked={isOpenNow}
                         setChecked={() => setIsOpenNow(!isOpenNow)}
                         caption='Open now'
+                        withCaption
                     />
                     <Checkbox
                         checked={foodTruck}
                         setChecked={() => onSelectType('foodTruck')}
                         caption='Food Truck'
+                        withCaption
                     />
                     <Checkbox
                         checked={coffeeCart}
                         setChecked={() => onSelectType('coffeeCart')}
                         caption='Coffee Cart'
+                        withCaption
                     />
                     <Checkbox
                         checked={isKosher}
                         setChecked={() => setIsKosher(!isKosher)}
                         caption='Kosher'
+                        withCaption
                     />
                     <Checkbox
                         checked={isOpenOnSaturday}
                         setChecked={() => setIsOpenOnSaturday(!isOpenOnSaturday)}
                         caption='Open On Saturdays'
+                        withCaption
                     />
                     <Checkbox
                         checked={isVegetarian}
                         setChecked={() => setIsVegetarian(!isVegetarian)}
                         caption='Vegetarian'
+                        withCaption
                     />
                     <Checkbox
                         checked={isVegan}
                         setChecked={() => setIsVegan(!isVegan)}
                         caption='Vegan'
+                        withCaption
                     />
                     <Checkbox
                         checked={isGlutenFree}
                         setChecked={() => setIsGlutenFree(!isGlutenFree)}
                         caption='Gluten Free'
+                        withCaption
                     />
                     <Text>Distance: {distance[0]}-{distance[1]}</Text>
                     <Slider
@@ -174,16 +182,19 @@ const FilterPanel = (props) => {
                         checked={fiveStarsRating}
                         setChecked={() => onSelectRating('fiveStars')}
                         caption='5 stars'
+                        withCaption
                     />
                     <Checkbox
                         checked={fourStarsRating}
                         setChecked={() => onSelectRating('fourStars')}
                         caption='4 stars & up'
+                        withCaption
                     />
                     <Checkbox
                         checked={threeStarsRating}
                         setChecked={() => onSelectRating('threeStars')}
                         caption='3 stars & up'
+                        withCaption
                     />
                 </View>
             </Modalize>

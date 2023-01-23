@@ -288,11 +288,13 @@ const EditingScreen = ({ route }) => {
                                                 checked={restaurantType.foodTruck}
                                                 setChecked={() => onChageRestaurantType('foodTruck')}
                                                 caption="Food Truck"
+                                                withCaption
                                             />
                                             <Checkbox
                                                 checked={restaurantType.coffeeCart}
                                                 setChecked={() => onChageRestaurantType('coffeeCart')}
                                                 caption="Coffee Cart"
+                                                withCaption
                                             />
                                         </View>
                                         <Text style={styles.title}>About</Text>
@@ -384,21 +386,25 @@ const EditingScreen = ({ route }) => {
                                             checked={kosher}
                                             setChecked={() => setKosher(!kosher)}
                                             caption='Kosher'
+                                            withCaption
                                         />
                                         <Checkbox
                                             checked={vegetarian}
                                             setChecked={() => setVegetarian(!vegetarian)}
                                             caption='Vegetarian'
+                                            withCaption
                                         />
                                         <Checkbox
                                             checked={vegan}
                                             setChecked={() => setVegan(!vegan)}
                                             caption='Vegan'
+                                            withCaption
                                         />
                                         <Checkbox
                                             checked={glutenFree}
                                             setChecked={() => setGlutenFree(!glutenFree)}
                                             caption='Gluten free'
+                                            withCaption
                                         />
                                         <Text style={styles.title}>Openings hours</Text>
                                         <View>
@@ -408,6 +414,7 @@ const EditingScreen = ({ route }) => {
                                                         <Checkbox
                                                             checked={item.isOpen}
                                                             setChecked={() => onChangeAvailability(index, item.isOpen)}
+                                                            withCaption={false}
                                                         />
                                                         <Text>{item.day}</Text>
                                                         {item.isOpen &&

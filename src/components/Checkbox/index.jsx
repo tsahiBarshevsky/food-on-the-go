@@ -1,21 +1,30 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import TouchableScale from 'react-native-touchable-scale';
-import { Entypo } from '@expo/vector-icons';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const Checkbox = ({ checked, setChecked, caption }) => {
-    return (
-        <View style={styles.container}>
-            <TouchableScale
+const BUTTON_SIZE = 23;
+
+const Checkbox = ({ checked, setChecked, caption, withCaption }) => {
+    return withCaption ? (
+        <TouchableOpacity
+            onPress={() => setChecked(!checked)}
+            style={styles.container}
+            activeOpacity={1}
+        >
+            <TouchableOpacity
                 onPress={() => setChecked(!checked)}
-                activeScale={0.85}
-                useNativeDriver
-                style={[styles.button, checked ? styles.checked : styles.unchecked]}
+                style={styles.button}
             >
-                {checked && <Entypo name="check" size={13} color='white' />}
-            </TouchableScale>
+                {checked && <View style={styles.inner} />}
+            </TouchableOpacity>
             <Text style={styles.cpation}>{caption}</Text>
-        </View>
+        </TouchableOpacity>
+    ) : (
+        <TouchableOpacity
+            onPress={() => setChecked(!checked)}
+            style={[styles.button, styles.noCpation]}
+        >
+            {checked && <View style={styles.inner} />}
+        </TouchableOpacity>
     )
 }
 
@@ -23,28 +32,33 @@ export default Checkbox;
 
 const styles = StyleSheet.create({
     container: {
+        alignSelf: 'flex-start',
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        marginVertical: 10,
-        paddingHorizontal: 5
+        paddingVertical: 5,
+        backgroundColor: 'royalblue'
     },
     button: {
-        width: 25,
-        height: 25,
+        width: BUTTON_SIZE,
+        height: BUTTON_SIZE,
+        borderRadius: BUTTON_SIZE / 2,
         borderWidth: 1,
-        borderRadius: 25 / 2,
         borderColor: 'black',
         alignItems: 'center',
         justifyContent: 'center'
     },
-    checked: {
+    inner: {
+        width: BUTTON_SIZE - 8,
+        height: BUTTON_SIZE - 8,
+        borderRadius: (BUTTON_SIZE - 8) / 2,
         backgroundColor: 'black'
     },
-    unchecked: {
-        backgroundColor: 'transparent'
+    noCpation: {
+        marginVertical: 5
     },
     cpation: {
-        paddingLeft: 10
+        paddingLeft: 10,
+        transform: [{ translateY: -1 }]
     }
 });
