@@ -15,7 +15,8 @@ const store = createStore(rootReducer);
 export default function App() {
     const [loaded] = useFonts({
         Quicksand: require('./assets/fonts/Quicksand-Regular.ttf'),
-        QuicksandBold: require('./assets/fonts/Quicksand-Bold.ttf')
+        QuicksandBold: require('./assets/fonts/Quicksand-Bold.ttf'),
+        BebasNeue: require('./assets/fonts/BebasNeue-Regular.ttf')
     });
 
     if (!loaded)

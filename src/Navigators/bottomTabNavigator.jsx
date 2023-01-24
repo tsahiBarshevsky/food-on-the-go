@@ -14,7 +14,8 @@ import ProfileNavigator from './profileNavigator';
 const Tab = createBottomTabNavigator();
 
 const BottomBarNavigator = () => {
-    const { theme } = useContext(GlobalContext)
+    const { theme } = useContext(GlobalContext);
+    const ICON_SIZE = 20;
 
     return (
         <Host>
@@ -26,6 +27,7 @@ const BottomBarNavigator = () => {
                     headerShown: false,
                     tabBarShowLabel: false,
                     tabBarStyle: {
+                        // height: 55,
                         backgroundColor: theme === 'Light' ? lightTheme.bottomBar : darkTheme.bottomBar,
                         borderTopWidth: 1,
                         borderTopColor: 'rgba(255, 255, 255, 0.1)',
@@ -42,13 +44,13 @@ const BottomBarNavigator = () => {
                                     <Feather
                                         style={styles.icon}
                                         name="map"
-                                        size={17}
+                                        size={ICON_SIZE}
                                         color={theme === 'Light' ? lightTheme.icon : darkTheme.icon}
                                     />
                                     <Text style={[styles.text, styles[`text${theme}`]]}>Map</Text>
                                 </View>
                             ) : (
-                                <Feather name="map" size={17} color={focused ? "#ffffff99" : "#a8a9ad"} />
+                                <Feather name="map" size={ICON_SIZE} color={focused ? "#ffffff99" : "#a8a9ad"} />
                             )
                         }
                     }}
@@ -63,13 +65,13 @@ const BottomBarNavigator = () => {
                                     <FontAwesome
                                         style={styles.icon}
                                         name="bookmark-o"
-                                        size={17}
+                                        size={ICON_SIZE}
                                         color={theme === 'Light' ? lightTheme.icon : darkTheme.icon}
                                     />
                                     <Text style={[styles.text, styles[`text${theme}`]]}>Saved</Text>
                                 </View>
                             ) : (
-                                <FontAwesome name="bookmark-o" size={17} color={focused ? "#ffffff99" : "#a8a9ad"} />
+                                <FontAwesome name="bookmark-o" size={ICON_SIZE} color={focused ? "#ffffff99" : "#a8a9ad"} />
                             )
                         }
                     }}
@@ -84,13 +86,13 @@ const BottomBarNavigator = () => {
                                     <AntDesign
                                         style={styles.icon}
                                         name="user"
-                                        size={17}
+                                        size={ICON_SIZE}
                                         color={theme === 'Light' ? lightTheme.icon : darkTheme.icon}
                                     />
-                                    <Text style={[styles.text, styles[`text${theme}`]]}>Saved</Text>
+                                    <Text style={[styles.text, styles[`text${theme}`]]}>Profile</Text>
                                 </View>
                             ) : (
-                                <AntDesign name="user" size={17} color={focused ? "#ffffff99" : "#a8a9ad"} />
+                                <AntDesign name="user" size={ICON_SIZE} color={focused ? "#ffffff99" : "#a8a9ad"} />
                             )
                         }
                     }}
@@ -106,10 +108,10 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        paddingHorizontal: 17,
+        justifyContent: 'center',
         paddingVertical: 7,
-        borderRadius: 50
+        borderRadius: 50,
+        width: '85%'
     },
     containerLight: {
         backgroundColor: lightTheme.focused
@@ -125,9 +127,9 @@ const styles = StyleSheet.create({
         transform: [{ translateY: -1.5 }]
     },
     textLight: {
-        color: lightTheme.text
+        color: lightTheme.icon
     },
     textDark: {
-        color: darkTheme.text
+        color: darkTheme.icon
     }
 });
