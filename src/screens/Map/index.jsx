@@ -99,21 +99,21 @@ const MapScreen = () => {
         if (threeStarsRating) {
             updatedList = updatedList.filter((item) => {
                 const ratings = item.reviews.map(({ rating }) => rating + 1);
-                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 3;
+                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 2;
             });
         }
         // Four stars rating
         if (fourStarsRating) {
             updatedList = updatedList.filter((item) => {
                 const ratings = item.reviews.map(({ rating }) => rating + 1);
-                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 4;
+                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 3;
             });
         }
         // Five stars rating
         if (fiveStarsRating) {
             updatedList = updatedList.filter((item) => {
                 const ratings = item.reviews.map(({ rating }) => rating + 1);
-                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) === 5;
+                return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 4;
             });
         }
         setFiltered(updatedList);
