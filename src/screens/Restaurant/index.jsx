@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
 import * as Progress from 'react-native-progress';
-import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity, Linking, BackHandler } from 'react-native';
-import { FontAwesome, Entypo } from '@expo/vector-icons';
+import { StyleSheet, SafeAreaView, ScrollView, Text, View, Image, TouchableOpacity, Linking, BackHandler } from 'react-native';
+import { FontAwesome, FontAwesome5, Entypo, AntDesign } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment/moment';
@@ -9,9 +9,12 @@ import { hours } from '../../utils/constants';
 import { authentication } from '../../utils/firebase';
 import { ReviewCard, RatingBar, List, SavePanel, SortingPanel } from '../../components';
 import globalStyles from '../../utils/globalStyles';
+import { darkTheme, lightTheme } from '../../utils/themes';
+import { GlobalContext } from '../../utils/context';
 
 const RestaurantScreen = ({ route }) => {
     const { index } = route.params; // index of restaurant in restaurants array
+    const { theme } = useContext(GlobalContext);
     const [userRating, setUserRating] = useState(-1);
     const [ratingsSum, setRatingSum] = useState({ "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 });
     const [ratingAverage, setRatingAverage] = useState(0);
@@ -88,7 +91,7 @@ const RestaurantScreen = ({ route }) => {
 
     return (
         <>
-            <View style={globalStyles.container}>
+            <SafeAreaView style={globalStyles.container}>
                 <ScrollView contentContainerStyle={styles.scrollView}>
                     <View style={styles.header}>
                         <Image
@@ -103,63 +106,119 @@ const RestaurantScreen = ({ route }) => {
                         <TouchableOpacity
                             onPress={onGoBack}
                             style={[styles.button, styles.back]}
+                            activeOpacity={0.85}
                         >
                             <Entypo name="chevron-left" size={25} color="white" />
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => savePanelRef.current?.open()}
                             style={[styles.button, styles.favorite]}
+                            activeOpacity={0.85}
                         >
                             <FontAwesome name="bookmark-o" size={18} color="white" />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.title}>{restaurant.name}</Text>
-                    <Text>{restaurant.description}</Text>
-                    <Text style={styles.subtitle}>About</Text>
+                    <Text style={[styles.title, styles[`text${theme}`]]}>{restaurant.name}</Text>
+                    <Text style={[styles.text, styles[`text${theme}`]]}>{restaurant.description}</Text>
+                    <Text style={[styles.subtitle, styles.text, styles[`text${theme}`]]}>About</Text>
                     <View style={styles.aboutBox}>
                         <View style={styles.icon}>
-                            <FontAwesome name="map-marker" size={24} color="black" />
+                            <FontAwesome name="map-marker" size={24} style={styles[`icon${theme}`]} />
                         </View>
-                        <Text>TBA</Text>
+                        <TouchableOpacity
+                            onPress={() => Linking.openURL(`google.navigation:q=${restaurant.location.latitude}+${restaurant.location.longitude}`)}
+                            activeOpacity={0.85}
+                        >
+                            <Text style={[styles.text, styles[`text${theme}`]]}>{restaurant.location.city}</Text>
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.aboutBox}>
                         <View style={styles.icon}>
-                            <FontAwesome name="shekel" size={20} color="black" />
-                        </View>
-                        <Text>{restaurant.priceRange.lowest} - {restaurant.priceRange.highest}</Text>
-                    </View>
-                    <View style={styles.aboutBox}>
-                        <View style={styles.icon}>
-                            <FontAwesome name="phone" size={20} color="black" />
+                            <FontAwesome name="phone" size={20} style={styles[`icon${theme}`]} />
                         </View>
                         <TouchableOpacity onPress={() => Linking.openURL(`tel: ${restaurant.phone}`)}>
-                            <Text>{restaurant.phone}</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>{restaurant.phone}</Text>
                         </TouchableOpacity>
+                    </View>
+                    {restaurant.link &&
+                        <View style={styles.aboutBox}>
+                            <View style={styles.icon}>
+                                <FontAwesome name="link" size={20} style={styles[`icon${theme}`]} />
+                            </View>
+                            <TouchableOpacity
+                                onPress={() => Linking.openURL(restaurant.link)}
+                                activeOpacity={0.85}
+                            >
+                                <Text style={[styles.text, styles[`text${theme}`]]}>{restaurant.link}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
+                    <View style={styles.aboutBox}>
+                        <View style={styles.icon}>
+                            <FontAwesome5 name="wheelchair" size={20} style={styles[`icon${theme}`]} />
+                        </View>
+                        <Text style={[styles.text, styles[`text${theme}`]]}>
+                        </Text>
                     </View>
                     <View style={styles.aboutBox}>
                         <View style={styles.icon}>
-                            <FontAwesome name="link" size={20} color="black" />
+                            <FontAwesome name="shekel" size={20} style={styles[`icon${theme}`]} />
                         </View>
-                        <TouchableOpacity onPress={() => Linking.openURL(restaurant.link)}>
-                            <Text>{restaurant.link}</Text>
-                        </TouchableOpacity>
+                        <Text style={[styles.text, styles[`text${theme}`]]}>
+                            {restaurant.priceRange.lowest}₪ - {restaurant.priceRange.highest}₪
+                        </Text>
+                    </View>
+                    <Text style={[styles.subtitle, styles.text, styles[`text${theme}`]]}>Menu</Text>
+                    <View style={styles.menu}>
+                        <View style={styles.menuItem}>
+                            {restaurant.kosher ?
+                                <AntDesign name="check" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                                :
+                                <AntDesign name="close" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                            }
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Kosher</Text>
+                        </View>
+                        <View style={styles.menuItem}>
+                            {restaurant.vegetarian ?
+                                <AntDesign name="check" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                                :
+                                <AntDesign name="close" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                            }
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Vegetarian</Text>
+                        </View>
+                        <View style={styles.menuItem}>
+                            {restaurant.vegan ?
+                                <AntDesign name="check" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                                :
+                                <AntDesign name="close" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                            }
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Vegan</Text>
+                        </View>
+                        <View style={styles.menuItem}>
+                            {restaurant.glutenFree ?
+                                <AntDesign name="check" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                                :
+                                <AntDesign name="close" size={20} style={[styles.menuIcon, styles[`icon${theme}`]]} />
+                            }
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Gluten Free</Text>
+                        </View>
                     </View>
                     <View style={styles.openingHours}>
-                        <Text style={{ fontSize: 17 }}>Opening hours</Text>
+                        <Text style={[styles.subtitle, styles.text, styles[`text${theme}`]]}>Opening hours</Text>
                         {item.isOpen && today === item.day && moment().isBetween(openTime, closeTime) ?
-                            <Text style={styles.open}>Open now</Text>
+                            <Text style={[styles.text, styles.open]}>Open now</Text>
                             :
-                            <Text style={styles.close}>Close now</Text>
+                            <Text style={[styles.text, styles.close]}>Close now</Text>
                         }
                     </View>
                     <List list={restaurant.openingHours} />
-                    <Text style={styles.subtitle}>Rate and review</Text>
+                    <Text style={[styles.subtitle, styles.text, styles[`text${theme}`]]}>Rate and review</Text>
                     <RatingBar
                         origin='restaurant'
                         currentRating={userRating}
                         restaurant={restaurant}
                     />
-                    <Text style={styles.subtitle}>Reviews</Text>
+                    <Text style={[styles.subtitle, styles.text, styles[`text${theme}`]]}>Reviews</Text>
                     {restaurant.reviews.length > 0 ?
                         <View>
                             {Object.keys(ratingsSum).map((key) => {
@@ -222,7 +281,7 @@ const RestaurantScreen = ({ route }) => {
                         <Text>No reviews yet</Text>
                     }
                 </ScrollView>
-            </View>
+            </SafeAreaView>
             <SavePanel
                 bottomSheetRef={savePanelRef}
                 restaurant={restaurant}
@@ -243,15 +302,13 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 200,
         marginVertical: 10,
-        backgroundColor: 'royalblue',
         borderRadius: 15,
         overflow: 'hidden'
     },
     image: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
-        opacity: 0.2
+        resizeMode: 'cover'
     },
     button: {
         position: 'absolute',
@@ -270,18 +327,30 @@ const styles = StyleSheet.create({
         right: 10
     },
     title: {
-        fontSize: 23,
-        fontWeight: 'bold',
+        fontSize: 25,
+        fontFamily: 'QuicksandBold',
         marginBottom: 5
     },
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
     subtitle: {
-        fontSize: 17,
-        marginVertical: 5
+        fontSize: 18,
+        marginTop: 10,
+        marginBottom: 5
     },
     aboutBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
+        marginBottom: 5
     },
     icon: {
         width: 28,
@@ -290,11 +359,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    iconLight: {
+        color: 'black'
+    },
+    iconDark: {
+        color: 'white'
+    },
+    menu: {
+        flexDirection: 'row',
+        flexWrap: 'wrap'
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        marginRight: 15,
+        marginBottom: 5
+    },
+    menuIcon: {
+        marginRight: 7
+    },
     openingHours: {
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
-        marginVertical: 5
+        marginBottom: 5
     },
     open: {
         color: 'green'

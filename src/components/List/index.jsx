@@ -1,9 +1,12 @@
+import React, { useContext } from 'react';
 import moment from 'moment/moment';
-import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { hours } from '../../utils/constants';
+import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 const List = ({ list }) => {
+    const { theme } = useContext(GlobalContext);
     const today = moment().format('dddd');
 
     return (
@@ -17,15 +20,15 @@ const List = ({ list }) => {
                             index < list.length && styles.space
                         ]}
                     >
-                        <Text style={item.day === today && styles.bold}>
+                        <Text style={[styles.text, styles[`text${theme}`], item.day === today && styles.bold]}>
                             {item.day}
                         </Text>
                         {item.isOpen ?
-                            <Text style={item.day === today && styles.bold}>
+                            <Text style={[styles.text, styles[`text${theme}`], item.day === today && styles.bold]}>
                                 {hours[item.open]} - {hours[item.close]}
                             </Text>
                             :
-                            <Text style={item.day === today && styles.bold}>Closed</Text>
+                            <Text style={[styles.text, styles[`text${theme}`], item.day === today && styles.bold]}>Closed</Text>
                         }
                     </View>
                 )
@@ -37,13 +40,22 @@ const List = ({ list }) => {
 export default List;
 
 const styles = StyleSheet.create({
+    text: {
+        fontFamily: 'Quicksand'
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
     openHour: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
     },
     bold: {
-        fontWeight: 'bold'
+        fontFamily: 'QuicksandBold'
     },
     space: {
         marginBottom: 7

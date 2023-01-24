@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, FlatList, TouchableOpacity, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateRating } from '../../redux/actions/review';
+import { GlobalContext } from '../../utils/context';
 
 const RatingBar = ({ origin, currentRating, restaurant }) => {
+    const { theme } = useContext(GlobalContext);
     const maxRating = [...Array(5).keys()];
     const review = useSelector(state => state.review);
     const navigation = useNavigation();
@@ -39,9 +41,9 @@ const RatingBar = ({ origin, currentRating, restaurant }) => {
                         onPress={() => onStarPressed(item)}
                     >
                         {item <= review.rating ?
-                            <AntDesign name="star" size={24} color="black" />
+                            <AntDesign name="star" size={24} color={theme === 'Light' ? 'black' : 'white'} />
                             :
-                            <AntDesign name="staro" size={24} color="black" />
+                            <AntDesign name="staro" size={24} color={theme === 'Light' ? 'black' : 'white'} />
                         }
                     </TouchableOpacity>
                 )
