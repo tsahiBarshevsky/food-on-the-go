@@ -157,8 +157,15 @@ const RestaurantScreen = ({ route }) => {
                         <View style={styles.icon}>
                             <FontAwesome5 name="wheelchair" size={20} style={styles[`icon${theme}`]} />
                         </View>
-                        <Text style={[styles.text, styles[`text${theme}`]]}>
-                        </Text>
+                        {restaurant.accessible ?
+                            <Text style={[styles.text, styles[`text${theme}`]]}>
+                                Handicapped accessible
+                            </Text>
+                            :
+                            <Text style={[styles.text, styles[`text${theme}`]]}>
+                                Not handicap accessible
+                            </Text>
+                        }
                     </View>
                     <View style={styles.aboutBox}>
                         <View style={styles.icon}>
@@ -269,25 +276,33 @@ const RestaurantScreen = ({ route }) => {
                             {!isSorting ?
                                 restaurant.reviews.map((review, index) => {
                                     return (
-                                        <ReviewCard
-                                            key={review.user.uid}
-                                            review={review}
-                                            currentRating={userRating}
-                                            restaurant={restaurant}
-                                            reviewIndex={index}
-                                        />
+                                        <View key={review.user.uid}>
+                                            <ReviewCard
+                                                review={review}
+                                                currentRating={userRating}
+                                                restaurant={restaurant}
+                                                reviewIndex={index}
+                                            />
+                                            {index !== restaurant.reviews.length - 1 &&
+                                                <View style={[styles.separator, styles[`separator${theme}`]]} />
+                                            }
+                                        </View>
                                     )
                                 })
                                 :
                                 [...restaurant.reviews].sort(sortReviews).map((review, index) => {
                                     return (
-                                        <ReviewCard
-                                            key={review.user.uid}
-                                            review={review}
-                                            currentRating={userRating}
-                                            restaurant={restaurant}
-                                            reviewIndex={restaurant.reviews.findIndex((r) => r.user.uid === review.user.uid)}
-                                        />
+                                        <View key={review.user.uid}>
+                                            <ReviewCard
+                                                review={review}
+                                                currentRating={userRating}
+                                                restaurant={restaurant}
+                                                reviewIndex={restaurant.reviews.findIndex((r) => r.user.uid === review.user.uid)}
+                                            />
+                                            {index !== restaurant.reviews.length - 1 &&
+                                                <View style={[styles.separator, styles[`separator${theme}`]]} />
+                                            }
+                                        </View>
                                     )
                                 })
                             }
@@ -310,7 +325,7 @@ export default RestaurantScreen;
 const styles = StyleSheet.create({
     scrollView: {
         paddingHorizontal: 15,
-        paddingBottom: 15
+        paddingBottom: 20
     },
     header: {
         position: 'relative',
@@ -426,4 +441,15 @@ const styles = StyleSheet.create({
     progressBar: {
         marginVertical: 3
     },
+    separator: {
+        width: '100%',
+        height: 1,
+        marginVertical: 15
+    },
+    separatorLight: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    },
+    separatorDark: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    }
 });

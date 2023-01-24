@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
 import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { getHistoryFromStorage } from '../../utils/AsyncStorageManagement';
+import { GlobalContext } from '../../utils/context';
 
 // firebase
 import { collection, getDocs, query, where } from 'firebase/firestore/lite';
 import { authentication, db } from '../../utils/firebase';
 
 const SplashScreen = () => {
+    const { theme } = useContext(GlobalContext);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -87,9 +90,12 @@ const SplashScreen = () => {
     }, []);
 
     return (
-        <View style={styles.container}>
-            <Text>Loding data...</Text>
-        </View>
+        <>
+            <StatusBar style={theme === 'Light' ? 'dark' : 'light'} />
+            <View style={styles.container}>
+                <Text>Loading data...</Text>
+            </View>
+        </>
     )
 }
 

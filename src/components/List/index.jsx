@@ -41,7 +41,8 @@ export default List;
 
 const styles = StyleSheet.create({
     text: {
-        fontFamily: 'Quicksand'
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
     },
     textLight: {
         color: lightTheme.text

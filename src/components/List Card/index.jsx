@@ -109,10 +109,16 @@ const ListCard = ({ item, name }) => {
                         onRequestClose={hideMenu}
                         style={[globalStyles.menu, globalStyles[`menu${theme}`]]}
                     >
-                        <MenuItem onPress={onEditCustomList}>
+                        <MenuItem
+                            onPress={onEditCustomList}
+                            pressColor='transparent'
+                        >
                             <Text style={[styles.text, styles[`text${theme}`]]}>Edit list</Text>
                         </MenuItem>
-                        <MenuItem onPress={onRemoveCustomList}>
+                        <MenuItem
+                            onPress={onRemoveCustomList}
+                            pressColor='transparent'
+                        >
                             <Text style={[styles.text, styles[`text${theme}`]]}>Delete list</Text>
                         </MenuItem>
                     </Menu>

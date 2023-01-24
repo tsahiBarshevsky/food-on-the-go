@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import moment from 'moment/moment';
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import MapView, { Marker } from 'react-native-maps';
 import { Animated, Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -161,6 +162,7 @@ const MapScreen = () => {
 
     return (
         <>
+            <ExpoStatusBar style={theme === 'Light' ? 'dark' : 'light'} />
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.subHeader}>

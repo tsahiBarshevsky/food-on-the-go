@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import update from 'immutability-helper';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
@@ -8,14 +8,18 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteReview, dislikeReview, likeReview } from '../../redux/actions/restaurants';
 import { authentication } from '../../utils/firebase';
+import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 // firebase
 import { doc, updateDoc, collection, getDocs, query, where } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
+import globalStyles from '../../utils/globalStyles';
 
 const AVATAR_SIZE = 35;
 
 const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
+    const { theme } = useContext(GlobalContext);
     const [visible, setVisible] = useState(false);
     const currentUser = authentication.currentUser;
     const restaurants = useSelector(state => state.restaurants);
@@ -104,12 +108,14 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
     }
 
     return (
-        <View style={styles.container}>
-            <Text>index{reviewIndex}</Text>
+        <View>
             <View style={styles.header}>
                 <View style={styles.user}>
                     {review.user.image ?
-                        <TouchableOpacity onPress={navigateToProfile}>
+                        <TouchableOpacity
+                            onPress={navigateToProfile}
+                            activeOpacity={0.85}
+                        >
                             <Image
                                 source={{ uri: review.user.image }}
                                 style={styles.image}
@@ -119,16 +125,22 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
                         <TouchableOpacity
                             onPress={navigateToProfile}
                             style={styles.avatar}
+                            activeOpacity={0.85}
                         >
                             <Text style={styles.letter}>
                                 {review.user.displayName.charAt(0)}
                             </Text>
                         </TouchableOpacity>
                     }
-                    <TouchableOpacity onPress={navigateToProfile}>
+                    <TouchableOpacity
+                        onPress={navigateToProfile}
+                        activeOpacity={0.85}
+                    >
                         <View>
-                            <Text>{review.user.displayName}</Text>
-                            <Text>{review.user.email}</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>{review.user.displayName}</Text>
+                            <Text style={[styles.text, styles[`text${theme}`], styles.email]}>
+                                {review.user.email}
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -137,14 +149,28 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
                         <Menu
                             visible={visible}
                             anchor={
-                                <TouchableOpacity onPress={showMenu}>
-                                    <Entypo name="dots-three-vertical" size={20} color="black" />
+                                <TouchableOpacity
+                                    onPress={showMenu}
+                                    activeOpacity={0.85}
+                                >
+                                    <Entypo name="dots-three-vertical" size={18} color={theme === 'Light' ? "black" : "white"} />
                                 </TouchableOpacity>
                             }
                             onRequestClose={hideMenu}
+                            style={[globalStyles.menu, globalStyles[`menu${theme}`]]}
                         >
-                            <MenuItem onPress={onEditReview}>Edit review</MenuItem>
-                            <MenuItem onPress={onDeleteReview}>Delete review</MenuItem>
+                            <MenuItem
+                                pressColor='transparent'
+                                onPress={onEditReview}
+                            >
+                                <Text style={[styles.text, styles[`text${theme}`]]}>Edit review</Text>
+                            </MenuItem>
+                            <MenuItem
+                                pressColor='transparent'
+                                onPress={onDeleteReview}
+                            >
+                                <Text style={[styles.text, styles[`text${theme}`]]}>Delete review</Text>
+                            </MenuItem>
                         </Menu>
                     </View>
                 }
@@ -153,27 +179,32 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
                 <View style={styles.stars}>
                     {[...Array(5).keys()].map((item) => {
                         if (item <= review.rating)
-                            return (<AntDesign key={item} name="star" size={20} color="black" />);
+                            return (<AntDesign key={item} name="star" size={20} color="#f9bb04" />);
                         else
-                            return (<AntDesign key={item} name="staro" size={20} color="black" />);
+                            return (<AntDesign key={item} name="staro" size={20} color="#f9bb04" />);
                     })}
                 </View>
-                <Text>On {review.date}</Text>
+                <Text style={[styles.text, styles[`text${theme}`]]}>On {review.date}</Text>
             </View>
             {review.comment &&
-                <Text>{review.comment}</Text>
+                <Text style={[styles.text, styles[`text${theme}`]]}>{review.comment}</Text>
             }
-            <View>
-                {currentUser.uid !== review.user.uid &&
-                    <TouchableOpacity onPress={handleLikeReview}>
+            <View style={styles.like}>
+                {currentUser.uid !== review.user.uid ?
+                    <TouchableOpacity
+                        onPress={handleLikeReview}
+                        activeOpacity={0.85}
+                    >
                         {review.likes.includes(currentUser.uid) ?
-                            <AntDesign name="like1" size={24} color="black" />
+                            <AntDesign name="like1" size={22} style={[styles.icon, styles[`icon${theme}`]]} />
                             :
-                            <AntDesign name="like2" size={24} color="black" />
+                            <AntDesign name="like2" size={22} style={[styles.icon, styles[`icon${theme}`]]} />
                         }
                     </TouchableOpacity>
+                    :
+                    <AntDesign name="like1" size={22} style={[styles.icon, styles[`icon${theme}`]]} />
                 }
-                <Text>{review.likes.length}</Text>
+                <Text style={[styles.text, styles[`text${theme}`]]}>({review.likes.length})</Text>
             </View>
         </View>
     )
@@ -182,9 +213,6 @@ const ReviewCard = ({ review, currentRating, restaurant, reviewIndex }) => {
 export default ReviewCard;
 
 const styles = StyleSheet.create({
-    container: {
-        marginBottom: 20
-    },
     header: {
         flexDirection: 'row',
         alignItems: 'flex-start',
@@ -193,7 +221,8 @@ const styles = StyleSheet.create({
     user: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginBottom: 5
     },
     image: {
         width: AVATAR_SIZE,
@@ -207,12 +236,13 @@ const styles = StyleSheet.create({
         width: AVATAR_SIZE,
         height: AVATAR_SIZE,
         borderRadius: AVATAR_SIZE / 2,
-        backgroundColor: 'black',
+        backgroundColor: lightTheme.icon,
         marginRight: 10
     },
     letter: {
+        fontSize: 25,
+        fontFamily: 'BebasNeue',
         color: 'white',
-        fontSize: 18,
         textTransform: 'capitalize',
         transform: [{ translateY: -1 }]
     },
@@ -226,5 +256,33 @@ const styles = StyleSheet.create({
     stars: {
         flexDirection: 'row',
         marginRight: 10
+    },
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
+    email: {
+        fontSize: 10
+    },
+    like: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        marginTop: 5
+    },
+    icon: {
+        marginRight: 5
+    },
+    iconLight: {
+        color: 'black'
+    },
+    iconDark: {
+        color: 'white'
     }
 });
