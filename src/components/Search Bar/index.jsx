@@ -17,7 +17,7 @@ const SearchBar = () => {
                 style={styles.button}
             >
                 <Text style={[styles.text, styles[`text${theme}`]]}>
-                    Search for food truck or coffee cart...
+                    Search for a food truck or coffee cart...
                 </Text>
             </TouchableOpacity>
         </View>
