@@ -80,6 +80,7 @@ const ListCard = ({ item, name }) => {
             onPress={onListPressed}
             disabled={item.list.length === 0}
             style={styles.container}
+            activeOpacity={0.85}
         >
             <View style={styles.left}>
                 <View style={styles.icon}>

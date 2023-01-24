@@ -1,12 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RestaurantCard } from '../../components';
-import { mapStyleLight, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
+import { mapStyleLight, mapStyleDark, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
+import { GlobalContext } from '../../utils/context';
 
 const SavedMapScreen = ({ route }) => {
     const { list, user } = route.params;
+    const { theme } = useContext(GlobalContext);
     const mapRef = useRef(null);
     const scrollViewRef = useRef(null);
     // const user = useSelector(state => state.user);
@@ -63,7 +65,7 @@ const SavedMapScreen = ({ route }) => {
                     showsBuildings={false}
                     toolbarEnabled={false}
                     style={styles.map}
-                    customMapStyle={mapStyleLight}
+                    customMapStyle={theme === 'Light' ? mapStyleLight : mapStyleDark}
                     region={{
                         latitude: location.latitude,
                         longitude: location.longitude,
@@ -80,7 +82,17 @@ const SavedMapScreen = ({ route }) => {
                                     latitude: latitude,
                                     longitude: longitude
                                 }}
-                                pinColor='#125626'
+                                image={
+                                    list === 'favorites' ?
+                                        require('../../../assets/images/map-heart.png')
+                                        :
+                                        (
+                                            list === 'interested' ?
+                                                require('../../../assets/images/map-flag.png')
+                                                :
+                                                require('../../../assets/images/map-list.png')
+                                        )
+                                }
                                 onPress={() => onMarkerPressed(index)}
                             />
                         )
