@@ -41,9 +41,9 @@ const RatingBar = ({ origin, currentRating, restaurant }) => {
                         onPress={() => onStarPressed(item)}
                     >
                         {item <= review.rating ?
-                            <AntDesign name="star" size={24} color={theme === 'Light' ? 'black' : 'white'} />
+                            <AntDesign name="star" size={24} color='#f9bb04' />
                             :
-                            <AntDesign name="staro" size={24} color={theme === 'Light' ? 'black' : 'white'} />
+                            <AntDesign name="staro" size={24} color='#f9bb04' />
                         }
                     </TouchableOpacity>
                 )

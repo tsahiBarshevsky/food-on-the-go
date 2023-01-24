@@ -221,31 +221,46 @@ const RestaurantScreen = ({ route }) => {
                     <Text style={[styles.subtitle, styles.text, styles[`text${theme}`]]}>Reviews</Text>
                     {restaurant.reviews.length > 0 ?
                         <View>
-                            {Object.keys(ratingsSum).map((key) => {
-                                return (
-                                    <View key={key} style={styles.rating}>
-                                        <View style={{ marginRight: 5 }}>
-                                            <Text>{key}</Text>
-                                        </View>
-                                        <View style={{ width: '96%' }}>
-                                            <Progress.Bar
-                                                progress={ratingsSum[key] / restaurant.reviews.length}
-                                                width={null}
-                                                height={10}
-                                                color="#4169e1"
-                                                unfilledColor="rgba(65, 105, 225, 0.5)"
-                                                borderWidth={0}
-                                                animationType="timing"
-                                                borderRadius={10}
-                                            />
-                                        </View>
+                            <View style={styles.ratings}>
+                                <View style={{ width: '70%' }}>
+                                    {Object.keys(ratingsSum).map((key) => {
+                                        return (
+                                            <View key={key}>
+                                                <View style={{ width: '100%' }}>
+                                                    <Progress.Bar
+                                                        progress={ratingsSum[key] / restaurant.reviews.length}
+                                                        width={null}
+                                                        height={8}
+                                                        color='#f9bb04'
+                                                        unfilledColor={theme === 'Light' ? '#cecece' : '#3a3a3a'}
+                                                        borderWidth={0}
+                                                        animationType="timing"
+                                                        borderRadius={10}
+                                                        style={styles.progressBar}
+                                                    />
+                                                </View>
+                                            </View>
+                                        )
+                                    })}
+                                </View>
+                                <View style={styles.average}>
+                                    <Text style={[styles.text, styles[`text${theme}`], styles.averageText]}>
+                                        {ratingAverage.toFixed(1)}
+                                    </Text>
+                                    <View style={styles.stars}>
+                                        {[...Array(5).keys()].map((item) => {
+                                            if (item < Math.floor(ratingAverage))
+                                                return (<AntDesign style={{ marginRight: 1 }} key={item} name="star" size={15} color='#f9bb04' />);
+                                            else
+                                                return (<AntDesign style={{ marginRight: 1 }} key={item} name="staro" size={15} color='#f9bb04' />);
+                                        })}
                                     </View>
-                                )
-                            })}
-                            <View>
-                                <Text>sum: {ratingAverage}</Text>
-                                <Text>{restaurant.reviews.length} Reviews</Text>
+                                    <Text style={[styles.text, styles[`text${theme}`]]}>
+                                        ({restaurant.reviews.length})
+                                    </Text>
+                                </View>
                             </View>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Sort by</Text>
                             <SortingPanel
                                 sortingType={sortingType}
                                 setSortingType={setSortingType}
@@ -278,7 +293,7 @@ const RestaurantScreen = ({ route }) => {
                             }
                         </View>
                         :
-                        <Text>No reviews yet</Text>
+                        <Text style={[styles.text, styles[`text${theme}`]]}>No reviews yet</Text>
                     }
                 </ScrollView>
             </SafeAreaView>
@@ -391,12 +406,24 @@ const styles = StyleSheet.create({
     close: {
         color: 'red'
     },
-    rating: {
+    ratings: {
         flexDirection: 'row',
-        justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: 'lightgreen',
-        marginBottom: 5,
-        width: '100%'
-    }
+        justifyContent: 'space-between',
+        marginBottom: 5
+    },
+    average: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        transform: [{ translateY: -3 }]
+    },
+    averageText: {
+        fontSize: 30
+    },
+    stars: {
+        flexDirection: 'row'
+    },
+    progressBar: {
+        marginVertical: 3
+    },
 });
