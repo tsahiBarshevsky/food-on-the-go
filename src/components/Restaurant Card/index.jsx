@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     containerDark: {
         backgroundColor: darkTheme.box,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.0925)'
+        borderColor: 'rgba(0, 0, 0, 0.0925)'
     },
     image: {
         width: 110,

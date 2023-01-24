@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 const SearchBar = () => {
+    const { theme } = useContext(GlobalContext);
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
-            <FontAwesome name="search" size={17} color="black" />
+        <View style={[styles.container, styles[`container${theme}`]]}>
+            <FontAwesome name="search" size={17} color={theme === 'Light' ? 'black' : 'white'} />
             <TouchableOpacity
                 onPress={() => navigation.navigate('Search')}
                 style={styles.button}
             >
-                <Text style={styles.text}>Search food truck or coffee cart...</Text>
+                <Text style={[styles.text, styles[`text${theme}`]]}>
+                    Search for food truck or coffee cart...
+                </Text>
             </TouchableOpacity>
         </View>
     )
@@ -27,11 +32,17 @@ const styles = StyleSheet.create({
         height: 45,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: 'white',
         paddingHorizontal: 15,
         borderRadius: 25,
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.05)'
+        borderWidth: 1
+    },
+    containerLight: {
+        backgroundColor: lightTheme.box,
+        borderColor: 'rgba(0, 0, 0, 0.0125)'
+    },
+    containerDark: {
+        backgroundColor: darkTheme.box,
+        borderColor: 'rgba(0, 0, 0, 0.0925)'
     },
     button: {
         width: '90%',
@@ -40,7 +51,13 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
         color: 'rgba(0, 0, 0, 0.35)',
-        // transform: [{ translateY: -1 }]
+    },
+    textDark: {
+        color: 'rgba(255, 255, 255, 0.35)',
     }
 });

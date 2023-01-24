@@ -1,16 +1,24 @@
-import React from 'react';
-import { Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 const BUTTON_SIZE = 40;
 
 const FilterButton = ({ bottomSheetRef }) => {
+    const { theme } = useContext(GlobalContext);
+
     return (
         <TouchableOpacity
             onPress={() => bottomSheetRef.current?.open()}
-            style={styles.container}
+            style={[styles.container, styles[`container${theme}`]]}
         >
-            <MaterialCommunityIcons name="tune-variant" size={24} color="black" />
+            <MaterialCommunityIcons
+                name="tune-variant"
+                size={22}
+                color={theme === 'Light' ? 'black' : 'white'}
+            />
         </TouchableOpacity>
     )
 }
@@ -24,9 +32,16 @@ const styles = StyleSheet.create({
         height: BUTTON_SIZE,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'white',
         borderRadius: BUTTON_SIZE / 2,
+    },
+    containerLight: {
+        backgroundColor: lightTheme.box,
         borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.05)',
-    }
+        borderColor: 'rgba(0, 0, 0, 0.0125)'
+    },
+    containerDark: {
+        backgroundColor: darkTheme.box,
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.0925)'
+    },
 });
