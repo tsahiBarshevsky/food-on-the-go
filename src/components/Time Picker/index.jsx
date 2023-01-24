@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Animated, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { AntDesign } from '@expo/vector-icons';
@@ -44,36 +44,38 @@ const TimePicker = ({
                 modalStyle={styles.modalStyle}
                 openAnimationConfig={{ timing: { duration: 200 } }}
                 closeAnimationConfig={{ timing: { duration: 500 } }}
-            >
-                <View style={styles.bottomSheetContainer}>
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
-                            <AntDesign name="close" size={20} color="black" />
-                        </TouchableOpacity>
-                        <Text>Select Hours</Text>
-                        <TouchableOpacity onPress={onConfirm}>
-                            <AntDesign name="check" size={20} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.pickers}>
-                        <WheelPicker
-                            selectedIndex={open}
-                            options={hours}
-                            onChange={(index) => setOpen(index)}
-                            flatListProps={{ overScrollMode: 'never' }}
-                            selectedIndicatorStyle={{ backgroundColor: 'white', width: 100, alignSelf: 'center', borderTopWidth: 2, borderBottomWidth: 2, borderRadius: 0 }}
-                        />
-                        <Text>until</Text>
-                        <WheelPicker
-                            selectedIndex={close}
-                            options={hours}
-                            onChange={(index) => setClose(index)}
-                            flatListProps={{ overScrollMode: 'never' }}
-                            selectedIndicatorStyle={{ backgroundColor: 'white', width: 100, alignSelf: 'center', borderTopWidth: 2, borderBottomWidth: 2, borderRadius: 0 }}
-                        />
-                    </View>
-                </View>
-            </Modalize>
+                useNativeDriver
+                customRenderer={
+                    <Animated.View style={styles.bottomSheetContainer}>
+                        <View style={styles.header}>
+                            <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
+                                <AntDesign name="close" size={20} color="black" />
+                            </TouchableOpacity>
+                            <Text>Select Hours</Text>
+                            <TouchableOpacity onPress={onConfirm}>
+                                <AntDesign name="check" size={20} color="black" />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.pickers}>
+                            <WheelPicker
+                                selectedIndex={open}
+                                options={hours}
+                                onChange={(index) => setOpen(index)}
+                                flatListProps={{ overScrollMode: 'never' }}
+                                selectedIndicatorStyle={{ backgroundColor: 'white', width: 100, alignSelf: 'center', borderTopWidth: 2, borderBottomWidth: 2, borderRadius: 0 }}
+                            />
+                            <Text>until</Text>
+                            <WheelPicker
+                                selectedIndex={close}
+                                options={hours}
+                                onChange={(index) => setClose(index)}
+                                flatListProps={{ overScrollMode: 'never' }}
+                                selectedIndicatorStyle={{ backgroundColor: 'white', width: 100, alignSelf: 'center', borderTopWidth: 2, borderBottomWidth: 2, borderRadius: 0 }}
+                            />
+                        </View>
+                    </Animated.View>
+                }
+            />
         </Portal>
     )
 }
@@ -82,7 +84,7 @@ export default TimePicker;
 
 const styles = StyleSheet.create({
     bottomSheetContainer: {
-        height: '100%',
+        height: 225
     },
     modalStyle: {
         borderTopLeftRadius: 20,

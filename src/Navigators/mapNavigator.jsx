@@ -8,6 +8,7 @@ const MapNavigator = () => {
     const options = {
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
     };
+
     return (
         <Stack.Navigator
             initialRouteName='MapMain'

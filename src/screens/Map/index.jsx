@@ -193,7 +193,7 @@ const MapScreen = () => {
                                         restaurant.type === 'Food Truck' ?
                                             require('../../../assets/images/food-truck.png')
                                             :
-                                            require('../../../assets/images/coffee-shop.png')
+                                            require('../../../assets/images/food-cart.png')
                                     }
                                     coordinate={{
                                         latitude: latitude,

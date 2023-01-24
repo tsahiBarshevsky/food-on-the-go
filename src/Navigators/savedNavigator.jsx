@@ -1,22 +1,25 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { SavedScreen, SavedMapScreen, RestaurantScreen, CustomListInsertion, CustomListEditing, UserScreen } from '../screens';
 
 const Stack = createStackNavigator();
 
 const SavedNavigator = () => {
+    const options = {
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
+    };
+
     return (
         <Stack.Navigator
             initialRouteName='SavedMain'
             screenOptions={{ headerShown: false }}
         >
-            <Stack.Screen name='SavedMain' component={SavedScreen} />
-            <Stack.Screen name='SavedMap' component={SavedMapScreen} />
-            <Stack.Screen name='Restaurant' component={RestaurantScreen} />
-            <Stack.Screen name='CustomListInsertion' component={CustomListInsertion} />
-            <Stack.Screen name='CustomListEditing' component={CustomListEditing} />
-            <Stack.Screen name='User' component={UserScreen} />
+            <Stack.Screen name='SavedMain' component={SavedScreen} options={options} />
+            <Stack.Screen name='SavedMap' component={SavedMapScreen} options={options} />
+            <Stack.Screen name='Restaurant' component={RestaurantScreen} options={options} />
+            <Stack.Screen name='CustomListInsertion' component={CustomListInsertion} options={options} />
+            <Stack.Screen name='CustomListEditing' component={CustomListEditing} options={options} />
+            <Stack.Screen name='User' component={UserScreen} options={options} />
         </Stack.Navigator>
     )
 }

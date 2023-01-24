@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import update from 'immutability-helper';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign, Feather, Ionicons, Entypo } from '@expo/vector-icons';
 import { Menu, MenuItem } from 'react-native-material-menu';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeCustomList, updateCustomListName } from '../../redux/actions/user';
+import { removeCustomList } from '../../redux/actions/user';
+import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 // firebase
 import { doc, updateDoc } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
+import globalStyles from '../../utils/globalStyles';
 
 const ListCard = ({ item, name }) => {
+    const { theme } = useContext(GlobalContext);
     const [visible, setVisible] = useState(false);
     const user = useSelector(state => state.user);
     const navigation = useNavigation();
@@ -52,11 +56,22 @@ const ListCard = ({ item, name }) => {
     const renderIcon = () => {
         switch (name) {
             case 'favorites':
-                return <AntDesign name="hearto" size={22} color="red" />;
+                return <AntDesign name="hearto" size={22} color="#c62828" />;
             case 'interested':
-                return <Feather name="flag" size={24} color="green" />;
+                return <Feather name="flag" size={24} color="#2e7d32" />;
             default:
-                return <Ionicons name="list" size={26} color="black" />;
+                return <Ionicons name="list" size={26} color="#1565c0" />;
+        }
+    }
+
+    const renderAmount = (length) => {
+        switch (length) {
+            case 0:
+                return 'Empty list';
+            case 1:
+                return 'One place';
+            default:
+                return `${length} Places`;
         }
     }
 
@@ -66,12 +81,16 @@ const ListCard = ({ item, name }) => {
             disabled={item.list.length === 0}
             style={styles.container}
         >
-            <View style={styles.icon}>
-                {renderIcon()}
-            </View>
-            <View>
-                <Text style={styles.title}>{name}</Text>
-                <Text>{item.list.length} Places</Text>
+            <View style={styles.left}>
+                <View style={styles.icon}>
+                    {renderIcon()}
+                </View>
+                <View>
+                    <Text style={[styles.title, styles[`text${theme}`]]}>{name}</Text>
+                    <Text style={[styles.text, styles[`text${theme}`]]}>
+                        {renderAmount(item.list.length)}
+                    </Text>
+                </View>
             </View>
             {name !== 'favorites' && name !== 'interested' &&
                 <View>
@@ -79,13 +98,22 @@ const ListCard = ({ item, name }) => {
                         visible={visible}
                         anchor={
                             <TouchableOpacity onPress={showMenu}>
-                                <Entypo name="dots-three-vertical" size={20} color="black" />
+                                <Entypo
+                                    name="dots-three-vertical"
+                                    size={15}
+                                    color={theme === 'Light' ? 'black' : 'white'}
+                                />
                             </TouchableOpacity>
                         }
                         onRequestClose={hideMenu}
+                        style={[globalStyles.menu, globalStyles[`menu${theme}`]]}
                     >
-                        <MenuItem onPress={onEditCustomList}>Edit list</MenuItem>
-                        <MenuItem onPress={onRemoveCustomList}>Delete list</MenuItem>
+                        <MenuItem onPress={onEditCustomList}>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Edit list</Text>
+                        </MenuItem>
+                        <MenuItem onPress={onRemoveCustomList}>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Delete list</Text>
+                        </MenuItem>
                     </Menu>
                 </View>
             }
@@ -99,10 +127,24 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 12
+        justifyContent: 'space-between'
+    },
+    left: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+    text: {
+        fontFamily: 'Quicksand'
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
     },
     title: {
+        fontFamily: 'QuicksandBold',
         textTransform: 'capitalize'
     },
     icon: {
