@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, Text, View, ScrollView, Image, FlatList, 
 import { useNavigation } from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
-import { StatBox, MinimalReviewCard } from '../../components';
+import { StatBox, MinimalReviewCard, PublicListCard } from '../../components';
 import { GlobalContext } from '../../utils/context';
 import { lightTheme, darkTheme } from '../../utils/themes';
 import globalStyles from '../../utils/globalStyles';
@@ -101,6 +101,7 @@ const UserScreen = ({ route }) => {
                     <TouchableOpacity
                         onPress={() => navigation.navigate('UserReviews', { reviews: contributions })}
                         style={styles.button}
+                        activeOpacity={0.85}
                     >
                         <Text style={[styles.text, styles.caption, styles[`caption${theme}`]]}>
                             View all reviews
@@ -117,20 +118,16 @@ const UserScreen = ({ route }) => {
                 >
                     Lists
                 </Text>
-                {/* <FlatList
-                    data={lists}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={{ flexGrow: 0 }}
-                    renderItem={({ item }) => {
-                        return (
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('SavedMap', { list: item.name, user: user })}
-                            >
-                                <Text>{item.name} - {item.list.length} places</Text>
-                            </TouchableOpacity>
-                        )
-                    }}
-                /> */}
+                {lists.map((item) => {
+                    return (
+                        <PublicListCard
+                            key={item}
+                            name={item.name}
+                            length={item.list.length}
+                            user={user}
+                        />
+                    )
+                })}
             </ScrollView>
         </SafeAreaView>
     )

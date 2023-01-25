@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         color: darkTheme.text
     },
     title: {
-        fontSize: 20
+        fontSize: 17
     },
     review: {
         flexDirection: 'row',
