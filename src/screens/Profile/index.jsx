@@ -9,7 +9,9 @@ import { removeRestaurant } from '../../redux/actions/restaurants';
 import { resetOwnedRestaurant } from '../../redux/actions/ownedRestaurant';
 import { clearHistory } from '../../redux/actions/hisorty';
 import { AppearancePanel, MinimalReviewCard } from '../../components';
+import { clearHistoryInStorage } from '../../utils/AsyncStorageManagement';
 import { CLOUDINARY_KEY } from '@env';
+
 import globalStyles from '../../utils/globalStyles';
 import Header from './header';
 import Footer from './footer';
@@ -18,10 +20,9 @@ import Footer from './footer';
 import { updateProfile, signOut } from 'firebase/auth';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore/lite';
 import { authentication, db } from '../../utils/firebase';
-import { clearHistoryInStorage } from '../../utils/AsyncStorageManagement';
 
 const ProfileScreen = () => {
-    const { isUsinSystemScheme, onTriggerFilter } = useContext(GlobalContext);
+    const { theme, isUsinSystemScheme, onTriggerFilter } = useContext(GlobalContext);
     const [userReviews, setUserReviews] = useState([]);
     const appearancePanelRef = useRef(null);
     const ownedRestaurant = useSelector(state => state.ownedRestaurant);
@@ -110,7 +111,6 @@ const ProfileScreen = () => {
     const headerProps = {
         navigation,
         currentUser,
-        userReviews,
         onUploadNewImage,
         ownedRestaurant,
         onRemoveRestaurant
@@ -142,6 +142,8 @@ const ProfileScreen = () => {
                     keyExtractor={(item) => item.id}
                     ListHeaderComponent={<Header {...headerProps} />}
                     ListFooterComponent={<Footer {...footerProps} />}
+                    ItemSeparatorComponent={<View style={[styles.separator, styles[`separator${theme}`]]} />}
+                    contentContainerStyle={styles.flatlist}
                     renderItem={({ item }) => {
                         return (
                             <MinimalReviewCard
@@ -159,4 +161,19 @@ const ProfileScreen = () => {
 
 export default ProfileScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    flatlist: {
+        paddingHorizontal: 15
+    },
+    separator: {
+        width: '100%',
+        height: 1,
+        marginVertical: 15
+    },
+    separatorLight: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
+    },
+    separatorDark: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)'
+    }
+});

@@ -1,43 +1,54 @@
+import React, { useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
+import { GlobalContext } from '../../utils/context';
+import { lightTheme, darkTheme } from '../../utils/themes';
 
 const AVATAR_SIZE = 90;
 
 const Header = (props) => {
-    const { navigation, currentUser, onUploadNewImage, userReviews, ownedRestaurant, onRemoveRestaurant } = props;
+    const { navigation, currentUser, onUploadNewImage, ownedRestaurant, onRemoveRestaurant } = props;
+    const { theme } = useContext(GlobalContext);
     const user = useSelector(state => state.user);
 
     return (
         <View>
             <View style={styles.header}>
-                <View style={styles.avatarWrapper}>
+                <View style={[styles.avatarWrapper, styles[`avatarWrapper${theme}`]]}>
                     <TouchableOpacity
                         onPress={onUploadNewImage}
-                        style={styles.camera}
+                        style={[styles.camera, styles[`camera${theme}`]]}
+                        activeOpacity={0.85}
                     >
-                        <FontAwesome name="camera" size={13} color="white" />
+                        <FontAwesome name="camera" size={13} color={theme === 'Light' ? 'white' : 'black'} />
                     </TouchableOpacity>
-                    <View style={styles.avatar}>
-                        {currentUser.photoURL ?
-                            <Image
-                                source={{ uri: currentUser.photoURL }}
-                                style={styles.image}
-                            />
-                            :
+                    {currentUser.photoURL ?
+                        <Image
+                            source={{ uri: currentUser.photoURL }}
+                            style={styles.image}
+                        />
+                        :
+                        <View style={styles.avatar}>
                             <Text style={styles.letter}>
                                 {currentUser.displayName.charAt(0)}
                             </Text>
-                        }
-                    </View>
+                        </View>
+                    }
                 </View>
-                <Text>{currentUser.displayName}</Text>
-                <Text>{currentUser.email}</Text>
+                <Text style={[styles.text, styles.name, styles[`text${theme}`]]}>
+                    {currentUser.displayName}
+                </Text>
+                <Text style={[styles.text, styles[`text${theme}`]]}>
+                    {currentUser.email}
+                </Text>
             </View>
             {user.type === 'owner' ?
                 (Object.keys(ownedRestaurant).length === 0 ?
                     <View>
-                        <Text style={styles.title}>Owned restaurant</Text>
+                        <Text style={[styles.title, styles[`text${theme}`]]}>
+                            Owned restaurant
+                        </Text>
                         <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
                             <Text>Add new restaurant</Text>
                         </TouchableOpacity>
@@ -55,7 +66,9 @@ const Header = (props) => {
                 :
                 null
             }
-            <Text style={styles.title}>Restaurants I've been reviewd ({userReviews.length})</Text>
+            <Text style={[styles.title, styles[`text${theme}`]]}>
+                Restaurants I've been reviewd
+            </Text>
         </View>
     )
 }
@@ -63,6 +76,20 @@ const Header = (props) => {
 export default Header;
 
 const styles = StyleSheet.create({
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
+    name: {
+        fontSize: 20,
+        lineHeight: 25
+    },
     header: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -77,8 +104,13 @@ const styles = StyleSheet.create({
         height: AVATAR_SIZE,
         borderRadius: AVATAR_SIZE / 2,
         borderWidth: 1.5,
-        borderColor: 'black',
         marginBottom: 10
+    },
+    avatarWrapperLight: {
+        borderColor: 'black'
+    },
+    avatarWrapperDark: {
+        borderColor: 'white'
     },
     avatar: {
         alignItems: 'center',
@@ -86,18 +118,18 @@ const styles = StyleSheet.create({
         width: AVATAR_SIZE - 8,
         height: AVATAR_SIZE - 8,
         borderRadius: (AVATAR_SIZE - 8) / 2,
-        backgroundColor: 'royalblue',
+        backgroundColor: lightTheme.icon
     },
     image: {
-        width: '100%',
-        height: '100%',
+        width: AVATAR_SIZE - 8,
+        height: AVATAR_SIZE - 8,
         borderRadius: (AVATAR_SIZE - 8) / 2
     },
     letter: {
-        fontSize: 55,
-        fontWeight: 'bold',
-        // color: background,
-        textTransform: 'uppercase',
+        fontSize: 65,
+        fontFamily: 'BebasNeue',
+        color: 'white',
+        textTransform: 'capitalize',
         transform: [{ translateY: -1 }]
     },
     camera: {
@@ -109,11 +141,17 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         bottom: 0,
         right: 0,
-        zIndex: 1,
+        zIndex: 1
+    },
+    cameraLight: {
         backgroundColor: 'black'
+    },
+    cameraDark: {
+        backgroundColor: 'white'
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold'
+        fontFamily: 'QuicksandBold',
+        marginBottom: 5
     }
 });

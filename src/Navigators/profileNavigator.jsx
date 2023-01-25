@@ -1,20 +1,23 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { ProfileScreen, InsertionScreen, EditingScreen, UserReviews } from '../screens';
 
 const Stack = createStackNavigator();
 
 const ProfileNavigator = () => {
+    const options = {
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS
+    };
+
     return (
         <Stack.Navigator
             initialRouteName='ProfileMain'
             screenOptions={{ headerShown: false }}
         >
-            <Stack.Screen name='ProfileMain' component={ProfileScreen} />
-            <Stack.Screen name='Insertion' component={InsertionScreen} />
-            <Stack.Screen name='Editing' component={EditingScreen} />
-            <Stack.Screen name='UserReviews' component={UserReviews} />
+            <Stack.Screen name='ProfileMain' component={ProfileScreen} options={options} />
+            <Stack.Screen name='Insertion' component={InsertionScreen} options={options} />
+            <Stack.Screen name='Editing' component={EditingScreen} options={options} />
+            <Stack.Screen name='UserReviews' component={UserReviews} options={options} />
         </Stack.Navigator>
     )
 }

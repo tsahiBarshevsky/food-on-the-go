@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons, Entypo, AntDesign } from '@expo/vector-icons';
 import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 const Footer = (props) => {
     const { navigation, userReviews, appearancePanelRef, isUsinSystemScheme, onClearSearchHistory, onSignOut } = props;
@@ -13,23 +14,27 @@ const Footer = (props) => {
                 <TouchableOpacity
                     onPress={() => navigation.navigate('UserReviews', { reviews: userReviews })}
                     style={styles.button}
+                    activeOpacity={0.85}
                 >
-                    <Text>View all reviews</Text>
+                    <Text style={[styles.text, styles.caption, styles[`caption${theme}`]]}>
+                        View all {userReviews.length} reviews
+                    </Text>
                 </TouchableOpacity>
             }
-            <Text style={styles.title}>Settings</Text>
+            <Text style={[styles.title, styles[`text${theme}`]]}>Settings</Text>
             <TouchableOpacity
                 onPress={() => appearancePanelRef.current?.open()}
                 style={styles.settings}
+                activeOpacity={1}
             >
                 <View style={styles.wrapper}>
-                    <View style={styles.iconWrapper}>
+                    <View style={[styles.iconWrapper, styles.blue]}>
                         <MaterialCommunityIcons name="theme-light-dark" size={18} color="#80adce" />
                     </View>
-                    <Text style={styles.settingsTitle}>Appearance</Text>
+                    <Text style={[styles.settingsTitle, styles[`text${theme}`]]}>Appearance</Text>
                 </View>
                 <View style={styles.wrapper}>
-                    <Text style={styles.theme}>
+                    <Text style={[styles.theme, styles.text]}>
                         {isUsinSystemScheme === 'true' ? 'System' : theme}
                     </Text>
                     <Entypo name="chevron-small-right" size={20} color="grey" />
@@ -40,10 +45,10 @@ const Footer = (props) => {
                 style={styles.settings}
             >
                 <View style={styles.wrapper}>
-                    <View style={styles.iconWrapper}>
-                        <MaterialIcons name="history" size={18} color="black" />
+                    <View style={[styles.iconWrapper, styles.green]}>
+                        <MaterialIcons name="history" size={18} color="#47a559" />
                     </View>
-                    <Text style={styles.settingsTitle}>Clear Search History</Text>
+                    <Text style={[styles.settingsTitle, styles[`text${theme}`]]}>Clear Search History</Text>
                 </View>
                 <Entypo name="chevron-small-right" size={20} color="grey" />
             </TouchableOpacity>
@@ -52,10 +57,10 @@ const Footer = (props) => {
                 style={styles.settings}
             >
                 <View style={styles.wrapper}>
-                    <View style={styles.iconWrapper}>
-                        <AntDesign name="logout" size={15} color="black" />
+                    <View style={[styles.iconWrapper, styles.red]}>
+                        <AntDesign name="logout" size={14} color="#a54747" />
                     </View>
-                    <Text style={styles.settingsTitle}>Sign Out</Text>
+                    <Text style={[styles.settingsTitle, styles[`text${theme}`]]}>Sign Out</Text>
                 </View>
                 <Entypo name="chevron-small-right" size={20} color="grey" />
             </TouchableOpacity>
@@ -75,10 +80,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 5,
-        paddingHorizontal: 15,
         paddingVertical: 5
     },
     settingsTitle: {
+        fontFamily: 'Quicksand',
         transform: [{ translateY: -1.5 }]
     },
     iconWrapper: {
@@ -89,6 +94,15 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginRight: 10
     },
+    blue: {
+        backgroundColor: '#dbecf5'
+    },
+    green: {
+        backgroundColor: '#dff0dd'
+    },
+    red: {
+        backgroundColor: '#f0dddd'
+    },
     wrapper: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
@@ -96,10 +110,35 @@ const styles = StyleSheet.create({
     },
     theme: {
         color: 'grey',
-        transform: [{ translateY: -1.5 }],
+        transform: [{ translateY: -2.5 }],
         marginRight: 5
     },
     button: {
-        alignSelf: 'center'
+        alignSelf: 'center',
+        marginVertical: 5
+    },
+    text: {
+        fontFamily: 'Quicksand',
+        // transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
+    caption: {
+        fontSize: 16
+    },
+    captionLight: {
+        color: '#1a73e8'
+    },
+    captionDark: {
+        color: '#8cb4f1'
+    },
+    title: {
+        fontSize: 20,
+        fontFamily: 'QuicksandBold',
+        marginBottom: 5
     }
 });
