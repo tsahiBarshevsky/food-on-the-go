@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import moment from 'moment/moment';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import MapView, { Marker } from 'react-native-maps';
-import { Animated, Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
+import { Animated, Platform, StatusBar, StyleSheet, View, Text, ToastAndroid } from 'react-native';
 import { useSelector } from 'react-redux';
 import { GlobalContext } from '../../utils/context';
 import { FilterButton, LocationBox, SearchBar, RestaurantCard, FilterPanel } from '../../components';
@@ -25,15 +25,16 @@ const MapScreen = () => {
     const [coffeeCart, setCoffeeCart] = useState(false);
     const [isKosher, setIsKosher] = useState(false);
     const [isOpenOnSaturday, setIsOpenOnSaturday] = useState(false);
+    const [isAccessible, setIsAccessible] = useState(false);
     const [isVegetarian, setIsVegetarian] = useState(false);
     const [isVegan, setIsVegan] = useState(false);
     const [isGlutenFree, setIsGlutenFree] = useState(false);
     const [isOpenNow, setIsOpenNow] = useState(false);
     const [prices, setPrices] = useState([1, 1000]);
     const [distance, setDistance] = useState([0, 350])
+    const [twoStarsRating, setTwoStarsRating] = useState(false);
     const [threeStarsRating, setThreeStarsRating] = useState(false);
     const [fourStarsRating, setFourStarsRating] = useState(false);
-    const [fiveStarsRating, setFiveStarsRating] = useState(false);
 
     const filterPanelProps = {
         panelRef,
@@ -41,15 +42,16 @@ const MapScreen = () => {
         coffeeCart, setCoffeeCart,
         isKosher, setIsKosher,
         isOpenOnSaturday, setIsOpenOnSaturday,
+        isAccessible, setIsAccessible,
         isVegetarian, setIsVegetarian,
         isVegan, setIsVegan,
         isGlutenFree, setIsGlutenFree,
         isOpenNow, setIsOpenNow,
         prices, setPrices,
         distance, setDistance,
+        twoStarsRating, setTwoStarsRating,
         threeStarsRating, setThreeStarsRating,
-        fourStarsRating, setFourStarsRating,
-        fiveStarsRating, setFiveStarsRating
+        fourStarsRating, setFourStarsRating
     };
 
     const applyFilters = () => {
@@ -66,6 +68,9 @@ const MapScreen = () => {
         // Is open on Saturday filter
         if (isOpenOnSaturday)
             updatedList = updatedList.filter((item) => item.openingHours[6].isOpen);
+        // Is handicapped accessible
+        if (isAccessible)
+            updatedList = updatedList.filter((item) => item.accessible);
         // Is vegetarian filter
         if (isVegetarian)
             updatedList = updatedList.filter((item) => item.vegetarian);
@@ -96,21 +101,21 @@ const MapScreen = () => {
         if (prices[0] > 1 || prices[1] < 1000)
             updatedList = updatedList.filter((item) => item.priceRange.lowest <= prices[0] && item.priceRange.highest >= prices[1]);
         // Three stars rating
-        if (threeStarsRating) {
+        if (twoStarsRating) {
             updatedList = updatedList.filter((item) => {
                 const ratings = item.reviews.map(({ rating }) => rating + 1);
                 return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 2;
             });
         }
         // Four stars rating
-        if (fourStarsRating) {
+        if (threeStarsRating) {
             updatedList = updatedList.filter((item) => {
                 const ratings = item.reviews.map(({ rating }) => rating + 1);
                 return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 3;
             });
         }
         // Five stars rating
-        if (fiveStarsRating) {
+        if (fourStarsRating) {
             updatedList = updatedList.filter((item) => {
                 const ratings = item.reviews.map(({ rating }) => rating + 1);
                 return (ratings.reduce((a, b) => a + b, 0) / ratings.length) >= 4;
@@ -118,6 +123,10 @@ const MapScreen = () => {
         }
         setFiltered(updatedList);
         onTriggerFilter(false);
+        if (updatedList.length === 0)
+            setTimeout(() => {
+                ToastAndroid.show('No result found', ToastAndroid.SHORT);
+            }, 500);
     }
 
     const onMarkerPressed = (index) => {

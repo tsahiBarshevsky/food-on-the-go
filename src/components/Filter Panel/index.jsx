@@ -18,15 +18,16 @@ const FilterPanel = (props) => {
         coffeeCart, setCoffeeCart,
         isKosher, setIsKosher,
         isOpenOnSaturday, setIsOpenOnSaturday,
+        isAccessible, setIsAccessible,
         isVegetarian, setIsVegetarian,
         isVegan, setIsVegan,
         isGlutenFree, setIsGlutenFree,
         isOpenNow, setIsOpenNow,
         prices, setPrices,
         distance, setDistance,
+        twoStarsRating, setTwoStarsRating,
         threeStarsRating, setThreeStarsRating,
-        fourStarsRating, setFourStarsRating,
-        fiveStarsRating, setFiveStarsRating
+        fourStarsRating, setFourStarsRating
     } = props;
     const { theme, onTriggerFilter } = useContext(GlobalContext);
 
@@ -46,15 +47,16 @@ const FilterPanel = (props) => {
         setCoffeeCart(false);
         setIsKosher(false);
         setIsOpenOnSaturday(false);
+        setIsAccessible(false);
         setIsVegetarian(false);
         setIsVegan(false);
         setIsGlutenFree(false);
         setIsOpenNow(false);
         setDistance([0, 350]);
         setPrices([1, 1000]);
+        setTwoStarsRating(false);
         setThreeStarsRating(false);
         setFourStarsRating(false);
-        setFiveStarsRating(false);
     }
 
     const onSelectType = (type) => {
@@ -71,19 +73,19 @@ const FilterPanel = (props) => {
     const onSelectRating = (rating) => {
         switch (rating) {
             case 'threeStars':
-                setThreeStarsRating(!threeStarsRating);
+                setTwoStarsRating(!twoStarsRating);
+                setThreeStarsRating(false);
                 setFourStarsRating(false);
-                setFiveStarsRating(false);
                 break;
             case 'fourStars':
-                setThreeStarsRating(false);
-                setFourStarsRating(!fourStarsRating);
-                setFiveStarsRating(false);
+                setTwoStarsRating(false);
+                setThreeStarsRating(!threeStarsRating);
+                setFourStarsRating(false);
                 break;
             default:
+                setTwoStarsRating(false);
                 setThreeStarsRating(false);
-                setFourStarsRating(false);
-                setFiveStarsRating(!fiveStarsRating);
+                setFourStarsRating(!fourStarsRating);
         }
     }
 
@@ -102,11 +104,17 @@ const FilterPanel = (props) => {
             >
                 <View style={styles.bottomSheetContainer}>
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={onResetFilters}>
-                            <Text>Reset</Text>
+                        <TouchableOpacity
+                            onPress={onResetFilters}
+                            activeOpacity={0.85}
+                        >
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Reset</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={onApplyFilters}>
-                            <Text>Apply</Text>
+                        <TouchableOpacity
+                            onPress={onApplyFilters}
+                            activeOpacity={0.85}
+                        >
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Apply</Text>
                         </TouchableOpacity>
                     </View>
                     <Text style={[styles.title, styles[`text${theme}`]]}>Menu</Text>
@@ -166,7 +174,7 @@ const FilterPanel = (props) => {
                             onPress={() => onSelectType('coffeeCart')}
                         />
                         <FilterApplyButton
-                            caption='Open now'
+                            caption='Open Now'
                             value={isOpenNow}
                             onPress={() => setIsOpenNow(!isOpenNow)}
                         />
@@ -174,6 +182,11 @@ const FilterPanel = (props) => {
                             caption='Open On Saturdays'
                             value={isOpenOnSaturday}
                             onPress={() => setIsOpenOnSaturday(!isOpenOnSaturday)}
+                        />
+                        <FilterApplyButton
+                            caption='Handicapped Accessible'
+                            value={isAccessible}
+                            onPress={() => setIsAccessible(!isAccessible)}
                         />
                     </View>
                     <View style={styles.slider}>
@@ -211,7 +224,7 @@ const FilterPanel = (props) => {
                             <Text style={[styles.text, styles[`text${theme}`]]}> & up</Text>
                         </View>
                         <Checkbox
-                            checked={fiveStarsRating}
+                            checked={fourStarsRating}
                             setChecked={() => onSelectRating('fiveStars')}
                             withCaption={false}
                         />
@@ -229,7 +242,7 @@ const FilterPanel = (props) => {
                             <Text style={[styles.text, styles[`text${theme}`]]}> & up</Text>
                         </View>
                         <Checkbox
-                            checked={fourStarsRating}
+                            checked={threeStarsRating}
                             setChecked={() => onSelectRating('fourStars')}
                             withCaption={false}
                         />
@@ -247,7 +260,7 @@ const FilterPanel = (props) => {
                             <Text style={[styles.text, styles[`text${theme}`]]}> & up</Text>
                         </View>
                         <Checkbox
-                            checked={threeStarsRating}
+                            checked={twoStarsRating}
                             setChecked={() => onSelectRating('threeStars')}
                             withCaption={false}
                         />
