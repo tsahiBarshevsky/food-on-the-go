@@ -5,6 +5,7 @@ import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import { GlobalContext } from '../../utils/context';
 import { updateIsUsingSystemScheme } from '../../utils/AsyncStorageManagement';
+import { lightTheme, darkTheme } from '../../utils/themes';
 
 const AppearancePanel = ({ bottomSheetRef }) => {
     const { theme, toggleTheme, isUsinSystemScheme, toggleIsUsinSystemScheme } = useContext(GlobalContext);
@@ -29,53 +30,56 @@ const AppearancePanel = ({ bottomSheetRef }) => {
                 threshold={50}
                 adjustToContentHeight
                 withHandle={false}
-                modalStyle={styles.modalStyle}
+                modalStyle={[styles.modal, styles[`modal${theme}`]]}
                 openAnimationConfig={{ timing: { duration: 200 } }}
                 closeAnimationConfig={{ timing: { duration: 500 } }}
                 useNativeDriver
             >
                 <View style={styles.bottomSheetContainer}>
-                    <Text>Select Theme</Text>
+                    <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>Select Theme</Text>
                     <TouchableOpacity
                         onPress={() => onChangeTheme('Light')}
                         style={styles.item}
+                        activeOpacity={1}
                     >
                         <View style={styles.iconAndCaption}>
                             <View style={styles.icon}>
-                                <Ionicons name="sunny" size={20} color="#4587d0" />
+                                <Ionicons name="sunny" size={20} color="#f08e08" />
                             </View>
-                            <Text style={styles.title}>Light</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Light</Text>
                         </View>
                         {theme === 'Light' && isUsinSystemScheme === 'false' &&
-                            <AntDesign name="check" size={17} color='black' />
+                            <AntDesign name="check" size={17} style={styles[`mark${theme}`]} />
                         }
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => onChangeTheme('Dark')}
                         style={styles.item}
+                        activeOpacity={1}
                     >
                         <View style={styles.iconAndCaption}>
                             <View style={styles.icon}>
-                                <Ionicons name="moon" size={20} color="#f08e08" />
+                                <Ionicons name="moon" size={20} color="#4587d0" />
                             </View>
-                            <Text style={styles.title}>Dark</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>Dark</Text>
                         </View>
                         {theme === 'Dark' && isUsinSystemScheme === 'false' &&
-                            <AntDesign name="check" size={17} color='black' />
+                            <AntDesign name="check" size={17} style={styles[`mark${theme}`]} />
                         }
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => onChangeTheme('System')}
                         style={styles.item}
+                        activeOpacity={1}
                     >
                         <View style={styles.iconAndCaption}>
                             <View style={styles.icon}>
-                                <Ionicons name="settings-sharp" size={20} color="#5f7177" />
+                                <Ionicons name="settings-sharp" size={20} color="#758388" />
                             </View>
-                            <Text style={styles.title}>System</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>System</Text>
                         </View>
                         {isUsinSystemScheme === 'true' &&
-                            <AntDesign name="check" size={17} color={styles[`mark${theme}`]} />
+                            <AntDesign name="check" size={17} style={styles[`mark${theme}`]} />
                         }
                     </TouchableOpacity>
                 </View>
@@ -92,9 +96,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 15
     },
-    modalStyle: {
+    modal: {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20
+    },
+    modalLight: {
+        backgroundColor: lightTheme.background
+    },
+    modalDark: {
+        backgroundColor: darkTheme.background
     },
     item: {
         flexDirection: 'row',
@@ -114,6 +124,22 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     title: {
-        textTransform: 'capitalize'
+        fontSize: 15
+    },
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
+    markLight: {
+        color: 'black'
+    },
+    markDark: {
+        color: 'white'
     }
 });

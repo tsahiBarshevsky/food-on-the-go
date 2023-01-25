@@ -6,6 +6,7 @@ import { GlobalContext } from '../../utils/context';
 import { lightTheme, darkTheme } from '../../utils/themes';
 
 const AVATAR_SIZE = 90;
+const INNER_SIZE = AVATAR_SIZE - 12;
 
 const Header = (props) => {
     const { navigation, userReviews, currentUser, onUploadNewImage, ownedRestaurant, onRemoveRestaurant } = props;
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
         width: AVATAR_SIZE,
         height: AVATAR_SIZE,
         borderRadius: AVATAR_SIZE / 2,
-        borderWidth: 1.5,
+        borderWidth: 3,
         marginBottom: 10
     },
     avatarWrapperLight: {
@@ -117,15 +118,15 @@ const styles = StyleSheet.create({
     avatar: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: AVATAR_SIZE - 8,
-        height: AVATAR_SIZE - 8,
-        borderRadius: (AVATAR_SIZE - 8) / 2,
+        width: INNER_SIZE,
+        height: INNER_SIZE,
+        borderRadius: INNER_SIZE / 2,
         backgroundColor: lightTheme.icon
     },
     image: {
-        width: AVATAR_SIZE - 8,
-        height: AVATAR_SIZE - 8,
-        borderRadius: (AVATAR_SIZE - 8) / 2
+        width: INNER_SIZE,
+        height: INNER_SIZE,
+        borderRadius: INNER_SIZE / 2
     },
     letter: {
         fontSize: 65,

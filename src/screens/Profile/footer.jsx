@@ -29,7 +29,7 @@ const Footer = (props) => {
             >
                 <View style={styles.wrapper}>
                     <View style={[styles.iconWrapper, styles.blue]}>
-                        <MaterialCommunityIcons name="theme-light-dark" size={18} color="#80adce" />
+                        <MaterialCommunityIcons name="theme-light-dark" size={18} color="#4792c7" />
                     </View>
                     <Text style={[styles.settingsTitle, styles[`text${theme}`]]}>Appearance</Text>
                 </View>
