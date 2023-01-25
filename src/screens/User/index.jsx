@@ -49,7 +49,10 @@ const UserScreen = ({ route }) => {
     return (
         <SafeAreaView style={globalStyles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    activeOpacity={0.85}
+                >
                     <Entypo name="chevron-left" size={22} color={theme === 'Light' ? "black" : "white"} />
                 </TouchableOpacity>
             </View>
@@ -83,7 +86,9 @@ const UserScreen = ({ route }) => {
                 />
             </View>
             <ScrollView contentContainerStyle={styles.scrollView}>
-                <Text style={[styles.title, styles.text, styles[`text${theme}`]]}>Reviews</Text>
+                {contributions.length > 0 &&
+                    <Text style={[styles.title, styles.text, styles[`text${theme}`]]}>Reviews</Text>
+                }
                 {contributions.slice(0, 2).map((restaurant, index) => {
                     return (
                         <View key={restaurant.id}>
@@ -99,7 +104,7 @@ const UserScreen = ({ route }) => {
                 })}
                 {contributions.length >= 2 &&
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('UserReviews', { reviews: contributions })}
+                        onPress={() => navigation.navigate('UserReviews', { user: name, reviews: contributions })}
                         style={styles.button}
                         activeOpacity={0.85}
                     >
@@ -108,16 +113,18 @@ const UserScreen = ({ route }) => {
                         </Text>
                     </TouchableOpacity>
                 }
-                <Text
-                    style={[
-                        styles.title,
-                        styles.text,
-                        styles[`text${theme}`],
-                        { marginTop: 10 }
-                    ]}
-                >
-                    Lists
-                </Text>
+                {lists.length > 0 &&
+                    <Text
+                        style={[
+                            styles.title,
+                            styles.text,
+                            styles[`text${theme}`],
+                            { marginTop: 10 }
+                        ]}
+                    >
+                        Lists
+                    </Text>
+                }
                 {lists.map((item) => {
                     return (
                         <PublicListCard

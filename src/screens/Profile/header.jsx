@@ -8,7 +8,7 @@ import { lightTheme, darkTheme } from '../../utils/themes';
 const AVATAR_SIZE = 90;
 
 const Header = (props) => {
-    const { navigation, currentUser, onUploadNewImage, ownedRestaurant, onRemoveRestaurant } = props;
+    const { navigation, userReviews, currentUser, onUploadNewImage, ownedRestaurant, onRemoveRestaurant } = props;
     const { theme } = useContext(GlobalContext);
     const user = useSelector(state => state.user);
 
@@ -66,9 +66,11 @@ const Header = (props) => {
                 :
                 null
             }
-            <Text style={[styles.title, styles[`text${theme}`]]}>
-                Restaurants I've been reviewd
-            </Text>
+            {userReviews.length > 0 &&
+                <Text style={[styles.title, styles[`text${theme}`]]}>
+                    Restaurants I've been reviewd
+                </Text>
+            }
         </View>
     )
 }

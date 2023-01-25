@@ -12,7 +12,7 @@ const Footer = (props) => {
         <View>
             {userReviews.length >= 2 &&
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('UserReviews', { reviews: userReviews })}
+                    onPress={() => navigation.navigate('UserReviews', { user: 'My', reviews: userReviews })}
                     style={styles.button}
                     activeOpacity={0.85}
                 >
@@ -43,6 +43,7 @@ const Footer = (props) => {
             <TouchableOpacity
                 onPress={onClearSearchHistory}
                 style={styles.settings}
+                activeOpacity={1}
             >
                 <View style={styles.wrapper}>
                     <View style={[styles.iconWrapper, styles.green]}>
@@ -55,6 +56,7 @@ const Footer = (props) => {
             <TouchableOpacity
                 onPress={onSignOut}
                 style={styles.settings}
+                activeOpacity={1}
             >
                 <View style={styles.wrapper}>
                     <View style={[styles.iconWrapper, styles.red]}>
@@ -119,7 +121,6 @@ const styles = StyleSheet.create({
     },
     text: {
         fontFamily: 'Quicksand',
-        // transform: [{ translateY: -1.5 }]
     },
     textLight: {
         color: lightTheme.text
@@ -139,6 +140,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontFamily: 'QuicksandBold',
-        marginBottom: 5
+        marginBottom: 5,
+        marginTop: 10
     }
 });

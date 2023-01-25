@@ -110,6 +110,7 @@ const ProfileScreen = () => {
     // props
     const headerProps = {
         navigation,
+        userReviews,
         currentUser,
         onUploadNewImage,
         ownedRestaurant,
