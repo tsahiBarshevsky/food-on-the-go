@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { SavedScreen, SavedMapScreen, RestaurantScreen, CustomListInsertion, CustomListEditing, UserScreen } from '../screens';
+import { SavedScreen, SavedMapScreen, RestaurantScreen, CustomListInsertion, CustomListEditing, UserScreen, UserReviews } from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +20,7 @@ const SavedNavigator = () => {
             <Stack.Screen name='CustomListInsertion' component={CustomListInsertion} options={options} />
             <Stack.Screen name='CustomListEditing' component={CustomListEditing} options={options} />
             <Stack.Screen name='User' component={UserScreen} options={options} />
+            <Stack.Screen name='UserReviews' component={UserReviews} />
         </Stack.Navigator>
     )
 }

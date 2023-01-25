@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { MapScreen, RestaurantScreen, ReviewScreen, SearchScreen, UserScreen, SavedMapScreen } from '../screens';
+import { MapScreen, RestaurantScreen, ReviewScreen, SearchScreen, UserScreen, SavedMapScreen, UserReviews } from '../screens';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +20,7 @@ const MapNavigator = () => {
             <Stack.Screen name='Search' component={SearchScreen} options={options} />
             <Stack.Screen name='User' component={UserScreen} options={options} />
             <Stack.Screen name='SavedMap' component={SavedMapScreen} options={options} />
+            <Stack.Screen name='UserReviews' component={UserReviews} />
         </Stack.Navigator>
     )
 }
