@@ -28,12 +28,13 @@ import {
 // firebase
 import { doc, updateDoc } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
+import { darkTheme, lightTheme } from '../../utils/themes';
 
 const AVATAR_SIZE = 45;
 
 const ReviewScreen = ({ route }) => {
     const { currentRating, restaurant } = route.params;
-    const { onTriggerFilter } = useContext(GlobalContext);
+    const { theme, onTriggerFilter } = useContext(GlobalContext);
     const review = useSelector(state => state.review);
     const restaurants = useSelector(state => state.restaurants);
     const [comment, setComment] = useState(Object.keys(review).length === 1 ? '' : review.comment);
@@ -129,19 +130,21 @@ const ReviewScreen = ({ route }) => {
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={() => onCancelReview()}
-                    style={styles.backButton}
+                    activeOpacity={0.85}
                 >
-                    <Entypo name="chevron-left" size={22} color="black" />
+                    <Entypo name="chevron-left" size={22} color={theme === 'Light' ? "black" : "white"} />
                 </TouchableOpacity>
-                <Text>{restaurant.name}</Text>
+                <Text style={[styles.text, styles[`text${theme}`], styles.title]}>
+                    {restaurant.name}
+                </Text>
                 <TouchableOpacity
                     onPress={onPostReview}
+                    activeOpacity={0.85}
+                    style={styles.button}
                 >
-                    <Text>Post</Text>
+                    <Text style={[styles.text, styles.textDark]}>Post</Text>
                 </TouchableOpacity>
             </View>
-            {/* <Text>Old: {currentRating}</Text>
-            <Text>New: {review.rating}</Text> */}
             <ScrollView
                 keyboardShouldPersistTaps="always"
                 showsVerticalScrollIndicator={false}
@@ -165,8 +168,8 @@ const ReviewScreen = ({ route }) => {
                             </View>
                         }
                         <View>
-                            <Text>{user.displayName}</Text>
-                            <Text>{user.email}</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>{user.displayName}</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>{user.email}</Text>
                         </View>
                     </View>
                     <View style={styles.ratingBar}>
@@ -176,20 +179,26 @@ const ReviewScreen = ({ route }) => {
                             restaurant={restaurant}
                         />
                     </View>
-                    <Text>Share some thoughts about...</Text>
-                    <View style={styles.textInputWrapper}>
+                    <Text style={[styles.text, styles[`text${theme}`]]}>Share some thoughts about {restaurant.name}</Text>
+                    <View
+                        style={[
+                            globalStyles.textInputWrapper,
+                            globalStyles[`textInputWrapper${theme}`],
+                            { marginTop: 5 }
+                        ]}
+                    >
                         <TextInput
                             placeholder="It's optional, you don't have to"
                             value={comment}
                             onChangeText={(text) => setComment(text)}
                             underlineColorAndroid="transparent"
-                            // placeholderTextColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
-                            // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
+                            placeholderTextColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
+                            selectionColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
                             multiline
                             blurOnSubmit={false}
                             onBlur={() => setIsFocused(false)}
                             onFocus={() => setIsFocused(true)}
-                            style={styles.textInput}
+                            style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                         />
                     </View>
                 </KeyboardAvoidingView>
@@ -201,6 +210,20 @@ const ReviewScreen = ({ route }) => {
 export default ReviewScreen;
 
 const styles = StyleSheet.create({
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
+    title: {
+        fontSize: 17,
+        fontFamily: 'QuicksandBold',
+    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -226,17 +249,25 @@ const styles = StyleSheet.create({
         width: AVATAR_SIZE,
         height: AVATAR_SIZE,
         borderRadius: AVATAR_SIZE / 2,
-        backgroundColor: 'black',
+        backgroundColor: lightTheme.icon,
         marginRight: 10
     },
     letter: {
+        fontSize: 35,
+        fontFamily: 'BebasNeue',
         color: 'white',
-        fontSize: 25,
         textTransform: 'capitalize',
         transform: [{ translateY: -1 }]
     },
+    button: {
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 25,
+        backgroundColor: lightTheme.icon
+    },
     ratingBar: {
-        paddingVertical: 10
+        paddingVertical: 10,
+        marginBottom: 10
     },
     scrollView: {
         paddingHorizontal: 15,

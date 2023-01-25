@@ -14,6 +14,28 @@ const globalStyles = StyleSheet.create({
     },
     menuDark: {
         backgroundColor: darkTheme.bottomBar
+    },
+    textInputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 25,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+    },
+    textInputWrapperLight: {
+        backgroundColor: lightTheme.box
+    },
+    textInputWrapperDark: {
+        backgroundColor: darkTheme.box
+    },
+    textInput: {
+        flex: 1
+    },
+    textInputLight: {
+        color: lightTheme.text
+    },
+    textInputDark: {
+        color: darkTheme.text
     }
 });
 
