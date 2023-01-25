@@ -9,6 +9,7 @@ import { RatingBar } from '../../components';
 import { authentication } from '../../utils/firebase';
 import { addNewReview, editReview } from '../../redux/actions/restaurants';
 import { GlobalContext } from '../../utils/context';
+import { darkTheme, lightTheme } from '../../utils/themes';
 import globalStyles from '../../utils/globalStyles';
 
 // React Native components
@@ -28,7 +29,6 @@ import {
 // firebase
 import { doc, updateDoc } from 'firebase/firestore/lite';
 import { db } from '../../utils/firebase';
-import { darkTheme, lightTheme } from '../../utils/themes';
 
 const AVATAR_SIZE = 45;
 

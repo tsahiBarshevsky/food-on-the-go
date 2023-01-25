@@ -20,8 +20,7 @@ const globalStyles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 25,
         paddingHorizontal: 15,
-        paddingTop: 5,
-        paddingBottom: 10
+        paddingVertical: 5
     },
     textInputWrapperLight: {
         backgroundColor: lightTheme.box

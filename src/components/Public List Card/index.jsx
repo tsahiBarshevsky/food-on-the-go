@@ -26,6 +26,7 @@ const PublicListCard = ({ name, length, user }) => {
     return (
         <TouchableOpacity
             onPress={onNavigate}
+            disabled={length === 0}
             style={styles.container}
             activeOpacity={0.85}
         >

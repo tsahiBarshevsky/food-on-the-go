@@ -34,23 +34,26 @@ const Header = (props) => {
                 <Text>{currentUser.displayName}</Text>
                 <Text>{currentUser.email}</Text>
             </View>
-            {user.type === 'owner' && Object.keys(ownedRestaurant).length === 0 ?
-                <View>
-                    <Text style={styles.title}>Owned restaurant</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
-                        <Text>Add new restaurant</Text>
-                    </TouchableOpacity>
-                </View>
+            {user.type === 'owner' ?
+                (Object.keys(ownedRestaurant).length === 0 ?
+                    <View>
+                        <Text style={styles.title}>Owned restaurant</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
+                            <Text>Add new restaurant</Text>
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    <View>
+                        <Text>My restaurant: {ownedRestaurant.name}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Editing', { restaurant: ownedRestaurant })}>
+                            <Text>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={onRemoveRestaurant}>
+                            <Text>Delete</Text>
+                        </TouchableOpacity>
+                    </View>)
                 :
-                <View>
-                    <Text>My restaurant: {ownedRestaurant.name}</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Editing', { restaurant: ownedRestaurant })}>
-                        <Text>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={onRemoveRestaurant}>
-                        <Text>Delete</Text>
-                    </TouchableOpacity>
-                </View>
+                null
             }
             <Text style={styles.title}>Restaurants I've been reviewd ({userReviews.length})</Text>
         </View>
