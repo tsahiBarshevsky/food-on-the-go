@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Animated, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
@@ -7,17 +7,22 @@ import WheelPicker from 'react-native-wheely';
 import update from 'immutability-helper';
 import moment from 'moment/moment';
 import { hours } from '../../utils/constants';
+import { GlobalContext } from '../../utils/context';
+import { lightTheme, darkTheme } from '../../utils/themes';
 
-const TimePicker = ({
-    bottomSheetRef,
-    open,
-    setOpen,
-    close,
-    setClose,
-    openHours,
-    setOpenHours,
-    index
-}) => {
+const TimePicker = (props) => {
+    const { theme } = useContext(GlobalContext);
+    const { bottomSheetRef,
+        chosenDay,
+        open,
+        setOpen,
+        close,
+        setClose,
+        openHours,
+        setOpenHours,
+        index
+    } = props;
+
     const onConfirm = () => {
         const openTime = moment(hours[open], "HH:mm");
         const closeTime = moment(hours[close], "HH:mm");
@@ -41,7 +46,7 @@ const TimePicker = ({
                 threshold={50}
                 adjustToContentHeight
                 withHandle={false}
-                modalStyle={styles.modalStyle}
+                modalStyle={[styles.modal, styles[`modal${theme}`]]}
                 openAnimationConfig={{ timing: { duration: 200 } }}
                 closeAnimationConfig={{ timing: { duration: 500 } }}
                 useNativeDriver
@@ -49,11 +54,13 @@ const TimePicker = ({
                     <Animated.View style={styles.bottomSheetContainer}>
                         <View style={styles.header}>
                             <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
-                                <AntDesign name="close" size={20} color="black" />
+                                <AntDesign name="close" size={20} color={theme === 'Light' ? 'black' : 'white'} />
                             </TouchableOpacity>
-                            <Text>Select Hours</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>
+                                Select hours for {chosenDay}
+                            </Text>
                             <TouchableOpacity onPress={onConfirm}>
-                                <AntDesign name="check" size={20} color="black" />
+                                <AntDesign name="check" size={20} color={theme === 'Light' ? 'black' : 'white'} />
                             </TouchableOpacity>
                         </View>
                         <View style={styles.pickers}>
@@ -62,15 +69,17 @@ const TimePicker = ({
                                 options={hours}
                                 onChange={(index) => setOpen(index)}
                                 flatListProps={{ overScrollMode: 'never' }}
-                                selectedIndicatorStyle={{ backgroundColor: 'white', width: 100, alignSelf: 'center', borderTopWidth: 2, borderBottomWidth: 2, borderRadius: 0 }}
+                                selectedIndicatorStyle={[styles.indicator, styles[`indicator${theme}`]]}
+                                itemTextStyle={[styles.text, styles[`text${theme}`]]}
                             />
-                            <Text>until</Text>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>until</Text>
                             <WheelPicker
                                 selectedIndex={close}
                                 options={hours}
                                 onChange={(index) => setClose(index)}
                                 flatListProps={{ overScrollMode: 'never' }}
-                                selectedIndicatorStyle={{ backgroundColor: 'white', width: 100, alignSelf: 'center', borderTopWidth: 2, borderBottomWidth: 2, borderRadius: 0 }}
+                                selectedIndicatorStyle={[styles.indicator, styles[`indicator${theme}`]]}
+                                itemTextStyle={[styles.text, styles[`text${theme}`]]}
                             />
                         </View>
                     </Animated.View>
@@ -84,11 +93,18 @@ export default TimePicker;
 
 const styles = StyleSheet.create({
     bottomSheetContainer: {
-        height: 225
+        height: 225,
+        paddingTop: 5
     },
-    modalStyle: {
+    modal: {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20
+    },
+    modalLight: {
+        backgroundColor: lightTheme.background
+    },
+    modalDark: {
+        backgroundColor: darkTheme.background
     },
     header: {
         flexDirection: 'row',
@@ -101,5 +117,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 50,
+    },
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
+    indicator: {
+        width: 100,
+        alignSelf: 'center',
+        borderTopWidth: 2,
+        borderBottomWidth: 2,
+        borderRadius: 0,
+    },
+    indicatorLight: {
+        backgroundColor: lightTheme.background,
+        borderTopColor: 'black',
+        borderBottomColor: 'black',
+    },
+    indicatorDark: {
+        backgroundColor: darkTheme.background,
+        borderTopColor: 'white',
+        borderBottomColor: 'white'
     }
 });
