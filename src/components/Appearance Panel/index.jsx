@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     bottomSheetContainer: {
         height: '100%',
         paddingHorizontal: 15,
-        paddingVertical: 15
+        paddingTop: 15
     },
     modal: {
         borderTopLeftRadius: 20,

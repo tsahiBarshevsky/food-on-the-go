@@ -416,10 +416,10 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     open: {
-        color: 'green'
+        color: '#1b5e20'
     },
     close: {
-        color: 'red'
+        color: '#b71c1c'
     },
     ratings: {
         flexDirection: 'row',

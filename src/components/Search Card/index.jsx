@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Keyboard } from 'react-native';
 import { FontAwesome5, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -48,6 +48,7 @@ const SearchCard = ({ item, keyword }) => {
     }
 
     const onCardPressed = () => {
+        Keyboard.dismiss();
         const index = restaurants.findIndex((restaurant) => restaurant.id === item.id);
         navigation.navigate('Restaurant', { index });
         getHistoryFromStorage().then((storage) => {
@@ -57,7 +58,7 @@ const SearchCard = ({ item, keyword }) => {
                     dispatch(addNewTermToHistory(item.id)) //Update store
                 }
                 else {
-                    storage.push(restaurants.id);
+                    storage.push(item.id);
                     updateHistoryInStorage(JSON.stringify(storage)); //Update AsyncStorage
                     dispatch(addNewTermToHistory(item.id)) //Update store
                 }
