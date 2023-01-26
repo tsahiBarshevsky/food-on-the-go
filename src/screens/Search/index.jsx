@@ -96,6 +96,7 @@ const SearchScreen = () => {
                         renderItem={({ item }) => {
                             return (
                                 <SearchCard
+                                    key={item.id}
                                     item={item}
                                     keyword={keyword}
                                 />

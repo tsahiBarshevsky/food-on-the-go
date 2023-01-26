@@ -1,12 +1,15 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Keyboard } from 'react-native';
-import { FontAwesome5, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import React, { useContext } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Keyboard, Image } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { getHistoryFromStorage, updateHistoryInStorage } from '../../utils/AsyncStorageManagement';
 import { addNewTermToHistory } from '../../redux/actions/hisorty';
+import { GlobalContext } from '../../utils/context';
+import { lightTheme, darkTheme } from '../../utils/themes';
 
 const SearchCard = ({ item, keyword }) => {
+    const { theme } = useContext(GlobalContext);
     const location = useSelector(state => state.location);
     const restaurants = useSelector(state => state.restaurants);
     const navigation = useNavigation();
@@ -32,17 +35,14 @@ const SearchCard = ({ item, keyword }) => {
     }
 
     const boldKeyword = (str, find) => {
-        // var re = new RegExp(find.toLowerCase(), 'g');
-        // var bl = str.toLowerCase().replace(re, `<Text>${find.toLowerCase()}</Text>`);
-        // return bl;
         const strSplit = str.split('')
         const keywordSplit = keyword.toLowerCase().split('')
         const arr = [];
         strSplit.forEach((item) => {
             if (keywordSplit.includes(item.toLowerCase()))
-                arr.push(<Text style={{ fontWeight: 'bold' }}>{item}</Text>)
+                arr.push(<Text style={[styles.bold, styles[`bold${theme}`]]}>{item}</Text>)
             else
-                arr.push(<Text>{item}</Text>)
+                arr.push(<Text style={[styles.text, styles[`text${theme}`]]}>{item}</Text>)
         });
         return arr;
     }
@@ -75,9 +75,9 @@ const SearchCard = ({ item, keyword }) => {
             <View style={styles.details}>
                 <View style={styles.locationBox}>
                     <View style={styles.location}>
-                        <FontAwesome5 name="map-marker-alt" size={20} color="black" />
+                        <FontAwesome5 name="map-marker-alt" size={20} color="white" />
                     </View>
-                    <Text>
+                    <Text style={[styles.text, styles[`text${theme}`]]}>
                         {getDistanceFromLatLonInKm(
                             item.location.latitude,
                             item.location.longitude,
@@ -87,22 +87,22 @@ const SearchCard = ({ item, keyword }) => {
                     </Text>
                 </View>
                 <View>
-                    {/* <View style={styles.nameWrapper}>
-                        <Text>{keyword}</Text>
-                        <Text style={styles.bold}>{item.name.slice(keyword.length)}</Text>
-                    </View> */}
-                    {/* {boldKeyword(item.name, keyword).forEach((item, index) => {
-                        return <View key={index}>{item}</View>;
-                    })} */}
-                    <Text>{boldKeyword(item.name, keyword)}</Text>
-                    {/* <Text>{item.name}</Text> */}
-                    <Text>{item.location.city}</Text>
+                    <View style={styles.nameWrapper}>
+                        {boldKeyword(item.name, keyword)}
+                    </View>
+                    <Text style={[styles.text, styles[`text${theme}`]]}>{item.location.city}</Text>
                 </View>
             </View>
             {item.type === 'Food Truck' ?
-                <MaterialCommunityIcons name="truck-fast-outline" size={24} color="black" />
+                <Image
+                    source={require('../../../assets/images/food-truck.png')}
+                    style={styles.image}
+                />
                 :
-                <Feather name="coffee" size={24} color="black" />
+                <Image
+                    source={require('../../../assets/images/food-cart.png')}
+                    style={styles.image}
+                />
             }
         </TouchableOpacity>
     )
@@ -114,24 +114,18 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 10,
-        paddingRight: 10,
-        borderRadius: 10,
-        backgroundColor: 'lightblue'
+        justifyContent: 'space-between'
     },
     details: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'lightgreen'
+        justifyContent: 'center'
     },
     locationBox: {
         alignItems: 'center',
         justifyContent: 'center',
         width: 55,
-        marginRight: 5,
-        backgroundColor: 'pink'
+        marginRight: 10
     },
     location: {
         alignItems: 'center',
@@ -140,14 +134,33 @@ const styles = StyleSheet.create({
         height: 34,
         borderRadius: 17,
         marginBottom: 3,
-        backgroundColor: 'grey'
+        backgroundColor: lightTheme.icon
     },
     nameWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start'
     },
+    image: {
+        width: 20,
+        height: 20
+    },
+    text: {
+        fontFamily: 'Quicksand'
+    },
+    textLigth: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
     bold: {
-        fontWeight: 'bold'
+        fontFamily: 'QuicksandBold'
+    },
+    boldLigth: {
+        color: lightTheme.text
+    },
+    boldDark: {
+        color: darkTheme.text
     }
 });
