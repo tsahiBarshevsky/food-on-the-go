@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import update from 'immutability-helper';
 import uuid from 'react-native-uuid';
-import { Formik } from 'formik';
+import { DotIndicator } from 'react-native-indicators';
+import { Formik, ErrorMessage } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -11,7 +12,9 @@ import { hours, restaurant, schedule } from '../../utils/constants';
 import { GlobalContext } from '../../utils/context';
 import { addNewRestaurant } from '../../redux/actions/restaurants';
 import globalStyles from '../../utils/globalStyles';
+import { darkTheme, lightTheme } from '../../utils/themes';
 import { CLOUDINARY_KEY } from '@env';
+import { restaurantSchema } from '../../utils/schemas';
 
 // React Native components
 import {
@@ -31,7 +34,6 @@ import {
 // Firebase
 import { authentication, db } from '../../utils/firebase';
 import { doc, setDoc } from 'firebase/firestore/lite';
-import { darkTheme, lightTheme } from '../../utils/themes';
 
 const InsertionScreen = () => {
     const { theme, onTriggerFilter } = useContext(GlobalContext);
@@ -144,11 +146,14 @@ const InsertionScreen = () => {
 
     const onAddNewRestaurant = (values) => {
         const { description, link, name, phone, priceRange } = values;
+        const dup = JSON.parse(JSON.stringify(priceRange));
+        dup.lowest = Number(priceRange.lowest);
+        dup.highest = Number(priceRange.highest);
         setDisabled(true);
         const newRestaurant = {
             id: uuid.v4(),
             owner: authentication.currentUser.uid,
-            name: name,
+            name: name.trim(),
             description: description,
             link: link,
             type: restaurantType.foodTruck ? "Food Truck" : "Coffee Cart",
@@ -158,7 +163,7 @@ const InsertionScreen = () => {
             vegetarian: vegetarian,
             vegan: vegan,
             glutenFree: glutenFree,
-            priceRange: priceRange,
+            priceRange: dup,
             reviews: [],
             openingHours: openHours,
             location: location
@@ -222,8 +227,11 @@ const InsertionScreen = () => {
                             enableReinitialize
                             onSubmit={(values) => onAddNewRestaurant(values)}
                             innerRef={formRef}
+                            validationSchema={restaurantSchema}
+                            validateOnChange={false}
+                            validateOnBlur={false}
                         >
-                            {({ handleChange, handleBlur, handleSubmit, values, errors, setErrors, touched }) => {
+                            {({ handleChange, handleBlur, handleSubmit, values }) => {
                                 return (
                                     <View>
                                         {!image ?
@@ -252,7 +260,8 @@ const InsertionScreen = () => {
                                         <View
                                             style={[
                                                 globalStyles.textInputWrapper,
-                                                globalStyles[`textInputWrapper${theme}`]
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
                                             ]}
                                         >
                                             <TextInput
@@ -270,7 +279,17 @@ const InsertionScreen = () => {
                                                 style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <View>
+                                        <ErrorMessage
+                                            name='name'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
+                                        <View style={styles.marginTop}>
                                             <Checkbox
                                                 checked={restaurantType.foodTruck}
                                                 setChecked={() => onChageRestaurantType('foodTruck')}
@@ -284,13 +303,16 @@ const InsertionScreen = () => {
                                                 withCaption
                                             />
                                         </View>
-                                        <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
-                                            About
-                                        </Text>
+                                        <View style={styles.marginTop}>
+                                            <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
+                                                About
+                                            </Text>
+                                        </View>
                                         <View
                                             style={[
                                                 globalStyles.textInputWrapper,
-                                                globalStyles[`textInputWrapper${theme}`]
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
                                             ]}
                                         >
                                             <TextInput
@@ -309,10 +331,21 @@ const InsertionScreen = () => {
                                                 style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
+                                        <ErrorMessage
+                                            name='description'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
                                         <View
                                             style={[
                                                 globalStyles.textInputWrapper,
-                                                globalStyles[`textInputWrapper${theme}`]
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
                                             ]}
                                         >
                                             <TextInput
@@ -330,10 +363,21 @@ const InsertionScreen = () => {
                                                 style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
+                                        <ErrorMessage
+                                            name='link'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
                                         <View
                                             style={[
                                                 globalStyles.textInputWrapper,
-                                                globalStyles[`textInputWrapper${theme}`]
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
                                             ]}
                                         >
                                             <TextInput
@@ -353,19 +397,34 @@ const InsertionScreen = () => {
                                                 style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <Checkbox
-                                            checked={accessible}
-                                            setChecked={() => setAccessible(!accessible)}
-                                            caption='Handicapped accessible'
-                                            withCaption
+                                        <ErrorMessage
+                                            name='phone'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
                                         />
-                                        <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
-                                            Menu
-                                        </Text>
+                                        <View style={styles.marginTop}>
+                                            <Checkbox
+                                                checked={accessible}
+                                                setChecked={() => setAccessible(!accessible)}
+                                                caption='Handicapped accessible'
+                                                withCaption
+                                            />
+                                        </View>
+                                        <View style={styles.marginTop}>
+                                            <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
+                                                Menu
+                                            </Text>
+                                        </View>
                                         <View
                                             style={[
                                                 globalStyles.textInputWrapper,
-                                                globalStyles[`textInputWrapper${theme}`]
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
                                             ]}
                                         >
                                             <TextInput
@@ -384,10 +443,21 @@ const InsertionScreen = () => {
                                                 style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
+                                        <ErrorMessage
+                                            name='priceRange.lowest'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
                                         <View
                                             style={[
                                                 globalStyles.textInputWrapper,
-                                                globalStyles[`textInputWrapper${theme}`]
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
                                             ]}
                                         >
                                             <TextInput
@@ -404,33 +474,47 @@ const InsertionScreen = () => {
                                                 style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <Checkbox
-                                            checked={kosher}
-                                            setChecked={() => setKosher(!kosher)}
-                                            caption='Kosher'
-                                            withCaption
+                                        <ErrorMessage
+                                            name='priceRange.highest'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
                                         />
-                                        <Checkbox
-                                            checked={vegetarian}
-                                            setChecked={() => setVegetarian(!vegetarian)}
-                                            caption='Vegetarian'
-                                            withCaption
-                                        />
-                                        <Checkbox
-                                            checked={vegan}
-                                            setChecked={() => setVegan(!vegan)}
-                                            caption='Vegan'
-                                            withCaption
-                                        />
-                                        <Checkbox
-                                            checked={glutenFree}
-                                            setChecked={() => setGlutenFree(!glutenFree)}
-                                            caption='Gluten free'
-                                            withCaption
-                                        />
-                                        <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
-                                            Openings hours
-                                        </Text>
+                                        <View style={styles.marginTop}>
+                                            <Checkbox
+                                                checked={kosher}
+                                                setChecked={() => setKosher(!kosher)}
+                                                caption='Kosher'
+                                                withCaption
+                                            />
+                                            <Checkbox
+                                                checked={vegetarian}
+                                                setChecked={() => setVegetarian(!vegetarian)}
+                                                caption='Vegetarian'
+                                                withCaption
+                                            />
+                                            <Checkbox
+                                                checked={vegan}
+                                                setChecked={() => setVegan(!vegan)}
+                                                caption='Vegan'
+                                                withCaption
+                                            />
+                                            <Checkbox
+                                                checked={glutenFree}
+                                                setChecked={() => setGlutenFree(!glutenFree)}
+                                                caption='Gluten free'
+                                                withCaption
+                                            />
+                                        </View>
+                                        <View style={styles.marginTop}>
+                                            <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
+                                                Openings hours
+                                            </Text>
+                                        </View>
                                         <View>
                                             {openHours.map((item, index) => {
                                                 return (
@@ -476,7 +560,7 @@ const InsertionScreen = () => {
                             activeOpacity={0.85}
                         >
                             {disabled ?
-                                <Text>...</Text>
+                                <DotIndicator size={5} count={3} color='white' />
                                 :
                                 <Text style={[styles.text, styles.buttonText]}>Save</Text>
                             }
@@ -558,16 +642,22 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
     button: {
+        height: 35,
         backgroundColor: lightTheme.icon,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 25,
-        paddingVertical: 7,
         marginTop: 10,
         elevation: 2
     },
     buttonText: {
         fontSize: 15,
         color: 'white'
+    },
+    textInput: {
+        marginTop: 10
+    },
+    marginTop: {
+        marginTop: 10
     }
 });

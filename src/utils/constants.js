@@ -82,8 +82,8 @@ const restaurant = {
     link: '',
     phone: '',
     priceRange: {
-        lowest: 0,
-        highest: 0
+        lowest: '',
+        highest: ''
     }
 };
 

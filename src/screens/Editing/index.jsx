@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import update from 'immutability-helper';
-import { Formik } from 'formik';
+import { DotIndicator } from 'react-native-indicators';
+import { Formik, ErrorMessage } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -10,7 +11,9 @@ import { hours } from '../../utils/constants';
 import { GlobalContext } from '../../utils/context';
 import { editRestaurant } from '../../redux/actions/restaurants';
 import globalStyles from '../../utils/globalStyles';
+import { darkTheme, lightTheme } from '../../utils/themes';
 import { CLOUDINARY_KEY } from '@env';
+import { restaurantSchema } from '../../utils/schemas';
 
 // React Native components
 import {
@@ -33,7 +36,7 @@ import { doc, updateDoc } from 'firebase/firestore/lite';
 
 const EditingScreen = ({ route }) => {
     const { restaurant } = route.params;
-    const { onTriggerFilter } = useContext(GlobalContext);
+    const { theme, onTriggerFilter } = useContext(GlobalContext);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
     const [index, setIndex] = useState(0);
     const [open, setOpen] = useState(0);
@@ -41,11 +44,13 @@ const EditingScreen = ({ route }) => {
     const [openHours, setOpenHours] = useState(restaurant.openingHours);
     const [image, setImage] = useState(restaurant.image.url);
     const [disabled, setDisabled] = useState(false);
+    const [chosenDay, setChosenDay] = useState(null);
     const location = useSelector(state => state.location);
     const restaurants = useSelector(state => state.restaurants);
     const navigation = useNavigation();
 
     // Boolean states
+    const [accessible, setAccessible] = useState(restaurant.accessible);
     const [kosher, setKosher] = useState(restaurant.kosher);
     const [vegetarian, setVegetarian] = useState(restaurant.vegetarian);
     const [vegan, setVegan] = useState(restaurant.vegan);
@@ -72,8 +77,8 @@ const EditingScreen = ({ route }) => {
         link: restaurant.link,
         phone: restaurant.phone,
         priceRange: {
-            lowest: restaurant.priceRange.lowest,
-            highest: restaurant.priceRange.highest
+            lowest: restaurant.priceRange.lowest.toString(),
+            highest: restaurant.priceRange.highest.toString()
         }
     };
 
@@ -90,13 +95,15 @@ const EditingScreen = ({ route }) => {
             setImage(result.assets[0].uri);
     }
 
-    const onChangeAvailability = (index, status) => {
+    const onChangeAvailability = (day, index, status) => {
         const newArray = update(openHours, {
             [index]: {
                 $merge: { isOpen: !status }
             }
         });
         setOpenHours(newArray);
+        if (!status)
+            onOpenTimeTicker(day, index);
     }
 
     const onChageRestaurantType = (pressed) => {
@@ -121,8 +128,9 @@ const EditingScreen = ({ route }) => {
         }
     }
 
-    const onOpenTimeTicker = (index) => {
+    const onOpenTimeTicker = (day, index) => {
         setIndex(index);
+        setChosenDay(day);
         setOpen(openHours[index].open);
         setClose(openHours[index].close);
         if (isKeyboardOpen) {
@@ -167,22 +175,26 @@ const EditingScreen = ({ route }) => {
 
     const onEditRestaurant = (values) => {
         const { description, link, name, phone, priceRange } = values;
-        // setDisabled(true);
+        const dup = JSON.parse(JSON.stringify(priceRange));
+        dup.lowest = Number(priceRange.lowest);
+        dup.highest = Number(priceRange.highest);
+        setDisabled(true);
         const editedRestaurant = {
-            name: name,
+            name: name.trim(),
             description: description,
             link: link,
             type: restaurantType.foodTruck ? "Food Truck" : "Coffee Cart",
             phone: phone,
+            accessible: accessible,
             kosher: kosher,
             vegetarian: vegetarian,
             vegan: vegan,
             glutenFree: glutenFree,
-            priceRange: priceRange,
+            priceRange: dup,
             openingHours: openHours,
             location: location
         };
-        if (image.includes('cloudinary')) {// Image hasn't changed
+        if (image.includes('cloudinary')) { // Image hasn't changed
             editedRestaurant.image = image;
             handleAddDocument(editedRestaurant);
         }
@@ -236,7 +248,7 @@ const EditingScreen = ({ route }) => {
                 <ScrollView
                     keyboardShouldPersistTaps="always"
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: 15 }}
+                    contentContainerStyle={styles.scrollView}
                 >
                     <KeyboardAvoidingView
                         enabled
@@ -247,43 +259,69 @@ const EditingScreen = ({ route }) => {
                             enableReinitialize
                             onSubmit={(values) => onEditRestaurant(values)}
                             innerRef={formRef}
+                            validationSchema={restaurantSchema}
+                            validateOnChange={false}
+                            validateOnBlur={false}
                         >
-                            {({ handleChange, handleBlur, handleSubmit, values, errors, setErrors, touched }) => {
+                            {({ handleChange, handleBlur, handleSubmit, values }) => {
                                 return (
                                     <View>
-                                        <View style={styles.header}>
-                                            {!image ?
-                                                <TouchableOpacity onPress={pickImage}>
-                                                    <Text>Pick image</Text>
-                                                    <MaterialCommunityIcons name="image-plus" size={24} color="black" />
-                                                </TouchableOpacity>
-                                                :
-                                                <TouchableOpacity
-                                                    onPress={pickImage}
-                                                    style={styles.image}
-                                                >
-                                                    <Image source={{ uri: image }} style={styles.image} />
-                                                </TouchableOpacity>
-                                            }
-                                        </View>
-                                        <Text style={styles.title}>Name and type</Text>
-                                        <View style={styles.textInputWrapper}>
+                                        {!image ?
+                                            <TouchableOpacity
+                                                onPress={pickImage}
+                                                style={[styles.header, styles[`header${theme}`]]}
+                                                activeOpacity={0.85}
+                                            >
+                                                <Text style={[styles.text, styles.caption, styles[`text${theme}`]]}>
+                                                    Select image
+                                                </Text>
+                                                <MaterialCommunityIcons name="image-plus" size={22} color={theme === 'Light' ? "black" : "white"} />
+                                            </TouchableOpacity>
+                                            :
+                                            <TouchableOpacity
+                                                onPress={pickImage}
+                                                style={styles.header}
+                                                activeOpacity={0.85}
+                                            >
+                                                <Image source={{ uri: image }} style={styles.image} />
+                                            </TouchableOpacity>
+                                        }
+                                        <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
+                                            Name and type
+                                        </Text>
+                                        <View
+                                            style={[
+                                                globalStyles.textInputWrapper,
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
+                                            ]}
+                                        >
                                             <TextInput
                                                 placeholder='Name...'
                                                 value={values.name}
                                                 ref={nameRef}
                                                 onChangeText={handleChange('name')}
                                                 underlineColorAndroid="transparent"
-                                                // placeholderTextColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
-                                                // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
+                                                placeholderTextColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
+                                                selectionColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('name')}
                                                 returnKeyType='next'
                                                 onSubmitEditing={() => descriptionRef.current?.focus()}
-                                                style={styles.textInput}
+                                                style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <View>
+                                        <ErrorMessage
+                                            name='name'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
+                                        <View style={styles.marginTop}>
                                             <Checkbox
                                                 checked={restaurantType.foodTruck}
                                                 setChecked={() => onChageRestaurantType('foodTruck')}
@@ -297,8 +335,18 @@ const EditingScreen = ({ route }) => {
                                                 withCaption
                                             />
                                         </View>
-                                        <Text style={styles.title}>About</Text>
-                                        <View style={styles.textInputWrapper}>
+                                        <View style={styles.marginTop}>
+                                            <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
+                                                About
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={[
+                                                globalStyles.textInputWrapper,
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
+                                            ]}
+                                        >
                                             <TextInput
                                                 placeholder='Description...'
                                                 value={values.description}
@@ -306,32 +354,64 @@ const EditingScreen = ({ route }) => {
                                                 onChangeText={handleChange('description')}
                                                 multiline
                                                 underlineColorAndroid="transparent"
-                                                // placeholderTextColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
-                                                // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
+                                                placeholderTextColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
+                                                selectionColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('description')}
                                                 returnKeyType='next'
                                                 onSubmitEditing={() => linkRef.current?.focus()}
-                                                style={styles.textInput}
+                                                style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <View style={styles.textInputWrapper}>
+                                        <ErrorMessage
+                                            name='description'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
+                                        <View
+                                            style={[
+                                                globalStyles.textInputWrapper,
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
+                                            ]}
+                                        >
                                             <TextInput
                                                 placeholder='Link...'
                                                 value={values.link}
                                                 ref={linkRef}
                                                 onChangeText={handleChange('link')}
                                                 underlineColorAndroid="transparent"
-                                                // placeholderTextColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
-                                                // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
+                                                placeholderTextColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
+                                                selectionColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('link')}
                                                 returnKeyType='next'
                                                 onSubmitEditing={() => phoneRef.current?.focus()}
-                                                style={styles.textInput}
+                                                style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <View style={styles.textInputWrapper}>
+                                        <ErrorMessage
+                                            name='link'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
+                                        <View
+                                            style={[
+                                                globalStyles.textInputWrapper,
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
+                                            ]}
+                                        >
                                             <TextInput
                                                 placeholder='Phone number...'
                                                 value={values.phone}
@@ -339,18 +419,46 @@ const EditingScreen = ({ route }) => {
                                                 keyboardType='number-pad'
                                                 onChangeText={handleChange('phone')}
                                                 underlineColorAndroid="transparent"
-                                                // placeholderTextColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
-                                                // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
+                                                placeholderTextColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
+                                                selectionColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
                                                 maxLength={10}
                                                 returnKeyType='next'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('phone')}
                                                 onSubmitEditing={() => lowestRef?.current.focus()}
-                                                style={styles.textInput}
+                                                style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <Text style={styles.title}>Menu</Text>
-                                        <View style={styles.textInputWrapper}>
+                                        <ErrorMessage
+                                            name='phone'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
+                                        <View style={styles.marginTop}>
+                                            <Checkbox
+                                                checked={accessible}
+                                                setChecked={() => setAccessible(!accessible)}
+                                                caption='Handicapped accessible'
+                                                withCaption
+                                            />
+                                        </View>
+                                        <View style={styles.marginTop}>
+                                            <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
+                                                Menu
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={[
+                                                globalStyles.textInputWrapper,
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
+                                            ]}
+                                        >
                                             <TextInput
                                                 placeholder='Lowest...'
                                                 value={values.priceRange.lowest}
@@ -358,16 +466,32 @@ const EditingScreen = ({ route }) => {
                                                 keyboardType='number-pad'
                                                 onChangeText={handleChange('priceRange.lowest')}
                                                 underlineColorAndroid="transparent"
-                                                // placeholderTextColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
-                                                // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
+                                                placeholderTextColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
+                                                selectionColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
                                                 returnKeyType='next'
                                                 blurOnSubmit={false}
                                                 onBlur={handleBlur('priceRange.lowest')}
                                                 onSubmitEditing={() => highestRef?.current.focus()}
-                                                style={styles.textInput}
+                                                style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <View style={styles.textInputWrapper}>
+                                        <ErrorMessage
+                                            name='priceRange.lowest'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
+                                        />
+                                        <View
+                                            style={[
+                                                globalStyles.textInputWrapper,
+                                                globalStyles[`textInputWrapper${theme}`],
+                                                styles.marginTop
+                                            ]}
+                                        >
                                             <TextInput
                                                 placeholder='Highest...'
                                                 value={values.priceRange.highest}
@@ -375,52 +499,83 @@ const EditingScreen = ({ route }) => {
                                                 keyboardType='number-pad'
                                                 onChangeText={handleChange('priceRange.highest')}
                                                 underlineColorAndroid="transparent"
-                                                // placeholderTextColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
-                                                // selectionColor={theme === 'Light' ? lightMode.placeholder : darkMode.placeholder}
+                                                placeholderTextColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
+                                                selectionColor={theme === 'Light' ? lightTheme.placeholder : darkTheme.placeholder}
                                                 onBlur={handleBlur('priceRange.highest')}
                                                 onSubmitEditing={handleSubmit}
-                                                style={styles.textInput}
+                                                style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                                             />
                                         </View>
-                                        <Checkbox
-                                            checked={kosher}
-                                            setChecked={() => setKosher(!kosher)}
-                                            caption='Kosher'
-                                            withCaption
+                                        <ErrorMessage
+                                            name='priceRange.highest'
+                                            render={(message) => {
+                                                return (
+                                                    <Text style={[styles.text, globalStyles.error]}>
+                                                        {message}
+                                                    </Text>
+                                                )
+                                            }}
                                         />
-                                        <Checkbox
-                                            checked={vegetarian}
-                                            setChecked={() => setVegetarian(!vegetarian)}
-                                            caption='Vegetarian'
-                                            withCaption
-                                        />
-                                        <Checkbox
-                                            checked={vegan}
-                                            setChecked={() => setVegan(!vegan)}
-                                            caption='Vegan'
-                                            withCaption
-                                        />
-                                        <Checkbox
-                                            checked={glutenFree}
-                                            setChecked={() => setGlutenFree(!glutenFree)}
-                                            caption='Gluten free'
-                                            withCaption
-                                        />
-                                        <Text style={styles.title}>Openings hours</Text>
+                                        <View style={styles.marginTop}>
+                                            <Checkbox
+                                                checked={kosher}
+                                                setChecked={() => setKosher(!kosher)}
+                                                caption='Kosher'
+                                                withCaption
+                                            />
+                                            <Checkbox
+                                                checked={vegetarian}
+                                                setChecked={() => setVegetarian(!vegetarian)}
+                                                caption='Vegetarian'
+                                                withCaption
+                                            />
+                                            <Checkbox
+                                                checked={vegan}
+                                                setChecked={() => setVegan(!vegan)}
+                                                caption='Vegan'
+                                                withCaption
+                                            />
+                                            <Checkbox
+                                                checked={glutenFree}
+                                                setChecked={() => setGlutenFree(!glutenFree)}
+                                                caption='Gluten free'
+                                                withCaption
+                                            />
+                                        </View>
+                                        <View style={styles.marginTop}>
+                                            <Text style={[styles.text, styles.title, styles[`text${theme}`]]}>
+                                                Openings hours
+                                            </Text>
+                                        </View>
                                         <View>
                                             {openHours.map((item, index) => {
                                                 return (
-                                                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                        <Checkbox
-                                                            checked={item.isOpen}
-                                                            setChecked={() => onChangeAvailability(index, item.isOpen)}
-                                                            withCaption={false}
-                                                        />
-                                                        <Text>{item.day}</Text>
-                                                        {item.isOpen &&
-                                                            <TouchableOpacity onPress={() => onOpenTimeTicker(index)}>
-                                                                <Text>{hours[item.open]} - {hours[item.close]}</Text>
+                                                    <View key={index} style={styles.dayItem}>
+                                                        <View style={styles.day}>
+                                                            <View style={styles.checkbox}>
+                                                                <Checkbox
+                                                                    checked={item.isOpen}
+                                                                    setChecked={() => onChangeAvailability(item.day, index, item.isOpen)}
+                                                                    withCaption={false}
+                                                                />
+                                                            </View>
+                                                            <Text style={[styles.text, styles[`text${theme}`]]}>
+                                                                {item.day}
+                                                            </Text>
+                                                        </View>
+                                                        {item.isOpen ?
+                                                            <TouchableOpacity
+                                                                onPress={() => onOpenTimeTicker(item.day, index)}
+                                                                activeOpacity={0.85}
+                                                            >
+                                                                <Text style={[styles.text, styles[`text${theme}`]]}>
+                                                                    {hours[item.open]} - {hours[item.close]}
+                                                                </Text>
                                                             </TouchableOpacity>
+                                                            :
+                                                            <Text style={[styles.text, styles[`text${theme}`]]}>
+                                                                Closed
+                                                            </Text>
                                                         }
                                                     </View>
                                                 )
@@ -433,11 +588,13 @@ const EditingScreen = ({ route }) => {
                         <TouchableOpacity
                             onPress={() => formRef.current?.handleSubmit()}
                             disabled={disabled}
+                            style={styles.button}
+                            activeOpacity={0.85}
                         >
                             {disabled ?
-                                <Text>...</Text>
+                                <DotIndicator size={5} count={3} color='white' />
                                 :
-                                <Text>Save changes</Text>
+                                <Text style={[styles.text, styles.buttonText]}>Save changes</Text>
                             }
                         </TouchableOpacity>
                     </KeyboardAvoidingView>
@@ -445,6 +602,7 @@ const EditingScreen = ({ route }) => {
             </SafeAreaView>
             <TimePicker
                 bottomSheetRef={timePickerRef}
+                chosenDay={chosenDay}
                 open={open}
                 setOpen={setOpen}
                 close={close}
@@ -460,8 +618,13 @@ const EditingScreen = ({ route }) => {
 export default EditingScreen;
 
 const styles = StyleSheet.create({
+    scrollView: {
+        paddingBottom: 15,
+        paddingHorizontal: 15
+    },
     title: {
-        fontSize: 20
+        fontSize: 20,
+        marginBottom: 5
     },
     header: {
         alignItems: 'center',
@@ -469,13 +632,64 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 200,
         marginVertical: 10,
-        backgroundColor: 'royalblue',
         borderRadius: 15,
         overflow: 'hidden'
+    },
+    headerLight: {
+        backgroundColor: lightTheme.box
+    },
+    headerDark: {
+        backgroundColor: darkTheme.box
     },
     image: {
         width: '100%',
         height: '100%',
         resizeMode: 'cover'
+    },
+    text: {
+        fontFamily: 'Quicksand',
+        transform: [{ translateY: -1.5 }]
+    },
+    textLight: {
+        color: lightTheme.text
+    },
+    textDark: {
+        color: darkTheme.text
+    },
+    caption: {
+        fontSize: 16,
+        marginBottom: 5
+    },
+    dayItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    day: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+    checkbox: {
+        marginRight: 10
+    },
+    button: {
+        height: 35,
+        backgroundColor: lightTheme.icon,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 25,
+        marginTop: 10,
+        elevation: 2
+    },
+    buttonText: {
+        fontSize: 15,
+        color: 'white'
+    },
+    textInput: {
+        marginTop: 10
+    },
+    marginTop: {
+        marginTop: 10
     }
 });

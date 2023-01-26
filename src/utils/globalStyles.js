@@ -37,6 +37,9 @@ const globalStyles = StyleSheet.create({
     },
     textInputDark: {
         color: darkTheme.text
+    },
+    error: {
+        color: '#b71c1c'
     }
 });
 
