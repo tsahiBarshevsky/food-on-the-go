@@ -40,13 +40,15 @@ const RestaurantCard = ({ restaurant }) => {
 
     useEffect(() => {
         const ratings = restaurant.reviews.map(({ rating }) => rating + 1);
-        setRatingAverage(ratings.reduce((a, b) => a + b, 0) / ratings.length);
+        if (ratings.length > 0) {
+            const average = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+            setRatingAverage(average.toFixed(1));
+        }
     }, [triggerFilter]);
 
     return (
         <TouchableOpacity
             onPress={() => onCardPressed()}
-            // onPress={() => Linking.openURL(`google.navigation:q=${restaurant.location.latitude}+${restaurant.location.longitude}`)}
             style={[styles.container, styles[`container${theme}`]]}
             activeOpacity={1}
         >
@@ -86,9 +88,15 @@ const RestaurantCard = ({ restaurant }) => {
                     <View style={styles.icon}>
                         <AntDesign name="star" size={17} color="#fbc02d" />
                     </View>
-                    <Text style={[styles.text, styles[`text${theme}`]]}>
-                        {ratingAverage.toFixed(1)}
-                    </Text>
+                    {ratingAverage ?
+                        <Text style={[styles.text, styles[`text${theme}`]]}>
+                            {ratingAverage}
+                        </Text>
+                        :
+                        <Text style={[styles.text, styles[`text${theme}`]]}>
+                            No reviews yet
+                        </Text>
+                    }
                 </View>
             </View>
         </TouchableOpacity>
