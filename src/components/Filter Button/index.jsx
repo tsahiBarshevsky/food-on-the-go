@@ -13,6 +13,7 @@ const FilterButton = ({ bottomSheetRef }) => {
         <TouchableOpacity
             onPress={() => bottomSheetRef.current?.open()}
             style={[styles.container, styles[`container${theme}`]]}
+            activeOpacity={0.85}
         >
             <MaterialCommunityIcons
                 name="tune-variant"

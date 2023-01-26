@@ -1,17 +1,32 @@
 import React, { useContext } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 import { GlobalContext } from '../../utils/context';
 import { darkTheme, lightTheme } from '../../utils/themes';
 
-const LocationBox = ({ city }) => {
+const LocationBox = ({ city, mapRef }) => {
     const { theme } = useContext(GlobalContext);
+    const location = useSelector(state => state.location);
+
+    const showUserLocation = () => {
+        mapRef.current?.animateToRegion({
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005
+        });
+    }
 
     return (
-        <View style={[styles.container, styles[`container${theme}`]]}>
+        <TouchableOpacity
+            onPress={showUserLocation}
+            style={[styles.container, styles[`container${theme}`]]}
+            activeOpacity={1}
+        >
             <FontAwesome5 name="map-marker-alt" size={18} color="#f57c00" />
             <Text style={[styles.text, styles[`text${theme}`]]}>{city}</Text>
-        </View>
+        </TouchableOpacity>
     )
 }
 
@@ -27,6 +42,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         borderRadius: 20,
         overflow: 'hidden',
+        alignSelf: 'flex-start'
     },
     containerLight: {
         backgroundColor: lightTheme.box,

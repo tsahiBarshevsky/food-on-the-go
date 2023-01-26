@@ -175,7 +175,10 @@ const MapScreen = () => {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.subHeader}>
-                        <LocationBox city={location.city} />
+                        <LocationBox
+                            city={location.city}
+                            mapRef={mapRef}
+                        />
                         <FilterButton bottomSheetRef={panelRef} />
                     </View>
                     <SearchBar />
@@ -183,7 +186,6 @@ const MapScreen = () => {
                 <View style={styles.mapContainer}>
                     <MapView
                         ref={mapRef}
-                        // showsUserLocation
                         showsBuildings={false}
                         toolbarEnabled={false}
                         style={styles.map}
@@ -195,6 +197,14 @@ const MapScreen = () => {
                             longitudeDelta: 0.005
                         }}
                     >
+                        {Object.keys(location).length > 0 && <Marker
+                            tappable={false}
+                            image={require('../../../assets/images/location.png')}
+                            coordinate={{
+                                latitude: location.latitude,
+                                longitude: location.longitude
+                            }}
+                        />}
                         {filtered.map((restaurant, index) => {
                             const { latitude, longitude } = restaurant.location;
                             return (

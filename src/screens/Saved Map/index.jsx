@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useContext } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
+import { Animated, StatusBar, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { RestaurantCard } from '../../components';
+import { RestaurantCard, LocationBox } from '../../components';
 import { mapStyleLight, mapStyleDark, CARD_WIDTH, SPACING_FOR_CARD_INSET } from '../../utils/constants';
 import { GlobalContext } from '../../utils/context';
 
@@ -57,11 +57,16 @@ const SavedMapScreen = ({ route }) => {
     });
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <LocationBox
+                    city={location.city}
+                    mapRef={mapRef}
+                />
+            </View>
             <View style={styles.mapContainer}>
                 <MapView
                     ref={mapRef}
-                    // showsUserLocation
                     showsBuildings={false}
                     toolbarEnabled={false}
                     style={styles.map}
@@ -73,6 +78,14 @@ const SavedMapScreen = ({ route }) => {
                         longitudeDelta: 0.005
                     }}
                 >
+                    <Marker
+                        tappable={false}
+                        image={require('../../../assets/images/location.png')}
+                        coordinate={{
+                            latitude: location.latitude,
+                            longitude: location.longitude
+                        }}
+                    />
                     {filtered.map((restaurant, index) => {
                         const { latitude, longitude } = restaurant.location;
                         return (
@@ -130,7 +143,7 @@ const SavedMapScreen = ({ route }) => {
                     )
                 })}
             </Animated.ScrollView>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -139,6 +152,13 @@ export default SavedMapScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1
+    },
+    header: {
+        width: '100%',
+        position: 'absolute',
+        top: Platform.OS === 'android' ? StatusBar.currentHeight + 5 : 5,
+        paddingHorizontal: 15,
+        zIndex: 2
     },
     mapContainer: {
         zIndex: 1,
