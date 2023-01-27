@@ -19,7 +19,7 @@ const globalStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 25,
-        paddingHorizontal: 15,
+        paddingHorizontal: 17,
         paddingVertical: 5
     },
     textInputWrapperLight: {
@@ -37,6 +37,15 @@ const globalStyles = StyleSheet.create({
     },
     textInputDark: {
         color: darkTheme.text
+    },
+    eye: {
+        marginLeft: 10
+    },
+    eyeLight: {
+        color: 'rgba(0, 0, 0, 0.75)'
+    },
+    eyeDark: {
+        color: 'rgba(255, 255, 255, 0.75)'
     },
     error: {
         color: '#b71c1c'

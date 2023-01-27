@@ -16,7 +16,8 @@ export default function App() {
     const [loaded] = useFonts({
         Quicksand: require('./assets/fonts/Quicksand-Regular.ttf'),
         QuicksandBold: require('./assets/fonts/Quicksand-Bold.ttf'),
-        BebasNeue: require('./assets/fonts/BebasNeue-Regular.ttf')
+        BebasNeue: require('./assets/fonts/BebasNeue-Regular.ttf'),
+        DancingScript: require('./assets/fonts/DancingScript-SemiBold.ttf'),
     });
 
     if (!loaded)
