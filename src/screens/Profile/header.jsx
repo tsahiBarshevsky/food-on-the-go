@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { GlobalContext } from '../../utils/context';
 import { lightTheme, darkTheme } from '../../utils/themes';
+import { RestaurantBox } from '../../components';
 
 const AVATAR_SIZE = 90;
 const INNER_SIZE = AVATAR_SIZE - 12;
@@ -45,25 +46,29 @@ const Header = (props) => {
                 </Text>
             </View>
             {user.type === 'owner' ?
-                (Object.keys(ownedRestaurant).length === 0 ?
-                    <View>
-                        <Text style={[styles.title, styles[`text${theme}`]]}>
-                            Owned restaurant
-                        </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('Insertion')}>
-                            <Text>Add new restaurant</Text>
-                        </TouchableOpacity>
-                    </View>
-                    :
-                    <View>
-                        <Text>My restaurant: {ownedRestaurant.name}</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate('Editing', { restaurant: ownedRestaurant })}>
-                            <Text>Edit</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={onRemoveRestaurant}>
-                            <Text>Delete</Text>
-                        </TouchableOpacity>
-                    </View>)
+                <View>
+                    <Text style={[styles.title, styles[`text${theme}`]]}>
+                        Owned restaurant
+                    </Text>
+                    {Object.keys(ownedRestaurant).length === 0 ?
+                        <View style={styles.insertion}>
+                            <Text style={[styles.text, styles[`text${theme}`]]}>
+                                You haven't added a restaurant yet.
+                            </Text>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('Insertion')}
+                                activeOpacity={0.85}
+                            >
+                                <Text style={[styles.caption, styles[`caption${theme}`]]}>Add yours!</Text>
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        <RestaurantBox
+                            restaurant={ownedRestaurant}
+                            onRemoveRestaurant={onRemoveRestaurant}
+                        />
+                    }
+                </View>
                 :
                 null
             }
@@ -156,5 +161,23 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'QuicksandBold',
         marginBottom: 5
+    },
+    insertion: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        marginBottom: 5
+    },
+    caption: {
+        fontSize: 15,
+        fontFamily: 'QuicksandBold',
+        marginLeft: 5,
+        transform: [{ translateY: -1 }]
+    },
+    captionLight: {
+        color: '#1a73e8'
+    },
+    captionDark: {
+        color: '#8cb4f1'
     }
 });

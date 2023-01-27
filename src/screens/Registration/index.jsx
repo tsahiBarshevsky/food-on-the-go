@@ -408,7 +408,8 @@ const styles = StyleSheet.create({
     },
     signInText: {
         fontFamily: 'QuicksandBold',
-        marginLeft: 5
+        marginLeft: 5,
+        transform: [{ translateY: -1 }]
     },
     signInTextLight: {
         color: '#1a73e8'

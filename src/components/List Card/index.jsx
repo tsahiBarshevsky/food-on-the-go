@@ -98,7 +98,10 @@ const ListCard = ({ item, name }) => {
                     <Menu
                         visible={visible}
                         anchor={
-                            <TouchableOpacity onPress={showMenu}>
+                            <TouchableOpacity
+                                onPress={showMenu}
+                                activeOpacity={0.85}
+                            >
                                 <Entypo
                                     name="dots-three-vertical"
                                     size={15}
