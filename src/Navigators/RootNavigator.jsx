@@ -51,12 +51,18 @@ const RootNavigator = () => {
                         <Stack.Screen
                             name='Splash'
                             component={SplashScreen}
-                            options={options}
+                            options={{
+                                headerShown: false,
+                                animationEnabled: false
+                            }}
                         />
                         <Stack.Screen
                             name='Home'
                             component={BottomBarNavigator}
-                            options={options}
+                            options={{
+                                headerShown: false,
+                                animationEnabled: false
+                            }}
                         />
                     </Stack.Group>
                 }

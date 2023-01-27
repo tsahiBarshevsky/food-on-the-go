@@ -198,7 +198,7 @@ const ReviewScreen = ({ route }) => {
                             blurOnSubmit={false}
                             onBlur={() => setIsFocused(false)}
                             onFocus={() => setIsFocused(true)}
-                            style={[globalStyles.textInput, globalStyles[`textInput${theme}`]]}
+                            style={[styles.textInput, globalStyles.textInput, globalStyles[`textInput${theme}`]]}
                         />
                     </View>
                 </KeyboardAvoidingView>
@@ -272,5 +272,8 @@ const styles = StyleSheet.create({
     scrollView: {
         paddingHorizontal: 15,
         paddingBottom: 15
+    },
+    textInput: {
+        transform: [{ translateY: -1 }]
     }
 });

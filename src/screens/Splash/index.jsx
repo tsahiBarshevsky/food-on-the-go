@@ -2,8 +2,9 @@ import React, { useEffect, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
 import { StyleSheet, Text, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { WaveIndicator } from 'react-native-indicators';
 import { getHistoryFromStorage } from '../../utils/AsyncStorageManagement';
 import { GlobalContext } from '../../utils/context';
 
@@ -13,6 +14,7 @@ import { authentication, db } from '../../utils/firebase';
 
 const SplashScreen = () => {
     const { theme } = useContext(GlobalContext);
+    const location = useSelector(state => state.location);
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -80,20 +82,34 @@ const SplashScreen = () => {
         catch (error) {
             console.log('error.message', error.message)
         }
-        finally {
-            navigation.replace('Home');
-        }
     }
 
     useEffect(() => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (Object.keys(location).length > 0)
+            navigation.replace('Home');
+    }, [location]);
+
     return (
         <>
             <StatusBar style={theme === 'Light' ? 'dark' : 'light'} />
             <View style={styles.container}>
-                <Text>Loading data...</Text>
+                <View style={styles.indicator}>
+                    <WaveIndicator
+                        waveMode='outline'
+                        color={theme === 'Light' ? 'black' : 'white'}
+                        size={45}
+                    />
+                </View>
+                <Text style={[styles.text, styles[`text${theme}`]]}>
+                    Wait...
+                </Text>
+                <Text style={[styles.text, styles[`text${theme}`]]}>
+                    Fetching data and locating your location.
+                </Text>
             </View>
         </>
     )
@@ -105,6 +121,23 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingHorizontal: 65
+    },
+    indicator: {
+        width: 45,
+        height: 45,
+        marginBottom: 10
+    },
+    text: {
+        fontSize: 16,
+        fontFamily: 'Quicksand',
+        textAlign: 'center'
+    },
+    textLight: {
+        color: 'black'
+    },
+    textDark: {
+        color: 'white'
     }
 });
