@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         width: CARD_WIDTH,
+        height: 132,
         borderRadius: 25,
         padding: 10,
         marginBottom: 2,
